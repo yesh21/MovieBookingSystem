@@ -1,0 +1,31 @@
+__pycache__/
+.DS_Store
+
+# Database
+site.db
+migrations/
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+cover/
+
+# Flask stuff:
+instance/
+.webassets-cache
+
+# Environments
+venv/
+
+# PyCharm
+.idea/
