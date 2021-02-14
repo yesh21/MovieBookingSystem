@@ -24,6 +24,7 @@ before_script:
 stages:
   - Static Analysis
   - Test
+  - Deploy
 
 flake8:
   stage: Static Analysis
@@ -38,6 +39,28 @@ test:
   tags:
     - AR-GL-R-1
   script:
-    - pip install pytest
+    - pip install pytest pytest-cov
     - pip install -r requirements.txt
-    - pytest Tests
+    - pytest --cov=Flask_Cinema_Site/ Tests
+    - coverage xml
+    - coverage html
+  artifacts:
+    reports:
+      cobertura: coverage.xml
+    paths:
+      - htmlcov/
+
+pages:
+  stage: Deploy
+  tags:
+    - AR-GL-R-1
+  dependencies:
+    - test
+  script:
+    - mv htmlcov/ public/
+  artifacts:
+    paths:
+      - public
+    expire_in: 30 days
+  only:
+    - master
