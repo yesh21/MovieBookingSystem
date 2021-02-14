@@ -1,7 +1,7 @@
 from flask_testing import TestCase
 
 from Flask_Cinema_Site import app, db
-from Flask_Cinema_Site.models import *
+# from Flask_Cinema_Site.models import *
 
 import warnings
 

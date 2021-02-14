@@ -1,7 +1,7 @@
 from Flask_Cinema_Site import app, db
-from Flask_Cinema_Site.models import *
+# from Flask_Cinema_Site.models import *
 
-from flask_sqlalchemy import SQLAlchemy
+# from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate, MigrateCommand
 from flask_script import Manager
 
