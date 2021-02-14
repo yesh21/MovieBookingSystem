@@ -1,4 +1,4 @@
-from Flask_Cinema_Site import db
+# from Flask_Cinema_Site import db
 
 import unittest
 from Tests.base import BaseTestCase

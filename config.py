@@ -7,7 +7,7 @@ class DefaultConfig(object):
 
     SECRET_KEY = 'e327924a6b8846030dbd537a6a33c7f0f2149593b50bc235016e022846915444'
 
-    #SAFE_URL_HOSTS = {'production-site.com'}
+    # SAFE_URL_HOSTS = {'production-site.com'}
 
 
 class DevelopmentConfig(DefaultConfig):
