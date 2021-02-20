@@ -1,8 +1,9 @@
 from Flask_Cinema_Site import db
 from datetime import datetime
+from flask_login import UserMixin
 
 
-class Customer(db.Model):
+class Customer(db.Model, UserMixin):
     __tablename__ = "customer"
     customerid = db.Column(db.Integer, unique=True,
                            primary_key=True, autoincrement=True)
