@@ -61,7 +61,7 @@ def signup():
     if form.validate_on_submit():
         hashed_password = generate_password_hash(form.password.data,
                                                  method='sha256')
-        new_user = models.Customer(customername=form.username.data,
+        new_user = models.Customer(username=form.username.data,
                                    email=form.email.data,
                                    password=hashed_password,
                                    lastname=form.lastname.data,
