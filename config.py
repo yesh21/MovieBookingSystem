@@ -1,12 +1,12 @@
 import os
 
+
 # Production
 class DefaultConfig(object):
     DEBUG = False
     Testing = False
     SQLALCHEMY_DATABASE_URI = 'sqlite:///site.db'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-
     SECRET_KEY = 'e327924a6b8846030dbd537a6a33c7f0f2149593b50bc235016e022846915444'
 
     # SAFE_URL_HOSTS = {'production-site.com'}
@@ -24,7 +24,6 @@ class ProductionConfig(DefaultConfig):
     basedir = os.path.abspath(os.path.dirname(__file__))
     SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'site.db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-
     SECRET_KEY = 'e327924a6b8846030dbd537a6a33c7f0f2149593b50bc235016e022846915444'
 
 
