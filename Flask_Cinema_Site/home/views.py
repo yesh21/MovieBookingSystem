@@ -1,4 +1,6 @@
 from flask import render_template, Blueprint
+from Flask_Cinema_Site import app
+from Flask_Cinema_Site import db,models
 
 
 home_blueprint = Blueprint(
@@ -6,7 +8,3 @@ home_blueprint = Blueprint(
     template_folder='templates'
 )
 
-
-@home_blueprint.route('/', methods=['GET'])
-def home():
-    return render_template('home.html')
