@@ -1,7 +1,7 @@
-from flask import render_template, Blueprint, flash, session
+from flask import render_template, Blueprint, flash, session, redirect, url_for
 from Flask_Cinema_Site import app
 from Flask_Cinema_Site import db, models
-from flask_login import LoginManager, login_user
+from flask_login import LoginManager, login_user, logout_user
 from werkzeug.security import check_password_hash, generate_password_hash
 from .forms import LoginForm, SignupForm
 
@@ -47,10 +47,10 @@ def login():
                 login_user(customer, remember=form.remember.data)
                 return 'logged in'
             else:
-                flash("incorrect password")
+                flash("incorrect password", 'error')
 
         else:
-            flash("email id not exists")
+            flash("email id not exists", "error")
     return render_template('login.html', form=form)
 
 
@@ -68,7 +68,14 @@ def signup():
                                    firstname=form.firstname.data)
         db.session.add(new_user)
         db.session.commit()
-        flash("new account created")
+        flash("new account created", "update")
         return render_template('login.html', form=form)
 
     return render_template('signup.html', form=form)
+
+
+@home_blueprint.route('/logout')
+def logout():
+    logout_user()
+    flash("successfully logged out!", "warning")
+    return redirect(url_for('home.login'))
