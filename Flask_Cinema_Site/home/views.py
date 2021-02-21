@@ -1,9 +1,11 @@
 from flask import render_template, Blueprint, flash, session, redirect, url_for
 from Flask_Cinema_Site import app
-from Flask_Cinema_Site import db, models
-from flask_login import LoginManager, login_user, logout_user
+from Flask_Cinema_Site import db, models, mail
+from flask_login import LoginManager, login_user, logout_user, current_user, login_required
 from werkzeug.security import check_password_hash, generate_password_hash
 from .forms import LoginForm, SignupForm
+from flask_mail import Message
+from itsdangerous import URLSafeTimedSerializer as Serializer
 
 
 home_blueprint = Blueprint(
@@ -68,10 +70,66 @@ def signup():
                                    firstname=form.firstname.data)
         db.session.add(new_user)
         db.session.commit()
+        token = generate_confirmation_token(new_user.email)
+        confirm_url = url_for('home.confirm_email',
+                              token=token, _external=True)
+        html = render_template('activate.html', confirm_url=confirm_url)
+        send_mail(new_user.email, token, html)
         flash("new account created", "update")
         return render_template('login.html', form=form)
 
     return render_template('signup.html', form=form)
+
+
+@home_blueprint.route("/mail")
+def send_mail(email, token, template, **kwargs):
+    msg = Message('Thanks for registering!',
+                  sender='yourownid@gmail.com',
+                  recipients=[email],
+                  html=template
+                  )
+    msg.body = 'An activation link from moviebox'
+    mail.send(msg)
+    return 'Sent'
+
+
+def confirm_token(token, expiration=360000):
+    serializer = Serializer(app.config['SECRET_KEY'])
+    try:
+        email = serializer.loads(
+            token,
+            salt=app.config['SECURITY_PASSWORD_SALT'],
+            max_age=expiration
+        )
+    except token.invalid:
+        return False
+    return email
+
+
+def generate_confirmation_token(email):
+    serializer = Serializer(app.config['SECRET_KEY'])
+    return serializer.dumps(email, salt=app.config['SECURITY_PASSWORD_SALT'])
+
+
+@login_required
+@home_blueprint.route('/confirm/<token>')
+def confirm_email(token):
+    if current_user.confirmed:
+        flash("Account already confirmed.", "update")
+        return redirect(url_for('home.signup'))
+    email = confirm_token(token)
+    user = models.Customer.query.filter_by(email=current_user
+                                           .email).first_or_404()
+    if email == user.email:
+        user.confirmed = True
+        db.session.add(user)
+        db.session.commit()
+        flash("You have confirmed your account. Thanks!", "update")
+        return redirect(url_for('home.signup'))
+    else:
+        flash("The confirmation link is invalid or has expired.", "warning")
+        return redirect(url_for('home.login'))
+    return redirect(url_for('home.signup'))
 
 
 @home_blueprint.route('/logout')

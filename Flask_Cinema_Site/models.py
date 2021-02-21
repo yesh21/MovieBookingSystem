@@ -13,6 +13,7 @@ class Customer(db.Model, UserMixin):
     username = db.Column(db.String(20), unique=True, nullable=False)
     password = db.Column(db.String(20), nullable=False)
     date = db.Column(db.DateTime, nullable=False, default=datetime.now())
+    confirmed = db.Column(db.Boolean, nullable=False, default=False)
 
     def get_id(self):
         return (self.customerid)
