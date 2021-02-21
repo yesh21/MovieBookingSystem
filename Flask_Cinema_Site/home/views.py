@@ -127,6 +127,7 @@ def confirm_email(token):
 
 
 @home_blueprint.route('/logout')
+@login_required
 def logout():
     logout_user()
     flash("successfully logged out!", "warning")
