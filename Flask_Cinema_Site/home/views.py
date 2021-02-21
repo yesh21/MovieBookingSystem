@@ -16,7 +16,7 @@ home_blueprint = Blueprint(
 
 login_manager = LoginManager()
 login_manager.init_app(app)
-login_manager.login_view = 'login'
+login_manager.login_view = 'home.login'
 
 
 @home_blueprint.route('/', methods=['GET'])
@@ -81,7 +81,6 @@ def signup():
     return render_template('signup.html', form=form)
 
 
-@home_blueprint.route("/mail")
 def send_mail(email, token, template, **kwargs):
     msg = Message('Thanks for registering!',
                   sender='yourownid@gmail.com',
@@ -111,8 +110,8 @@ def generate_confirmation_token(email):
     return serializer.dumps(email, salt=app.config['SECURITY_PASSWORD_SALT'])
 
 
-@login_required
 @home_blueprint.route('/confirm/<token>')
+@login_required
 def confirm_email(token):
     if current_user.confirmed:
         flash("Account already confirmed.", "update")
