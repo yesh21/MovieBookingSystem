@@ -24,11 +24,6 @@ def home():
     return render_template('home.html')
 
 
-@home_blueprint.route('/', methods=['GET'])
-def user():
-    return render_template('user.html')
-
-
 @login_manager.user_loader
 def load_user(customerid):
     return models.Customer.query.get(int(customerid))
