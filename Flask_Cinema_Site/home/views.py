@@ -77,14 +77,18 @@ def signup():
 
 
 def send_mail(email, token, template, **kwargs):
-    msg = Message('Thanks for registering!',
-                  sender='yourownid@gmail.com',
-                  recipients=[email],
-                  html=template
-                  )
-    msg.body = 'An activation link from moviebox'
-    mail.send(msg)
-    return 'Sent'
+    try:
+        msg = Message('Thanks for registering!',
+                      sender='yourownid@gmail.com',
+                      recipients=[email],
+                      html=template
+                      )
+        msg.body = 'An activation link from moviebox'
+        mail.send(msg)
+        return 'Sent'
+    except IOError:
+        print('plz set correct email and pass in config')
+        return False
 
 
 def confirm_token(token, expiration=360000):
