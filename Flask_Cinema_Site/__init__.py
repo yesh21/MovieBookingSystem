@@ -1,6 +1,7 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
+from flask_mail import Mail
 
 
 app = Flask(__name__)
@@ -14,6 +15,7 @@ else:
 
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
+mail = Mail(app)
 
 
 from Flask_Cinema_Site.home.views import home_blueprint
