@@ -1,0 +1,61 @@
+{% extends 'movies_base.html' %}
+
+{% block content %}
+
+    <h1>Add films page</h1>
+    <div class="container">
+        <div class="card my-4">
+            <h4 class="card-header">New Product Listing</h4>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data">
+                    <fieldset class="form-groups">
+                        <!-- Name -->
+                        <div class="form-group">
+                            {{ form.name.label(class="form-control-label") }}
+                            {{ form.name(class=get_field_class(form.name.errors), placeholder="Banana",
+                                         minlength=5 ,maxlength=25) }}
+                            {{ format_errors(form.name.errors) }}
+                        </div>
+
+                        <!-- Description -->
+                        <div class="form-group">
+                            {{ form.description.label(class="form-control-label") }}
+                            {{ form.description(class=get_field_class(form.description.errors),
+                                    placeholder="1 of 5 a day = 1 medium banana and source of vitamin B6",
+                                    minlength=10 ,maxlength=250) }}
+                            {{ format_errors(form.description.errors) }}
+                        </div>
+
+                        <!-- Category -->
+                        <div class="form-group">
+                            {{ form.category.label(class="form-control-label") }}
+                            {{ form.category(class=get_field_class(form.category.errors), size="6") }}
+                            {{ format_errors(form.category.errors) }}
+                        </div>
+
+
+
+
+
+                        <!-- Product Picture Upload -->
+                        <div class="form-group">
+                            {{ form.picture.label(class="form-control-label") }}
+                            {{ form.picture(class="form-control-file", accept="image/png,image/jpeg") }}
+                            <div class="text-danger">
+                                {% for err in form.picture.errors %}
+                                    <small>{{ err }}</small>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </fieldset>
+                    <!-- Submit Button -->
+                    <div class="form-group">
+                        {{ form.submit(class="btn btn-dark") }}
+                    </div>
+                    <!-- CSRF token -->
+                    {{ form.hidden_tag() }}
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

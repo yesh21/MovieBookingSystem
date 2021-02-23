@@ -1,6 +1,7 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+<nav class="navbar navbar-expand-lg navbar-dark mb-4">
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarContent"
-            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            aria-controls="navbarSupportedContent" aria-expanded="false"
+            aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
 
@@ -8,15 +9,28 @@
         <div class="collapse navbar-collapse" id="navbarContent">
             <!-- Nav bar left -->
             <ul class="navbar-nav mr-auto">
-                <li class="nav-item{% if title == 'Home' %} active{% endif %}">
-                    <a class="nav-link" href="#">Home</a>
+                <li class="nav-item">
+                    <a class="navbar-brand d-flex" href="{{ url_for('home.home') }}">
+                        <span class="movie_box">Moviebox</span>
+                    </a>
                 </li>
-                {% if current_user.is_authenticated %}
-                    <li class="nav-item{% if title == 'List a product' %} active{% endif %}">
-                        <a class="nav-link" href="#">List a product</a>
-                    </li>
-                {% endif %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('movie.view_multiple') }}">Browse Movies</a>
+                </li>
             </ul>
+
+            <div class="mr-2">
+                <form class="form-inline input-group">
+                    <input class="form-control" type="search" placeholder="Search" aria-label="Search">
+                    <div class="input-group-append">
+                        <div class="input-group-text p-0">
+                            <button class="btn" type="submit">
+                                <i class="bi bi-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
 
             <!-- Nav bar right -->
             <ul class="nav navbar-nav navbar-right">
@@ -26,7 +40,8 @@
                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <!-- Insert username / name -->
                         </a>
-                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
+                        <div class="dropdown-menu dropdown-menu-right"
+                             aria-labelledby="userDropdown">
                             <a class="dropdown-item" href="#">Manage Account</a>
                             <div class="dropdown-divider"></div>
                             <form action="#" method="post">
@@ -36,8 +51,11 @@
                         </div>
                     </li>
                 {% else %}
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('home.login', next=request.path) }}">Login</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('home.signup') }}">Register</a></li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('home.login', next=request.path) }}">Login</a>
+                    </li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('home.signup') }}">Register</a>
+                    </li>
                 {% endif %}
             </ul>
         </div>
