@@ -46,14 +46,29 @@
                 <h4 class="card-header">Login</h4>
 
 
-                {% with messages = get_flashed_messages() %} {% if messages %} {% for message in messages %}
+                {% with messages = get_flashed_messages(category_filter=["error"]) %} {% if messages %} {% for message in messages %}
                 <div class="alert alert-danger alert-dismissible fade show" style="margin: 20px;" role="alert">
-                    <strong>Error:</strong> {{ message }}
+                    <strong>error:</strong> {{ message }}
                     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                       <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
 
+                {% endfor %} {% endif %} {% endwith %} {% with messages = get_flashed_messages(category_filter=["warning"]) %} {% if messages %} {% for message in messages %}
+                <div class="alert alert-warning alert-dismissible fade show" style="margin: 20px;" role="alert">
+                    <strong>warning:</strong> {{ message }}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                {% endfor %} {% endif %} {% endwith %} {% with messages = get_flashed_messages(category_filter=["update"]) %} {% if messages %} {% for message in messages %}
+                <div class="alert alert-success alert-dismissible fade show" style="margin: 20px;" role="alert">
+                    <strong>update:</strong> {{ message }}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
                 {% endfor %} {% endif %} {% endwith %} {% block content %}
                 <!-- START Bootstrap-Cookie-Alert -->
                 <div class="alert text-center cookiealert" role="alert">
