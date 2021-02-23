@@ -68,10 +68,17 @@ class Viewing(db.Model):
 
 class Movie(db.Model):
     __tablename__ = "movie"
+    # Relationships
     movieid = db.Column(db.Integer, unique=True,
                         primary_key=True)
     viewings = db.relationship('viewing',
                                backref='movie', lazy=True)
+
+    # Data fields
+    #TODO Fix string lengths
+    name = db.Column(db.String(100), nullable=False)
+    year = db.Column(db.Integer, nullable=False)
+    overview = db.Column(db.String(100), nullable=False)
 
 
 class ViewingSeatLink(db.Model):
