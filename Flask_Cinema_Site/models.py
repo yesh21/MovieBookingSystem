@@ -69,16 +69,23 @@ class Viewing(db.Model):
 class Movie(db.Model):
     __tablename__ = "movie"
     # Relationships
-    movieid = db.Column(db.Integer, unique=True,
-                        primary_key=True)
-    viewings = db.relationship('viewing',
-                               backref='movie', lazy=True)
+    movieid = db.Column(db.Integer, unique=True, primary_key=True)
+    viewings = db.relationship('viewing', backref='movie', lazy=True)
 
     # Data fields
-    #TODO Fix string lengths
+    # TODO Fix string lengths
     name = db.Column(db.String(100), nullable=False)
-    year = db.Column(db.Integer, nullable=False)
-    overview = db.Column(db.String(100), nullable=False)
+    overview = db.Column(db.String(250), nullable=False)
+    released = db.Column(db.Date, nullable=False)
+
+    cover_art_name = db.Column(db.String(35), nullable=False)
+
+    # Should probably be own table cba
+    directors = db.Column(db.String(250), nullable=True)
+    cast = db.Column(db.String(250), nullable=True)
+
+    def rel_cover_art_path(self):
+        return 'movie/cover_art' + self.cover_art_name
 
 
 class ViewingSeatLink(db.Model):
