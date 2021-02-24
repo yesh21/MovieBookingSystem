@@ -1,0 +1,29 @@
+{% extends 'movies_base.html' %}
+
+{% block content %}
+    <section class="jumbotron bg-transparent text-center p-0">
+        <div class="container">
+            <h1 class="jumbotron-heading">Browse Movies</h1>
+        </div>
+    </section>
+
+    <div class="album py-5">
+        <div class="container">
+            {% if movies|length > 0 %}
+                <div class="card-columns">
+                    {% for m in movies %}
+                        <div class="h-100">
+                            {% include("snippets/movie_preview.html") %}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="card w-100 bg-dark-purple">
+                    <div class="card-body text-center">
+                        <p class="h4">No movies found</p>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

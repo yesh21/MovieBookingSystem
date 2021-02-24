@@ -23,3 +23,6 @@ app.register_blueprint(home_blueprint)
 
 from Flask_Cinema_Site.user.views import user_blueprint
 app.register_blueprint(user_blueprint, url_prefix='/user')
+
+from Flask_Cinema_Site.movie.views import movies_blueprint
+app.register_blueprint(movies_blueprint, url_prefix='/movie')
