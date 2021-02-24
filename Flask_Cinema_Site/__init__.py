@@ -1,10 +1,10 @@
-from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_mail import Mail
 from flask import Flask
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
+from flask_admin.menu import MenuLink
 
 app = Flask(__name__)
 # Load config
@@ -23,9 +23,10 @@ mail = Mail(app)
 app.config['FLASK_ADMIN_SWATCH'] = 'cerulean'
 
 admin = Admin(app, name='microblog', template_mode='bootstrap4')
+admin.add_link(MenuLink(name='Logout', category='', url="/"))
 
-from .models import Customer, CustomerViewing, Basket, BasketViewing, Viewing\
-                    ,Movie, ViewingSeat, Seat, Theatre
+from .models import Customer, CustomerViewing, Basket, BasketViewing, Viewing,\
+                    Movie, ViewingSeat, Seat, Theatre
 
 # Add administrative views here
 admin.add_view(ModelView(Customer, db.session))
