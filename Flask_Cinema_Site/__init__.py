@@ -2,7 +2,9 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_mail import Mail
-
+from flask import Flask
+from flask_admin import Admin
+from flask_admin.contrib.sqla import ModelView
 
 app = Flask(__name__)
 # Load config
@@ -17,6 +19,22 @@ db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
 mail = Mail(app)
 
+# set optional bootswatch theme
+app.config['FLASK_ADMIN_SWATCH'] = 'cerulean'
+
+admin = Admin(app, name='microblog', template_mode='bootstrap4')
+
+from .models import *
+# Add administrative views here
+admin.add_view(ModelView(Customer, db.session))
+admin.add_view(ModelView(CustomerViewing, db.session))
+admin.add_view(ModelView(Basket, db.session))
+admin.add_view(ModelView(BasketViewing, db.session))
+admin.add_view(ModelView(Viewing, db.session))
+admin.add_view(ModelView(Movie, db.session, endpoint='movies'))
+admin.add_view(ModelView(ViewingSeat, db.session))
+admin.add_view(ModelView(Seat, db.session))
+admin.add_view(ModelView(Theatre, db.session))
 
 from Flask_Cinema_Site.home.views import home_blueprint
 app.register_blueprint(home_blueprint)
