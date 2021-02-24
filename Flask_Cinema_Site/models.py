@@ -5,99 +5,89 @@ from flask_login import UserMixin
 
 class Customer(db.Model, UserMixin):
     __tablename__ = "customer"
-    customerid = db.Column(db.Integer, unique=True,
-                           primary_key=True, autoincrement=True)
-    email = db.Column(db.String(70), unique=True, nullable=False)
+    id = db.Column(db.Integer, primary_key=True)
+
+    customer_viewings = db.relationship('CustomerViewing', backref='customer', lazy=True)
+    basket = db.relationship('Basket', backref='customer', lazy=True)
+
+    # Data fields
+    email = db.Column(db.String(70), nullable=False, unique=True)
     firstname = db.Column(db.String(20), nullable=False)
     lastname = db.Column(db.String(20), nullable=False)
     username = db.Column(db.String(20), unique=True, nullable=False)
     password = db.Column(db.String(20), nullable=False)
     date = db.Column(db.DateTime, nullable=False, default=datetime.now())
     confirmed = db.Column(db.Boolean, nullable=False, default=False)
-    customerViewingLinks = db.relationship('CustomerViewingLink',
-                                           backref='Customer', lazy=True)
-    basket = db.relationship('Basket',
-                             backref='Customer', lazy=True)
-
-    def get_id(self):
-        return (self.customerid)
 
 
-class CustomerViewingLink(db.Model):
-    __tablename__ = "customerViewingLink"
-    transactionid = db.Column(db.Integer, unique=True,
-                              primary_key=True)
-    customerid = db.Column(db.Integer, db.ForeignKey('customer.customerid'),
-                           unique=True,
-                           primary_key=True)
-    viewingid = db.Column(db.Integer, db.ForeignKey('viewing.viewingid'),
-                          unique=True,
-                          primary_key=True)
+class CustomerViewing(db.Model):
+    __tablename__ = "customer_viewing"
+    transaction_id = db.Column(db.Integer, unique=True, primary_key=True)
+    customer_id = db.Column(db.Integer, db.ForeignKey('customer.id'), unique=True, primary_key=True)
+    viewing_id = db.Column(db.Integer, db.ForeignKey('viewing.id'), unique=True, primary_key=True)
 
 
 class Basket(db.Model):
     __tablename__ = "basket"
-    customerid = db.Column(db.Integer, db.ForeignKey('customer.customerid'),
-                           unique=True,
-                           primary_key=True)
-    basketviewinglinks = db.relationship('BasketViewingLink',
-                                         backref='Customer', lazy=True)
+    customer_id = db.Column(db.Integer, db.ForeignKey('customer.id'), unique=True, primary_key=True)
+    basket_viewing = db.relationship('BasketViewing', backref='basket', lazy=True)
 
 
-class BasketViewingLink(db.Model):
-    __tablename__ = "basketviewinglink"
-    customerid = db.Column(db.Integer, db.ForeignKey('customer.customerid'),
-                           unique=True,
-                           primary_key=True)
-    viewingid = db.Column(db.Integer, db.ForeignKey('viewing.viewingid'),
-                          unique=True,
-                          primary_key=True)
+class BasketViewing(db.Model):
+    __tablename__ = "basket_viewing"
+    customer_basket_id = db.Column(db.Integer, db.ForeignKey('basket.customer_id'), unique=True,
+                                   primary_key=True)
+    viewing_id = db.Column(db.Integer, db.ForeignKey('viewing.id'), unique=True, primary_key=True)
 
 
 class Viewing(db.Model):
     __tablename__ = "viewing"
-    viewingid = db.Column(db.Integer, unique=True,
-                          primary_key=True)
-    movieid = db.Column(db.Integer, db.ForeignKey('movie.movieid'),
-                        unique=True)
-    customerViewingLinks = db.relationship('CustomerViewingLink',
-                                           backref='Viewing', lazy=True)
-    basketviewinglink = db.relationship('BasketViewingLink',
-                                        backref='Customer', lazy=True)
+    id = db.Column(db.Integer, unique=True, primary_key=True)
+
+    movie_id = db.Column(db.Integer, db.ForeignKey('movie.id'), unique=True)
+
+    customer_viewings = db.relationship('CustomerViewing', backref='viewing', lazy=True)
+    basket_viewing = db.relationship('BasketViewing', backref='customer', lazy=True)
 
 
 class Movie(db.Model):
     __tablename__ = "movie"
-    movieid = db.Column(db.Integer, unique=True,
-                        primary_key=True)
-    viewings = db.relationship('viewing',
-                               backref='movie', lazy=True)
+    id = db.Column(db.Integer, unique=True, primary_key=True)
+    viewings = db.relationship('Viewing', backref='movie', lazy=True)
+
+    # Data fields
+    # TODO Fix string lengths
+    name = db.Column(db.String(100), nullable=False)
+    overview = db.Column(db.String(250), nullable=False)
+    released = db.Column(db.Date, nullable=False)
+
+    cover_art_name = db.Column(db.String(35), nullable=False)
+
+    # Should probably be own table cba
+    directors = db.Column(db.String(250), nullable=True)
+    cast = db.Column(db.String(250), nullable=True)
+
+    def rel_cover_art_path(self):
+        return 'static/cover_arts/' + self.cover_art_name
 
 
-class ViewingSeatLink(db.Model):
-    __tablename__ = "viewingseatlink"
-    seatid = db.Column(db.Integer, unique=True,
-                       primary_key=True)
-    viewingid = db.Column(db.Integer, unique=True,
-                          primary_key=True)
+class ViewingSeat(db.Model):
+    __tablename__ = "viewing_seat"
+    seat_id = db.Column(db.Integer, db.ForeignKey('seat.id'), unique=True, primary_key=True)
+    viewing_id = db.Column(db.Integer, db.ForeignKey('viewing.id'), unique=True, primary_key=True)
 
 
 class Seat(db.Model):
     __tablename__ = "seat"
-    seatid = db.Column(db.Integer, unique=True,
-                       primary_key=True)
-    theatreid = db.Column(db.Integer, db.ForeignKey('theatre.theatreid'),
-                          unique=True,
-                          primary_key=True)
-    theatre = db.relationship('Theatre',
-                              backref='seat', lazy=True)
+    id = db.Column(db.Integer, unique=True, primary_key=True)
+
+    theatre_id = db.Column(db.Integer, db.ForeignKey('theatre.id'), unique=True, primary_key=True)
+    # theatre = db.relationship('Theatre', backref='seats', lazy=True)
 
 
 class Theatre(db.Model):
     __tablename__ = "theatre"
-    theatreid = db.Column(db.Integer, unique=True,
-                          primary_key=True)
-    seatid = db.Column(db.Integer, db.ForeignKey('seat.seatid'),
-                       unique=True)
-    seats = db.relationship('seat',
-                            backref='theatre', lazy=True)
+    id = db.Column(db.Integer, unique=True, primary_key=True)
+
+    # seat_id = db.Column(db.Integer, db.ForeignKey('seat.id'), unique=True)
+    seats = db.relationship('Seat', backref='theatre', lazy=True)
