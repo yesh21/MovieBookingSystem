@@ -24,7 +24,9 @@ app.config['FLASK_ADMIN_SWATCH'] = 'cerulean'
 
 admin = Admin(app, name='microblog', template_mode='bootstrap4')
 
-from .models import *
+from .models import Customer, CustomerViewing, Basket, BasketViewing, Viewing\
+                    ,Movie, ViewingSeat, Seat, Theatre
+
 # Add administrative views here
 admin.add_view(ModelView(Customer, db.session))
 admin.add_view(ModelView(CustomerViewing, db.session))
