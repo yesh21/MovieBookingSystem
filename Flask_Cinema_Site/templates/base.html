@@ -14,7 +14,7 @@
 </head>
 
 <body class="text-light">
-    {% include("nav.html") %}
+    {% include("snippets/nav.html") %}
 
     <main>
         <!-- Success or error messages -->
@@ -32,9 +32,9 @@
         {% block content %}{% endblock %}
     </main>
 
-    {% include("footer.html") %}
+    {% include("snippets/footer.html") %}
 
-    {% include("cookie_warning.html") %}
+    {% include("snippets/cookie_warning.html") %}
 
     <!-- JQuery / Bootstrap -->
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
