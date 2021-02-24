@@ -66,6 +66,7 @@ class Movie(db.Model):
     # Should probably be own table cba
     directors = db.Column(db.String(250), nullable=True)
     cast = db.Column(db.String(250), nullable=True)
+    genres = db.Column(db.String(250), nullable=True)
 
     def rel_cover_art_path(self):
         return 'static/cover_arts/' + self.cover_art_name
