@@ -68,7 +68,7 @@ class Movie(db.Model):
     cast = db.Column(db.String(250), nullable=True)
 
     def rel_cover_art_path(self):
-        return 'movie/cover_art' + self.cover_art_name
+        return 'static/cover_arts/' + self.cover_art_name
 
 
 class ViewingSeat(db.Model):

@@ -1,9 +1,9 @@
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed
 
-from wtforms import StringField, SubmitField, TextAreaField, SelectField, SelectMultipleField
-from wtforms.fields.html5 import DecimalField, URLField, DateField
-from wtforms.validators import DataRequired, Length, ValidationError, NumberRange
+from wtforms import StringField, SubmitField, TextAreaField
+from wtforms.fields.html5 import DateField
+from wtforms.validators import DataRequired, Length
 
 
 class NewMovieForm(FlaskForm):
