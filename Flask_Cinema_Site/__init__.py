@@ -26,7 +26,7 @@ admin = Admin(app, name='microblog', template_mode='bootstrap4')
 admin.add_link(MenuLink(name='Logout', category='', url="/"))
 
 from .models import Customer, CustomerViewing, Basket, BasketViewing, Viewing,\
-                    Movie, ViewingSeat, Seat, Theatre
+    Movie, ViewingSeat, Seat, Theatre
 
 # Add administrative views here
 admin.add_view(ModelView(Customer, db.session))
