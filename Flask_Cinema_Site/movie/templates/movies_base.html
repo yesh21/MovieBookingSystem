@@ -1,1 +1,5 @@
 {% extends 'base.html' %}
+
+{% block head %}
+    <link rel="stylesheet" href="{{ url_for('movie.static', filename='css/movies.css') }}">
+{% endblock %}

@@ -13,10 +13,11 @@ class NewMovieForm(FlaskForm):
     released = DateField('Released', validators=[DataRequired()])
 
     picture = FileField('Upload cover art *',
-                        validators=[DataRequired(message='Product picture is required'),
+                        validators=[DataRequired(message='Cover art is required'),
                                     FileAllowed(['jpg', 'jpeg', 'png'])])
 
     directors = TextAreaField('Directors', validators=[Length(min=0, max=250)])
     cast_list = TextAreaField('Cast list', validators=[Length(min=0, max=250)])
+    genres = TextAreaField('Genres', validators=[Length(min=0, max=250)])
 
     add_btn = SubmitField('Add')

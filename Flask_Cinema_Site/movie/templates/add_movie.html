@@ -1,41 +1,119 @@
 {% extends 'movies_base.html' %}
 
 {% block content %}
-
-    <h1>Add films page</h1>
     <div class="container">
-        <div class="card my-4">
-            <h4 class="card-header">New Product Listing</h4>
+        <div class="card my-4 bg-black">
+            <h4 class="card-header border-bottom">Add Movie</h4>
             <div class="card-body">
                 <form method="post" enctype="multipart/form-data">
                     <fieldset class="form-groups">
                         <!-- Name -->
                         <div class="form-group">
-                            {{ form.name.label(class="form-control-label") }}
-                            {{ form.name(class=get_field_class(form.name.errors), placeholder="Banana",
-                                         minlength=5 ,maxlength=25) }}
-                            {{ format_errors(form.name.errors) }}
+                            <div class="form-group">
+                                {{  form.name.label(class="form-control-label") }}
+
+                                {% if form.name.errors %}
+                                    {{ form.name(class="form-control is-invalid") }}
+                                    <div class="invalid-feedback">
+                                        {% for err in form.name.errors %}
+                                            <span>{{ err }}</span>
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    {{ form.name(class="form-control") }}
+                                {% endif %}
+                            </div>
                         </div>
 
-                        <!-- Description -->
+                        <!-- Overview -->
                         <div class="form-group">
-                            {{ form.description.label(class="form-control-label") }}
-                            {{ form.description(class=get_field_class(form.description.errors),
-                                    placeholder="1 of 5 a day = 1 medium banana and source of vitamin B6",
-                                    minlength=10 ,maxlength=250) }}
-                            {{ format_errors(form.description.errors) }}
+                            <div class="form-group">
+                                {{  form.overview.label(class="form-control-label") }}
+
+                                {% if form.overview.errors %}
+                                    {{ form.overview(class="form-control is-invalid") }}
+                                    <div class="invalid-feedback">
+                                        {% for err in form.overview.errors %}
+                                            <span>{{ err }}</span>
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    {{ form.overview(class="form-control") }}
+                                {% endif %}
+                            </div>
                         </div>
 
-                        <!-- Category -->
+                    <!-- Released -->
                         <div class="form-group">
-                            {{ form.category.label(class="form-control-label") }}
-                            {{ form.category(class=get_field_class(form.category.errors), size="6") }}
-                            {{ format_errors(form.category.errors) }}
+                            <div class="form-group">
+                                {{  form.released.label(class="form-control-label") }}
+
+                                {% if form.released.errors %}
+                                    {{ form.released(class="form-control is-invalid") }}
+                                    <div class="invalid-feedback">
+                                        {% for err in form.released.errors %}
+                                            <span>{{ err }}</span>
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    {{ form.released(class="form-control") }}
+                                {% endif %}
+                            </div>
                         </div>
 
+                        <!-- Directors -->
+                        <div class="form-group">
+                            <div class="form-group">
+                                {{  form.directors.label(class="form-control-label") }}
 
+                                {% if form.directors.errors %}
+                                    {{ form.directors(class="form-control is-invalid") }}
+                                    <div class="invalid-feedback">
+                                        {% for err in form.directors.errors %}
+                                            <span>{{ err }}</span>
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    {{ form.directors(class="form-control") }}
+                                {% endif %}
+                            </div>
+                        </div>
 
+                        <!-- Cast -->
+                        <div class="form-group">
+                            <div class="form-group">
+                                {{  form.cast_list.label(class="form-control-label") }}
 
+                                {% if form.cast_list.errors %}
+                                    {{ form.cast_list(class="form-control is-invalid") }}
+                                    <div class="invalid-feedback">
+                                        {% for err in form.cast_list.errors %}
+                                            <span>{{ err }}</span>
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    {{ form.cast_list(class="form-control") }}
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Overview -->
+                        <div class="form-group">
+                            <div class="form-group">
+                                {{  form.genres.label(class="form-control-label") }}
+
+                                {% if form.genres.errors %}
+                                    {{ form.genres(class="form-control is-invalid") }}
+                                    <div class="invalid-feedback">
+                                        {% for err in form.genres.errors %}
+                                            <span>{{ err }}</span>
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    {{ form.genres(class="form-control") }}
+                                {% endif %}
+                            </div>
+                        </div>
 
                         <!-- Product Picture Upload -->
                         <div class="form-group">
@@ -50,10 +128,10 @@
                     </fieldset>
                     <!-- Submit Button -->
                     <div class="form-group">
-                        {{ form.submit(class="btn btn-dark") }}
+                        {{ form.add_btn(class="btn btn-dark") }}
                     </div>
                     <!-- CSRF token -->
-                    {{ form.hidden_tag() }}
+                    {{ form.csrf_token }}
                 </form>
             </div>
         </div>
