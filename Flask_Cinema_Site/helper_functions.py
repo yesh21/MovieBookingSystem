@@ -9,10 +9,11 @@ import secrets
 
 
 def get_redirect_url():
+    # TODO ?next= dont work on POST requests???
     url = request.args.get('next') or request.referrer
     if url and is_safe_url(url, app.config['SAFE_URL_HOSTS']):
         return url
-    return url_for('home')
+    return url_for('home.home')
 
 
 def save_picture(picture, rel_folder_path):
