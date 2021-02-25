@@ -81,7 +81,7 @@ def signup():
 def send_mail(email, token, template, **kwargs):
     try:
         msg = Message('Thanks for registering!',
-                      sender='yourownid@gmail.com',
+                      sender=app.config['MAIL_USERNAME'],
                       recipients=[email],
                       html=template
                       )
