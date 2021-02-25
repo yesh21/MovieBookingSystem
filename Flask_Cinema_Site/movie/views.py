@@ -5,7 +5,6 @@ from Flask_Cinema_Site.helper_functions import get_redirect_url, save_picture
 
 from flask import render_template, redirect, url_for, Blueprint, flash
 
-from datetime import date
 
 movies_blueprint = Blueprint(
     'movie', __name__,

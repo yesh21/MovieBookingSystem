@@ -11,17 +11,17 @@ from datetime import date
 
 m1 = Movie(
     name='Black Widow',
-    overview='In Marvel Studios’ action-packed spy thriller “Black Widow,” ' \
-                 'Natasha Romanoff aka Black Widow confronts the darker parts of ' \
-                 'her ledger when a dangerous conspiracy with ties to her past ' \
-                 'arises. Pursued by a force that will stop at nothing to bring ' \
-                 'her down, Natasha must deal with her history as a spy and the ' \
-                 'broken relationships left in her wake long before she became an Avenger.',
+    overview='In Marvel Studios’ action-packed spy thriller “Black Widow,” '
+             'Natasha Romanoff aka Black Widow confronts the darker parts of '
+             'her ledger when a dangerous conspiracy with ties to her past '
+             'arises. Pursued by a force that will stop at nothing to bring '
+             'her down, Natasha must deal with her history as a spy and the '
+             'broken relationships left in her wake long before she became an Avenger.',
     released=date(2021, 5, 7),
     cover_art_name='black_widow.jpg',
     directors='Cate Shortland',
-    cast='Rachel Weisz, David Harbour, O-T Fagbenle, Ray Winstone, Florence ' \
-             'Pugh, Scarlett Johansson'
+    cast='Rachel Weisz, David Harbour, O-T Fagbenle, Ray Winstone, Florence '
+         'Pugh, Scarlett Johansson'
 )
 db.session.add(m1)
 
