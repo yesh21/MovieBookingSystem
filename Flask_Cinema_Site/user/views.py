@@ -2,7 +2,7 @@ from Flask_Cinema_Site import app, db, models, mail
 from Flask_Cinema_Site.helper_functions import get_redirect_url
 from .forms import LoginForm, SignupForm
 
-from flask import render_template, Blueprint, flash, session, redirect, url_for, request
+from flask import render_template, Blueprint, flash, session, redirect, url_for
 from flask_login import LoginManager, login_user, logout_user, current_user, login_required
 from flask_mail import Message
 
