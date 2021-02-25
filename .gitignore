@@ -5,6 +5,9 @@ __pycache__/
 site.db
 migrations/
 
+# User generated content
+Flask_Cinema_Site/movie/static/cover_arts
+
 # Unit test / coverage reports
 htmlcov/
 .tox/

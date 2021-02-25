@@ -8,7 +8,7 @@
                 <div class="card mb-4 px-1 h-100 bg-black">
                     <img class="y-100 w-100 m-auto"
                          src="{{ movie.rel_cover_art_path() }}"
-                         alt="Product picture">
+                         alt="Movie cover art">
                 </div>
             </div>
 
@@ -19,8 +19,14 @@
                         <h5 class="card-title">{{ movie.name }}</h5>
                         <!-- Price / Rating -->
                         <div class="d-flex justify-content-between pb-2 border-bottom">
-                            <div>Text left</div>
-                            <div>Text right</div>
+                            <div>999 mins</div>
+                            <div>
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-half"></i>
+                                <i class="bi bi-star"></i>
+                            </div>
                         </div>
                         <p class="card-text py-2 mb-0 border-bottom">{{ movie.overview }}</p>
                         <p class="card-text py-2 mb-0 border-bottom">Release date: {{ movie.released.strftime("%B %d, %Y") }}</p>
@@ -28,17 +34,22 @@
                         <p class="card-text pb-2 mb-0">Cast: {{ movie.cast  if movie.cast is not none else 'Unkown' }}</p>
                         <p class="card-text mb-0">Genres: {{ movie.genres if movie.genres is not none else 'Unkown' }}</p>
                     </div>
-                    <!-- Edit / Delete buttons -->
-                    {% if current_user.is_authenticated and current_user.id == product.seller_id %}
+
+                    {% if True %}
+                        <!-- Edit / Hide / Delete buttons -->
                         <div class="card-footer">
                             <div class="row">
                                 <div class="col">
-                                    <a href="{{ url_for('edit_product', product_id=product.id) }}"
-                                       class="btn btn-dark w-100">Edit product</a>
+                                    <a href="{{ url_for('movie.edit_get', movie_id=movie.id) }}"
+                                       class="btn btn-dark w-100">Edit movie</a>
+                                </div>
+                                <div class="col">
+                                    <button type="button" class="btn btn-primary w-100" data-toggle="modal"
+                                            data-target="#">Hide movie</button>
                                 </div>
                                 <div class="col">
                                     <button type="button" class="btn btn-danger w-100" data-toggle="modal"
-                                            data-target="#deleteProductModal">Delete Product</button>
+                                            data-target="#deleteMovieModal">Delete movie</button>
                                 </div>
                             </div>
                         </div>
@@ -47,26 +58,85 @@
             </div>
         </div>
 
-        <!-- Similar products -->
+        <!-- Viewings search -->
+        <div class="card bg-black mb-4">
+            <div class="card-header">Upcoming viewings</div>
+            <div class="card-body">
+                <div class="row mx-neg-1">
+                    {% for i in range(7) %}
+                        <div class="col-lg col-md-12 mb-2 px-1">
+                            <div class="bg-dark px-2 text-center rounded">
+                                <p class="h6 my-1">Mon 25/02/21</p>
+                                <div class="bg-black d-inline-block mx-auto my-1 rounded">
+                                    <a href="#">
+                                        <span class="px-2 ">14:00</span>
+                                    </a>
+                                </div>
+                                 <div class="bg-black d-inline-block mx-auto my-1 rounded">
+                                     <a href="#">
+                                         <span class="px-2 ">15:00</span>
+                                     </a>
+                                </div>
+                                 <div class="bg-black d-inline-block mx-auto my-1 rounded">
+                                     <a href="#">
+                                         <span class="px-2 ">20:00</span>
+                                     </a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div><!-- Viewings search end -->
+
+        <!-- Similar movies -->
         <div class="card bg-black">
             <div class="card-header">Similar movies you may also like</div>
             <div class="card-body">
                 <div class="row">
-                    {% for p in related_products %}
-                        <div class="col-lg-4 col-md-6 mb-3">
 
-                        </div>
-                    {% endfor %}
                 </div>
-                {% if related_products|length == 0 %}
-                    <div class="card w-100">
+                {% if 0 == 0 %}
+                    <div class="card w-100 bg-dark">
                         <div class="card-body text-center">
-                            <p class="h4">No products found</p>
+                            <p class="h4">No movies found</p>
                         </div>
                     </div>
                 {% endif %}
             </div>
-        </div><!-- Similar products end -->
+        </div><!-- Similar movies end -->
+
+        <!-- Delete Movie Modal -->
+        <div class="modal fade" id="deleteMovieModal" tabindex="-1" role="dialog"
+             aria-labelledby="deleteMovieModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content bg-dark">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="deleteMovieModalLabel">Delete Movie</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        Are you sure you wish to delete the movie? Deleting the movie cannot be undone and will also
+                        delete all associated viewings.
+                    </div>
+                    <div class="modal-footer">
+                        <form action="#" method="post">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-danger">Delete</button>
+                            <!-- Movie id -->
+
+                            <!-- CSRF token -->
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div><!-- Delete Movie Modal End -->
     </div>
-    </div>
+{% endblock %}
+
+{% block scripts %}
+
 {% endblock %}
