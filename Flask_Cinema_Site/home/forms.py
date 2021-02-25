@@ -1,11 +1,11 @@
-from flask_wtf import Form
+from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, validators
 from wtforms import BooleanField, SubmitField
 from wtforms.validators import DataRequired, Email, Length, ValidationError
 from Flask_Cinema_Site import db, models
 
 
-class LoginForm(Form):
+class LoginForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(),
                                              Email(message='Invalid email')
                                              ], render_kw={
@@ -18,7 +18,7 @@ class LoginForm(Form):
     loginbtn = SubmitField('Login')
 
 
-class SignupForm(Form):
+class SignupForm(FlaskForm):
     firstname = StringField('firstname',
                             validators=[DataRequired(), Length(min=3, max=20)],
                             render_kw={"placeholder": "First Name"})
