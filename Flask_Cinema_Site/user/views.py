@@ -1,6 +1,6 @@
 from Flask_Cinema_Site import app, db, models, mail
 from Flask_Cinema_Site.helper_functions import get_redirect_url
-from .forms import LoginForm, SignupForm
+from .forms import LoginForm, SignupForm, ForgotPasswordForm
 
 from flask import render_template, Blueprint, flash, session, redirect, url_for
 from flask_login import LoginManager, login_user, logout_user, current_user, login_required
@@ -24,6 +24,7 @@ login_manager.login_view = 'user.login'
 def load_user(customerid):
     return models.Customer.query.get(int(customerid))
 
+
 @user_blueprint.route('/reset/password', methods=['POST', 'GET'])
 def reset():
     form = ForgotPasswordForm()
@@ -31,6 +32,7 @@ def reset():
         return render_template('forgot_password.html', title='Reset password', form=form)
     else:
         pass
+
 
 @user_blueprint.route('/', methods=['GET'])
 def user():
