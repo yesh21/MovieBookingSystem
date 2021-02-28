@@ -30,15 +30,14 @@ def reset():
     form = ForgotPasswordForm()
     if form.validate_on_submit():
         print(str(form.email.data))
-        customer = db.session.query(models.Customer).filter_by\
-            (email=form.email.data).first()
+        customer = db.session.query(models.Customer)\
+            .filter_by(email=form.email.data).first()
         if not customer:
             flash('Unknown email has been entered.')
         else:
             flash('A link has been sent to your email to reset your password, \
                 the link will expire after 24 hours.')
-    return render_template('forgot_password.html', title='Reset password',
-        form=form)
+    return render_template('forgot_password.html', title='Reset password', form=form)
 
 
 @user_blueprint.route('/', methods=['GET'])
