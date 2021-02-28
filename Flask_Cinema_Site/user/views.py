@@ -26,7 +26,7 @@ def load_user(customerid):
 
 @user_blueprint.route('/reset/password', methods=['POST', 'GET'])
 def reset():
-    form = SignupForm()
+    form = ForgotPasswordForm()
     if not form.validate_on_submit():
         return render_template('forgot_password.html', title='Reset password', form=form)
     else:
