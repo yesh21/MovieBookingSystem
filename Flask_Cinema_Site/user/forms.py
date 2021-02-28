@@ -69,7 +69,8 @@ class SignupForm(FlaskForm):
             raise ValidationError(
                   f"Email '{userdata.email}' already exists")
 
-class SignupForm(FlaskForm):
+
+class ForgotPasswordForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(),
                                              Email(message='Invalid email')
                                              ], render_kw={
