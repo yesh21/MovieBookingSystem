@@ -75,4 +75,3 @@ class ForgotPasswordForm(FlaskForm):
                                              Email(message='Invalid email')
                                              ], render_kw={
                                                  "placeholder": "Email"})
-    send_reset_link = SubmitField('Reset password')

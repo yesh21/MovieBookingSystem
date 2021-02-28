@@ -25,13 +25,20 @@ def load_user(customerid):
     return models.Customer.query.get(int(customerid))
 
 
-@user_blueprint.route('/reset/password', methods=['POST', 'GET'])
+@user_blueprint.route('/reset', methods=['GET', 'POST'])
 def reset():
     form = ForgotPasswordForm()
-    if not form.validate_on_submit():
-        return render_template('forgot_password.html', title='Reset password', form=form)
-    else:
-        pass
+    if form.validate_on_submit():
+        print(str(form.email.data))
+        customer = db.session.query(models.Customer).filter_by\
+            (email=form.email.data).first()
+        if not customer:
+            flash('Unknown email has been entered.')
+        else:
+            flash('A link has been sent to your email to reset your password, \
+                the link will expire after 24 hours.')
+    return render_template('forgot_password.html', title='Reset password',
+        form=form)
 
 
 @user_blueprint.route('/', methods=['GET'])
