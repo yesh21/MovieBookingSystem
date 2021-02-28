@@ -24,6 +24,13 @@ login_manager.login_view = 'user.login'
 def load_user(customerid):
     return models.Customer.query.get(int(customerid))
 
+@user_blueprint.route('/reset/password', methods=['POST', 'GET'])
+def reset():
+    form = SignupForm()
+    if not form.validate_on_submit():
+        return render_template('forgot_password.html', title='Reset password', form=form)
+    else:
+        pass
 
 @user_blueprint.route('/', methods=['GET'])
 def user():

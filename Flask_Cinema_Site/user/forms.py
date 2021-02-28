@@ -68,3 +68,10 @@ class SignupForm(FlaskForm):
         if userdata:
             raise ValidationError(
                   f"Email '{userdata.email}' already exists")
+
+class SignupForm(FlaskForm):
+    email = StringField('Email', validators=[DataRequired(),
+                                             Email(message='Invalid email')
+                                             ], render_kw={
+                                                 "placeholder": "Email"})
+    send_reset_link = SubmitField('Reset password')
