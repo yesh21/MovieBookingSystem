@@ -11,6 +11,8 @@ bookings_blueprint = Blueprint(
 )
 
 
+# Will show movie, brief details and row of times for each day
+# Once selected will redirect to seats
 @bookings_blueprint.route('/<int:movie_id>', methods=['GET'])
 def view_specific(movie_id):
     m = Movie.query.get(movie_id)
