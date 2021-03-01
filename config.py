@@ -22,10 +22,10 @@ class DefaultConfig(object):
     # MAIL_USE_TLS = False
     # MAIL_USE_SSL = True
     # Plz no spam
-    MAIL_SERVER = 'ssl0.ovh.net'
+    MAIL_SERVER = 'smtp.gmail.com'
     MAIL_PORT = 465
-    MAIL_USERNAME = 'comp2913-group40@aaronrosser.xyz'
-    MAIL_PASSWORD = 'hIYcrp3Rxg61OwJ'
+    MAIL_USERNAME = 'alan.ashford.786123@gmail.com'
+    MAIL_PASSWORD = 'Laughing522'
     MAIL_USE_TLS = False
     MAIL_USE_SSL = True
 
