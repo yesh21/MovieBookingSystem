@@ -8,127 +8,29 @@
                 <form method="post" enctype="multipart/form-data">
                     <fieldset class="form-groups">
                         <!-- Name -->
-                        <div class="form-group">
-                            <div class="form-group">
-                                {{  form.name.label(class="form-control-label") }}
-
-                                {% if form.name.errors %}
-                                    {{ form.name(class="form-control is-invalid") }}
-                                    <div class="invalid-feedback">
-                                        {% for err in form.name.errors %}
-                                            <span>{{ err }}</span>
-                                        {% endfor %}
-                                    </div>
-                                {% else %}
-                                    {{ form.name(class="form-control") }}
-                                {% endif %}
-                            </div>
-                        </div>
+                        {{  get_field_group_html(form.name) }}
 
                         <!-- Overview -->
-                        <div class="form-group">
-                            <div class="form-group">
-                                {{  form.overview.label(class="form-control-label") }}
+                        {{  get_field_group_html(form.overview) }}
 
-                                {% if form.overview.errors %}
-                                    {{ form.overview(class="form-control is-invalid") }}
-                                    <div class="invalid-feedback">
-                                        {% for err in form.overview.errors %}
-                                            <span>{{ err }}</span>
-                                        {% endfor %}
-                                    </div>
-                                {% else %}
-                                    {{ form.overview(class="form-control") }}
-                                {% endif %}
-                            </div>
-                        </div>
-
-                    <!-- Released -->
-                        <div class="form-group">
-                            <div class="form-group">
-                                {{  form.released.label(class="form-control-label") }}
-
-                                {% if form.released.errors %}
-                                    {{ form.released(class="form-control is-invalid") }}
-                                    <div class="invalid-feedback">
-                                        {% for err in form.released.errors %}
-                                            <span>{{ err }}</span>
-                                        {% endfor %}
-                                    </div>
-                                {% else %}
-                                    {{ form.released(class="form-control") }}
-                                {% endif %}
-                            </div>
-                        </div>
+                        <!-- Released -->
+                        {{  get_field_group_html(form.released) }}
 
                         <!-- Directors -->
-                        <div class="form-group">
-                            <div class="form-group">
-                                {{  form.directors.label(class="form-control-label") }}
-
-                                {% if form.directors.errors %}
-                                    {{ form.directors(class="form-control is-invalid") }}
-                                    <div class="invalid-feedback">
-                                        {% for err in form.directors.errors %}
-                                            <span>{{ err }}</span>
-                                        {% endfor %}
-                                    </div>
-                                {% else %}
-                                    {{ form.directors(class="form-control") }}
-                                {% endif %}
-                            </div>
-                        </div>
+                        {{  get_field_group_html(form.directors) }}
 
                         <!-- Cast -->
-                        <div class="form-group">
-                            <div class="form-group">
-                                {{  form.cast_list.label(class="form-control-label") }}
+                        {{  get_field_group_html(form.cast_list) }}
 
-                                {% if form.cast_list.errors %}
-                                    {{ form.cast_list(class="form-control is-invalid") }}
-                                    <div class="invalid-feedback">
-                                        {% for err in form.cast_list.errors %}
-                                            <span>{{ err }}</span>
-                                        {% endfor %}
-                                    </div>
-                                {% else %}
-                                    {{ form.cast_list(class="form-control") }}
-                                {% endif %}
-                            </div>
-                        </div>
+                        <!-- Genre -->
+                        {{  get_field_group_html(form.genres) }}
 
-                        <!-- Overview -->
-                        <div class="form-group">
-                            <div class="form-group">
-                                {{  form.genres.label(class="form-control-label") }}
-
-                                {% if form.genres.errors %}
-                                    {{ form.genres(class="form-control is-invalid") }}
-                                    <div class="invalid-feedback">
-                                        {% for err in form.genres.errors %}
-                                            <span>{{ err }}</span>
-                                        {% endfor %}
-                                    </div>
-                                {% else %}
-                                    {{ form.genres(class="form-control") }}
-                                {% endif %}
-                            </div>
-                        </div>
-
-                        <!-- Product Picture Upload -->
-                        <div class="form-group">
-                            {{ form.picture.label(class="form-control-label") }}
-                            {{ form.picture(class="form-control-file", accept="image/png,image/jpeg") }}
-                            <div class="text-danger">
-                                {% for err in form.picture.errors %}
-                                    <small>{{ err }}</small>
-                                {% endfor %}
-                            </div>
-                        </div>
+                        <!-- Movie cover art upload -->
+                        {{ get_file_upload_group_html(form.picture, accept='image/png,image/jpeg') }}
                     </fieldset>
                     <!-- Submit Button -->
                     <div class="form-group">
-                        {{ form.add_btn(class="btn btn-dark") }}
+                        {{ form.add_btn(class="btn btn-primary") }}
                     </div>
                     <!-- CSRF token -->
                     {{ form.csrf_token }}
