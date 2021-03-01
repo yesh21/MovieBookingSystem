@@ -19,16 +19,12 @@ db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
 mail = Mail(app)
 
-# set optional bootswatch theme
-app.config['FLASK_ADMIN_SWATCH'] = 'cerulean'
-
-admin = Admin(app, name='microblog', template_mode='bootstrap4')
-admin.add_link(MenuLink(name='Logout', category='', url="/"))
-
+# Add administrative views here
 from .models import Customer, CustomerViewing, Basket, BasketViewing, Viewing,\
     Movie, ViewingSeat, Seat, Theatre
 
-# Add administrative views here
+admin = Admin(app, name='microblog', template_mode='bootstrap4')
+admin.add_link(MenuLink(name='Logout', category='', url="/"))
 admin.add_view(ModelView(Customer, db.session))
 admin.add_view(ModelView(CustomerViewing, db.session))
 admin.add_view(ModelView(Basket, db.session))
@@ -38,7 +34,18 @@ admin.add_view(ModelView(Movie, db.session, endpoint='movies'))
 admin.add_view(ModelView(ViewingSeat, db.session))
 admin.add_view(ModelView(Seat, db.session))
 admin.add_view(ModelView(Theatre, db.session))
+# set optional bootswatch theme
+app.config['FLASK_ADMIN_SWATCH'] = 'cerulean'
 
+# Add custom functions to all templates
+from Flask_Cinema_Site.helper_functions import get_field_html, get_field_group_html, \
+    get_file_upload_group_html, get_field_errors_html
+app.jinja_env.globals.update(get_field_html=get_field_html,
+                             get_field_group_html=get_field_group_html,
+                             get_file_upload_group_html=get_file_upload_group_html,
+                             get_field_errors_html=get_field_errors_html)
+
+# Register blueprints
 from Flask_Cinema_Site.home.views import home_blueprint
 app.register_blueprint(home_blueprint)
 
