@@ -67,21 +67,13 @@
                         <div class="col-lg col-md-12 mb-2 px-1">
                             <div class="bg-dark px-2 text-center rounded">
                                 <p class="h6 my-1">Mon 25/02/21</p>
+                                {% for viewing in viewings %}
                                 <div class="bg-black d-inline-block mx-auto my-1 rounded">
                                     <a href="#">
-                                        <span class="px-2 ">14:00</span>
+                                        <span class="px-2 "><a href="{{ '/book/slot?viewing=%s&movie=%s' % (movie.id,viewing.id) }}">{{viewing.time}}</a></span>
                                     </a>
                                 </div>
-                                 <div class="bg-black d-inline-block mx-auto my-1 rounded">
-                                     <a href="#">
-                                         <span class="px-2 ">15:00</span>
-                                     </a>
-                                </div>
-                                 <div class="bg-black d-inline-block mx-auto my-1 rounded">
-                                     <a href="#">
-                                         <span class="px-2 ">20:00</span>
-                                     </a>
-                                </div>
+                                {% endfor %}
                             </div>
                         </div>
                     {% endfor %}
