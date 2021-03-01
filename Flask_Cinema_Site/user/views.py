@@ -67,8 +67,8 @@ def reset():
             flash('Unknown email has been entered.', 'danger')
         else:
             send_password_reset_email(customer)
-            flash('A link has been sent to your email to reset your password, \
-                the link will expire after 24 hours.', 'success')
+            flash('A link has been sent to your email to reset your password\
+                , the link will expire after 24 hours.', 'success')
     return render_template('forgot_password.html', title='Reset password', form=form)
 
 
