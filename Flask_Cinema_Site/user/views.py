@@ -28,12 +28,12 @@ def load_user(customerid):
 def send_password_reset_email(user):
     token = user.get_reset_password_token()
     helper_functions.send_email('[Microblog] Reset Your Password',
-               sender=app.config['MAIL_USERNAME'][0],
-               recipients=[user.email],
-               text_body=render_template('reset_password.txt',
-                                         user=user, token=token),
-               html_body=render_template('reset_password.txt',
-                                         user=user, token=token))
+                                sender=app.config['MAIL_USERNAME'][0],
+                                recipients=[user.email],
+                                text_body=render_template('reset_password.txt',
+                                user=user, token=token),
+                                html_body=render_template('reset_password.txt',
+                                user=user, token=token))
 
 
 @app.route('/reset_password/<token>', methods=['GET', 'POST'])
