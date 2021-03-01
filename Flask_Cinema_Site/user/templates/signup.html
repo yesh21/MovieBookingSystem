@@ -1,112 +1,73 @@
 {% extends 'user_base.html' %}
 
 {% block content %}
-    <div class="container h-100">
-        <div class="justify-content-center align-items-center"
-             style="position: relative; top: 10%; font-weight: 600;">
-            <div class="card bg-black" style="width: 100%">
-                <h4 class="card-header border-bottom">Sign Up</h4>
+    <div class="container">
+        <div class="card bg-black">
+            <h4 class="card-header border-bottom">Register</h4>
 
-                <div class="card-body">
-                    <form class="form form-signin" method="POST"
-                          action="{{ url_for('user.signup') }}">
-                        <div class="row g-3">
-                            <div class="col">
-                                <label>First Name</label>
-                                {{ form.firstname (class_='form-control is-invalid' ,**{'aria-describedby':"inputGroupPrepend2 validationServerfirstnameFeedback1", 'style':"border-color: grey;"} ) }}
-                                {% if form.firstname.errors %}
-                                    {% for errors in form.firstname.errors %}
-                                        <div id="validationServerfirstnameFeedback"
-                                             class="invalid-feedback">
-                                            {{ errors }}
-                                        </div>
-                                    {% endfor %} {% endif %}
+            <div class="card-body">
+                <form action="" method="post">
+                    <fieldset class="form-groups">
+                        <!-- Names -->
+                        <div class="form-row">
+                            <div class="form-group col">
+                                {{ get_field_html(form.firstname) }}
                             </div>
-                            <div class="col">
-                                <label>Last Name</label>
-                                {{ form.lastname (class_='form-control is-invalid' ,**{'aria-describedby':"inputGroupPrepend2 validationServerlastnameFeedback1", 'style':"border-color: grey;"} ) }}
-                                {% if form.lastname.errors %}
-                                    {% for errors in form.lastname.errors %}
-                                        <div id="validationServerlastnameFeedback"
-                                             class="invalid-feedback">
-                                            {{ errors }}
-                                        </div>
-                                    {% endfor %} {% endif %}
+                            <div class="form-group col">
+                                {{ get_field_html(form.lastname) }}
                             </div>
                         </div>
-                        <div class="row g-3">
-                            <div class="col">
-                                <label>Email </label>
-                                {{ form.email (class_='form-control is-invalid' ,**{'aria-describedby':"inputGroupPrepend2 validationServeremailFeedback1", 'style':"border-color: grey;"} ) }}
-                                {% if form.email.errors %} {% for errors
-                                in form.email.errors %}
-                                    <div id="validationServeremailFeedback"
-                                         class="invalid-feedback">
-                                        {{ errors }}
-                                    </div>
-                                {% endfor %} {% endif %}
+
+                        <!-- Email / username -->
+                        <div class="form-row">
+                            <div class="form-group col">
+                                {{ get_field_html(form.email) }}
                             </div>
-                            <div class="col-md-4">
-                                <label for="validationDefaultUsername"
-                                       class="form-label">Username</label>
+                            <div class="form-group col-md-4">
+                                {{ form.username.label(class="form-control-label") }}
                                 <div class="input-group">
-                                    <span class="input-group-text" id="inputGroupPrepend2">@</span>
-                                    {{ form.username (class_='form-control is-invalid' ,**{'aria-describedby':"inputGroupPrepend2 validationServerUsernameFeedback", 'style':"border-color:
-                                    grey;"} ) }} {% if form.username.errors %}
-                                    {% for errors in form.username.errors %}
-                                        <div id="validationServerUsernameFeedback"
-                                             class="invalid-feedback">
-                                            {{ errors }}
-                                        </div>
-                                    {% endfor %} {% endif %}
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">@</span>
+                                    </div>
+                                    {% if form.username.errors %}
+                                        {{ form.username(class='form-control is-invalid') }}
+                                    {% else %}
+                                        {{ form.username(class='form-control') }}
+                                    {% endif %}
                                 </div>
+                                {{ get_field_errors_html(form.username.errors) }}
                             </div>
                         </div>
-                        <div class="row g-3">
-                            <div class="col">
-                                <label>Password</label>
-                                {{ form.password (class_='form-control is-invalid' ,**{'aria-describedby':"inputGroupPrepend2 validationServerPasswordFeedback1", 'style':"border-color: grey;"} ) }}
-                                {% if form.password.errors %}
-                                    {% for errors in form.password.errors %}
-                                        <div id="validationServerPasswordFeedback"
-                                             class="invalid-feedback">
-                                            {{ errors }}
-                                        </div>
-                                    {% endfor %} {% endif %}
-                            </div>
-                            <div class="col">
-                                <label>Re-Password:</label>
-                                {{ form.confirmPassword (class_='form-control is-invalid' ,**{'aria-describedby':"inputGroupPrepend2 validationServerconfirmPasswordFeedback1", 'style':"border-color: grey;"} ) }}
-                                {% if form.confirmPassword.errors %}
-                                    {% for errors in form.confirmPassword.errors %}
-                                        <div id="validationServerconfirmPasswordFeedback"
-                                             class="invalid-feedback">
-                                            {{ errors }}
-                                        </div>
-                                    {% endfor %} {% endif %}
-                            </div>
-                        </div>
-                        <br>
-                        <br> {{ form.consent }} I consent for storing all my data securely,
-                        including passwords
-                        <br>
-                        <br>
-                        <div style="width:50%">
-                            {{ form.Signupbtn (class_='btn btn-lg btn-success') }}
-                        </div>
-                        {{ form.hidden_tag() }}
-                    </form>
-                    <hr style="border-top: 1px solid black; width:50%">
-                    <form method="get" action="/login">
-                        <div style="display: flex;justify-content: center;">
-                            <p style="margin-bottom: 0rem;">If u are already an existing user,</p>
-                            <button type="submit" class="btn btn-outline-primary btn-sm">Log in!
-                            </button>
-                        </div>
-                    </form>
 
+                        <!-- Passwords -->
+                        <div class="form-row">
+                            <div class="form-group col">
+                                {{ get_field_html(form.password) }}
+                            </div>
+                            <div class="form-group col">
+                                {{ get_field_html(form.confirm_password) }}
+                            </div>
+                        </div>
+
+                        <!-- Consent -->
+                        <div class="form-group form-check">
+                            {{ form.consent(class="form-check-input") }}
+                            {{ form.consent.label(class="form-check-label") }}
+                        </div>
+                    </fieldset>
+
+                    <!-- Submit Button -->
+                    <div class="form-group">
+                        {{ form.signup_btn(class="btn btn-primary d-block") }}
+                    </div>
+
+                    {{ form.hidden_tag() }}
+                </form>
+                <div class="border-top pt-2">
+                    <small class="text-muted">
+                        Already have an account? <a class="ml-1" href="{{ url_for('user.login') }}">Login</a>
+                    </small>
                 </div>
-                <!-- /container -->
             </div>
         </div>
     </div>
