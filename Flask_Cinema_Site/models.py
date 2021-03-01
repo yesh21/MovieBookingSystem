@@ -1,6 +1,9 @@
 from Flask_Cinema_Site import db
 from datetime import datetime
 from flask_login import UserMixin
+from time import time
+import jwt
+from Flask_Cinema_Site import app
 
 
 class Customer(db.Model, UserMixin):
@@ -18,6 +21,20 @@ class Customer(db.Model, UserMixin):
     password = db.Column(db.String(20), nullable=False)
     date = db.Column(db.DateTime, nullable=False, default=datetime.now())
     confirmed = db.Column(db.Boolean, nullable=False, default=False)
+
+    def get_reset_password_token(self, expires_in=86400):
+        return jwt.encode(
+            {'reset_password': self.id, 'exp': time() + expires_in},
+            app.config['SECRET_KEY'], algorithm='HS256')
+
+    @staticmethod
+    def verify_reset_password_token(token):
+        try:
+            id = jwt.decode(token, app.config['SECRET_KEY'],
+                            algorithms=['HS256'])['reset_password']
+        except:
+            return
+        return Customer.query.get(id)
 
 
 class CustomerViewing(db.Model):

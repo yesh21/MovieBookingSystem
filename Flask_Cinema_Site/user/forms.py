@@ -64,3 +64,10 @@ class ForgotPasswordForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Email(message='Invalid email')],
                         render_kw={"placeholder": "Email"})
     submit = SubmitField('Reset')
+
+
+class ResetPasswordForm(FlaskForm):
+    password = PasswordField('Password', validators=[DataRequired()])
+    password2 = PasswordField('Repeat Password', validators=[DataRequired(),\
+        EqualTo('password')])
+    submit = SubmitField('Request Password Reset')

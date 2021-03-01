@@ -1,6 +1,6 @@
 from Flask_Cinema_Site import app, db, models, mail
 from Flask_Cinema_Site.helper_functions import get_redirect_url
-from .forms import LoginForm, SignupForm, ForgotPasswordForm
+from .forms import LoginForm, SignupForm, ForgotPasswordForm, ResetPasswordForm
 
 from flask import render_template, Blueprint, flash, session, redirect, url_for
 from flask_login import LoginManager, login_user, logout_user, current_user, login_required
@@ -8,6 +8,7 @@ from flask_mail import Message
 
 from werkzeug.security import check_password_hash, generate_password_hash
 from itsdangerous import URLSafeTimedSerializer as Serializer
+from threading import Thread
 
 
 user_blueprint = Blueprint(
@@ -25,16 +26,47 @@ def load_user(customerid):
     return models.Customer.query.get(int(customerid))
 
 
+def send_async_email(app, msg):
+    with app.app_context():
+        mail.send(msg)
+
+
+def send_email(subject, sender, recipients, text_body, html_body):
+    msg = Message(subject, sender=sender, recipients=recipients)
+    msg.body = text_body
+    msg.html = html_body
+    Thread(target=send_async_email, args=(app, msg)).start()
+
+
+def send_password_reset_email(user):
+    token = user.get_reset_password_token()
+    send_email('[Microblog] Reset Your Password',
+               sender=app.config['MAIL_USERNAME'][0],
+               recipients=[user.email],
+               text_body=render_template('reset_password.txt',
+                                         user=user, token=token),
+               html_body=render_template('reset_password.txt',
+                                         user=user, token=token))
+
+
+@app.route('/reset_password/<token>', methods=['GET', 'POST'])
+def reset_password(token):
+    form = ResetPasswordForm()
+    if form.validate_on_submit():
+        pass
+    return render_template('reset_password.html', form=form)
+
+
 @user_blueprint.route('/reset', methods=['GET', 'POST'])
 def reset():
     form = ForgotPasswordForm()
     if form.validate_on_submit():
-        print(str(form.email.data))
         customer = db.session.query(models.Customer)\
             .filter_by(email=form.email.data).first()
         if not customer:
             flash('Unknown email has been entered.', 'danger')
         else:
+            send_password_reset_email(customer)
             flash('A link has been sent to your email to reset your password, \
                 the link will expire after 24 hours.', 'success')
     return render_template('forgot_password.html', title='Reset password', form=form)
