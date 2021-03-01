@@ -1,15 +1,18 @@
 {% extends 'booking_base.html' %}
 {% block content %}
 <div class="container">
-    <div class="row">
-        <h1>You Have Selected {{title}}</h1>
+    <div class="row justify-content-md-center">
+        <h1>You Have Selected <span style="color:red">{{title}}</span></h1>
     </div>
     <div class="row">
-        <h2>Please select a time</h2>
-
-        <button type="button" class="btn btn-primary" onclick="showSeats">{{times.time}}</button>
+        <h2>At time: </h2>
 
     </div>
+    <div class="row justify-content-md-center">
+            <div class=" bg-success text-white">
+                <h2>{{times.time.strftime('%H:%M') }} On {{times.time.strftime('%d/%m') }}</h2>
+            </div>
+        </div>
 
 </div>
 
@@ -23,6 +26,7 @@
             x.style.display = "none";
         }
         }
+
 
 </script>
 {% endblock %}

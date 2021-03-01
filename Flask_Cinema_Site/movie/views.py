@@ -1,6 +1,6 @@
 from Flask_Cinema_Site import db
 from Flask_Cinema_Site.movie.forms import NewMovieForm
-from Flask_Cinema_Site.models import Movie
+from Flask_Cinema_Site.models import Movie, Viewing
 from Flask_Cinema_Site.helper_functions import get_redirect_url, save_picture
 
 from flask import render_template, redirect, url_for, Blueprint, flash
@@ -26,7 +26,8 @@ def view_specific(movie_id):
         flash(f'Movie with id [{movie_id}] not found', 'danger')
         return redirect(get_redirect_url())
 
-    return render_template('view_specific_movie.html', title=m.name, movie=m)
+    viewings = Viewing.query.filter_by(movie_id=m.id).all()
+    return render_template('view_specific_movie.html', title=m.name, movie=m, viewings=viewings)
 
 
 @movies_blueprint.route('/add', methods=['GET'])
