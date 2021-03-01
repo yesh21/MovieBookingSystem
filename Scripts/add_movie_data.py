@@ -4,10 +4,10 @@ import os
 sys.path.insert(0, os.path.dirname(__file__) + '/..')
 
 from Flask_Cinema_Site import db
-from Flask_Cinema_Site.models import Movie
+from Flask_Cinema_Site.models import Movie, Viewing
+from itertools import cycle
 
-from datetime import date
-
+from datetime import date, datetime
 
 m1 = Movie(
     name='Black Widow',
@@ -40,4 +40,21 @@ m2 = Movie(
 )
 
 db.session.add(m2)
+db.session.commit()
+
+# Add random times for each movie id
+Movies = Movie.query.all()
+hourShowing = [10, 12, 14, 16, 18]
+minuteShowing = [15, 45]
+
+cycleHour = cycle(hourShowing)
+cycleMinute = cycle(minuteShowing)
+viewingTimes = []
+for i in range(len(Movies)):
+    viewingTimes.append(datetime(2012, 3, 3, next(cycleHour), next(cycleMinute)))
+
+for count, movie in enumerate(Movies):
+    viewing1 = Viewing(movie_id=movie.id, time=viewingTimes[count])
+    db.session.add(viewing1)
+
 db.session.commit()
