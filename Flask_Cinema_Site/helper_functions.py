@@ -1,4 +1,4 @@
-from Flask_Cinema_Site import app
+from Flask_Cinema_Site import app, mail
 
 from flask import request, url_for, current_app, Markup
 
@@ -6,6 +6,9 @@ from is_safe_url import is_safe_url
 from PIL import Image, ImageOps
 import os
 import secrets
+
+from flask_mail import Message
+from threading import Thread
 
 
 def get_redirect_url():
@@ -84,3 +87,15 @@ def get_file_upload_group_html(form_field, **kwargs):
 
     html += Markup('</div>')
     return html
+
+
+def send_async_email(app, msg):
+    with app.app_context():
+        mail.send(msg)
+
+
+def send_email(subject, sender, recipients, text_body, html_body):
+    msg = Message(subject, sender=sender, recipients=recipients)
+    msg.body = text_body
+    msg.html = html_body
+    Thread(target=send_async_email, args=(app, msg)).start()
