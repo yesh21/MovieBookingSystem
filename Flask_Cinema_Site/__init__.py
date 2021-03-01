@@ -54,3 +54,6 @@ app.register_blueprint(user_blueprint, url_prefix='/user')
 
 from Flask_Cinema_Site.movie.views import movies_blueprint
 app.register_blueprint(movies_blueprint, url_prefix='/movie')
+
+from Flask_Cinema_Site.bookings.views import bookings_blueprint
+app.register_blueprint(movies_blueprint, url_prefix='/book')
