@@ -2,7 +2,7 @@ from flask import render_template, redirect, url_for, Blueprint, flash
 
 from Flask_Cinema_Site import app, db, models, mail, helper_functions
 from Flask_Cinema_Site.helper_functions import get_redirect_url
-from Flask_Cinema_Site.models import Movie
+from Flask_Cinema_Site.models import Movie, Viewing
 
 bookings_blueprint = Blueprint(
     'bookings', __name__,
@@ -20,4 +20,5 @@ def view_specific(movie_id):
         flash(f'Movie with id [{movie_id}] not found', 'danger')
         return redirect(get_redirect_url())
 
-    return render_template('select_time', title=m.name, movie=m)
+    viewings = Viewing.query.fiter_by(movie_id=m.id)
+    return render_template('select_time', title=m.name, movie=m, times=viewings)

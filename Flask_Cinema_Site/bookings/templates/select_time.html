@@ -1,1 +1,28 @@
 {% extends 'booking_base.html' %}
+{% block content %}
+<div class="container">
+    <div class="row">
+        <h1>You Have Selected {{title}}</h1>
+    </div>
+    <div class="row">
+        <h2>Please select a time</h2>
+
+        <button type="button" class="btn btn-primary" onclick="showSeats">{{times.time}}</button>
+
+    </div>
+
+</div>
+
+<script>
+        //This is to show seats once time selected.
+        function showSeats() {
+        var x = document.getElementById("seats");
+        if(x.style.display === "none"){
+            x.style.display = "block";
+        } else {
+            x.style.display = "none";
+        }
+        }
+
+</script>
+{% endblock %}
