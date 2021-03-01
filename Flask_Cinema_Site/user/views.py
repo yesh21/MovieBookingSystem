@@ -31,9 +31,9 @@ def send_password_reset_email(user):
                                 sender=app.config['MAIL_USERNAME'][0],
                                 recipients=[user.email],
                                 text_body=render_template('reset_password.txt',
-                                user=user, token=token),
+                                                          user=user, token=token),
                                 html_body=render_template('reset_password.txt',
-                                user=user, token=token))
+                                                          user=user, token=token))
 
 
 @app.route('/reset_password/<token>', methods=['GET', 'POST'])
