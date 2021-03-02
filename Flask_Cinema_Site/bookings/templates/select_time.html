@@ -1,4 +1,9 @@
 {% extends 'booking_base.html' %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('bookings.static', filename='css/bookings.css') }}">
+{% endblock %}
+
 {% block content %}
 <div class="container">
     <div class="row justify-content-md-center">
@@ -6,27 +11,47 @@
     </div>
     <div class="row">
         <h2>At time: </h2>
-
     </div>
     <div class="row justify-content-md-center">
-            <div class=" bg-success text-white">
-                <h2>{{times.time.strftime('%H:%M') }} On {{times.time.strftime('%d/%m') }}</h2>
-            </div>
+        <div class=" bg-success text-white">
+            <h2>{{times.time.strftime('%H:%M') }} On {{times.time.strftime('%d/%m') }}</h2>
+        </div>
+    </div>
+    <div class="row">
+        <h2>Select Seat: </h2>
+    </div>
+    <!--Very rudimentary seats will change!!-->
+    <div class="row justify-content-md-center">
+        <span class="border border-primary">
+            <table class="table">
+            {% for i in range(10) %}
+                <tr>
+                    <th scope="row">{{i}}</th>
+             {% for j in range(10) %}
+                <td>{{j}}</td>
+             {% endfor %}
+                </tr>
+            {% endfor %}
+            </table>
+    </span>
+    </div>
+    <div class="row">
+        <span class="border border-primary w-100">
+            <p class="text-monospace text-center">Screen</p>
+        </span>
         </div>
 
+    <div class="row pt-5">
+    <div class="col"><hr></div>
+    <div class="col-auto">Alternative Times</div>
+    <div class="col"><hr></div>
+    </div>
+    <!--Insert list of times in the same day here-->
 </div>
 
-<script>
-        //This is to show seats once time selected.
-        function showSeats() {
-        var x = document.getElementById("seats");
-        if(x.style.display === "none"){
-            x.style.display = "block";
-        } else {
-            x.style.display = "none";
-        }
-        }
 
+{% endblock %}
 
-</script>
+{% block scripts %}
+<script src="{{ url_for('bookings.static', filename='js/seating.js') }}"></script>
 {% endblock %}
