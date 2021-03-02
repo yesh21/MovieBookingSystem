@@ -9,7 +9,6 @@ from flask_mail import Message
 from werkzeug.security import check_password_hash, generate_password_hash
 from itsdangerous import URLSafeTimedSerializer as Serializer
 
-
 user_blueprint = Blueprint(
     'user', __name__,
     template_folder='templates'
@@ -31,9 +30,9 @@ def send_password_reset_email(user):
                                 sender=app.config['MAIL_USERNAME'][0],
                                 recipients=[user.email],
                                 text_body=render_template('reset_password.txt',
-                                user=user, token=token),
+                                                          user=user, token=token),
                                 html_body=render_template('reset_password.txt',
-                                user=user, token=token))
+                                                          user=user, token=token))
 
 
 @app.route('/reset_password/<token>', methods=['GET', 'POST'])
@@ -48,7 +47,7 @@ def reset_password(token):
 def reset():
     form = ForgotPasswordForm()
     if form.validate_on_submit():
-        customer = db.session.query(models.Customer)\
+        customer = db.session.query(models.Customer) \
             .filter_by(email=form.email.data).first()
         if not customer:
             flash('Unknown email has been entered.', 'danger')
@@ -71,7 +70,7 @@ def login():
     if not form.validate_on_submit():
         return render_template('login.html', title='Login', form=form)
 
-    customer = db.session.query(models.Customer)\
+    customer = db.session.query(models.Customer) \
         .filter(models.Customer.email.ilike(form.email.data)).first()
 
     if customer:
