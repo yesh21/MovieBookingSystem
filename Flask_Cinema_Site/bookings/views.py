@@ -1,6 +1,5 @@
-from flask import render_template, redirect, url_for, Blueprint, flash, request
+from flask import render_template, redirect, Blueprint, flash, request
 
-from Flask_Cinema_Site import app, db, models, mail, helper_functions
 from Flask_Cinema_Site.helper_functions import get_redirect_url
 from Flask_Cinema_Site.models import Movie, Viewing
 
