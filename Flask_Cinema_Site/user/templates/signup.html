@@ -35,7 +35,7 @@
                                         {{ form.username(class='form-control') }}
                                     {% endif %}
                                 </div>
-                                {{ get_field_errors_html(form.username.errors) }}
+                                {{ get_file_upload_errors_html(form.username.errors) }}
                             </div>
                         </div>
 
@@ -65,7 +65,7 @@
                 </form>
                 <div class="border-top pt-2">
                     <small class="text-muted">
-                        Already have an account? <a class="ml-1" href="{{ url_for('user.login') }}">Login</a>
+                        Already have an account? <a class="ml-1" href="{{ url_for('user.login_get') }}">Login</a>
                     </small>
                 </div>
             </div>

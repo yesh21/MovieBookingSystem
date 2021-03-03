@@ -1,8 +1,11 @@
+from Flask_Cinema_Site import db, models
+
+from flask_login import current_user
 from flask_wtf import FlaskForm
+
 from wtforms import StringField, PasswordField
 from wtforms import BooleanField, SubmitField
 from wtforms.validators import DataRequired, Email, Length, ValidationError, EqualTo
-from Flask_Cinema_Site import db, models
 
 
 class LoginForm(FlaskForm):
@@ -27,8 +30,8 @@ class SignupForm(FlaskForm):
                                              Length(min=3, max=70)],
                         render_kw={"placeholder": "Email"})
 
-    password = PasswordField('Password', validators=[DataRequired(), Length(min=3, max=20),
-                                                     EqualTo('confirmPassword',
+    password = PasswordField('Password', validators=[DataRequired(), Length(min=3),
+                                                     EqualTo('confirm_password',
                                                              message='Passwords must match')],
                              render_kw={"placeholder": "Password"})
     confirm_password = PasswordField('Confirm Password', validators=[DataRequired()],
@@ -49,7 +52,7 @@ class SignupForm(FlaskForm):
         for char in self.username.data:
             if char in excluded_chars:
                 raise ValidationError(
-                    f"Character {char} is not allowed in username.")
+                    f"Character '{char}' is not allowed in username.")
 
     def validate_email(self, email):
         userdata = db.session\
@@ -57,7 +60,7 @@ class SignupForm(FlaskForm):
             .filter(models.Customer.email.ilike(self.email.data))\
             .first()
         if userdata:
-            raise ValidationError(f"Email ['{userdata.email}'] already exists")
+            raise ValidationError(f"Email '{userdata.email}' already exists")
 
 
 class ForgotPasswordForm(FlaskForm):
@@ -67,7 +70,23 @@ class ForgotPasswordForm(FlaskForm):
 
 
 class ResetPasswordForm(FlaskForm):
-    password = PasswordField('Password', validators=[DataRequired()])
-    password2 = PasswordField('Repeat Password', validators=[DataRequired(),
-                              EqualTo('password')])
-    submit = SubmitField('Request Password Reset')
+    password = PasswordField('New Password', validators=[DataRequired()])
+    password2 = PasswordField('Confirm New Password', validators=[DataRequired(),
+                                                                  EqualTo('password')])
+    submit = SubmitField('Reset password')
+
+
+class ChangePasswordForm(FlaskForm):
+    current_password = PasswordField('Current Password', validators=[DataRequired()])
+
+    password = PasswordField('New Password', validators=[DataRequired()])
+    password_confirm = PasswordField('Confirm New Password',
+                                     validators=[DataRequired(), EqualTo('password')])
+
+    submit = SubmitField('Save')
+
+    def validate_current_password(self, current_password):
+        if current_user.check_password(current_password.data):
+            return
+
+        raise ValidationError('Incorrect password')
