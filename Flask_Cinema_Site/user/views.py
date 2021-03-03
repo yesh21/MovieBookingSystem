@@ -1,13 +1,14 @@
 from Flask_Cinema_Site import app, db, models, mail, helper_functions
+from Flask_Cinema_Site.models import Customer
 from Flask_Cinema_Site.helper_functions import get_redirect_url
 from .forms import LoginForm, SignupForm, ForgotPasswordForm, ResetPasswordForm
 
-from flask import render_template, Blueprint, flash, session, redirect, url_for
+from flask import render_template, Blueprint, flash, redirect, url_for
 from flask_login import LoginManager, login_user, logout_user, current_user, login_required
-from flask_mail import Message
+from flask_api import status
 
-from werkzeug.security import check_password_hash, generate_password_hash
 from itsdangerous import URLSafeTimedSerializer as Serializer
+from datetime import datetime
 
 user_blueprint = Blueprint(
     'user', __name__,
@@ -20,19 +21,19 @@ login_manager.login_view = 'user.login'
 
 
 @login_manager.user_loader
-def load_user(customerid):
-    return models.Customer.query.get(int(customerid))
+def load_user(customer_id):
+    return Customer.query.get(int(customer_id))
 
 
 def send_password_reset_email(user):
     token = user.get_reset_password_token()
-    helper_functions.send_email('[Microblog] Reset Your Password',
-                                sender=app.config['MAIL_USERNAME'][0],
-                                recipients=[user.email],
-                                text_body=render_template('reset_password.txt',
-                                                          user=user, token=token),
-                                html_body=render_template('reset_password.txt',
-                                                          user=user, token=token))
+    helper_functions.send_email(
+        '[Microblog] Reset Your Password',
+        sender=app.config['MAIL_USERNAME'],
+        recipients=[user.email],
+        text_body=render_template('email/reset_password_email_body.txt', user=user, token=token),
+        html_body=render_template('email/reset_password_email_body.txt',user=user, token=token)
+    )
 
 
 @app.route('/reset_password/<token>', methods=['GET', 'POST'])
@@ -60,108 +61,106 @@ def reset():
 
 @user_blueprint.route('/', methods=['GET'])
 def user():
-    return render_template('user.html', title='User')
+    return render_template('email/confirm_email_body.html', title='User')
 
 
-@user_blueprint.route('/login', methods=['GET', 'POST'])
-def login():
+@user_blueprint.route('/login', methods=['GET'])
+def login_get():
+    # Check if user logged in
+    if current_user.is_authenticated:
+        return redirect(get_redirect_url())
+
     form = LoginForm()
-
-    if not form.validate_on_submit():
-        return render_template('login.html', title='Login', form=form)
-
-    customer = db.session.query(models.Customer) \
-        .filter(models.Customer.email.ilike(form.email.data)).first()
-
-    if customer:
-        if check_password_hash(customer.password, form.password.data):
-            session['email'] = customer.email
-            login_user(customer, remember=form.remember.data)
-            return redirect(get_redirect_url())
-        else:
-            flash("incorrect password", 'danger')
-
-    else:
-        flash("email id not exists", "danger")
     return render_template('login.html', title='Login', form=form)
 
 
-@user_blueprint.route('/signup', methods=['GET', 'POST'])
-def signup():
+@user_blueprint.route('/login', methods=['POST'])
+def login_post():
+    # Check if user logged in
+    if current_user.is_authenticated:
+        return redirect(get_redirect_url())
+
+    form = LoginForm()
+
+    # Validate form submission
+    if not form.validate_on_submit():
+        return render_template('login.html', title='Login', form=form), status.HTTP_400_BAD_REQUEST
+
+    # Check for user
+    u = Customer.query.filter_by(email=form.email.data).first()
+    if not u or not u.check_password(form.password.data):
+        flash(f'Login failed. Provided details were incorrect.', 'danger')
+        return render_template('login.html', title='Login', form=form), status.HTTP_400_BAD_REQUEST
+
+    # Login successful
+    login_user(u, form.remember.data)
+    flash('Login successful', 'success')
+
+    # Update last login date time
+    u.last_login = datetime.now()
+    db.session.commit()
+
+    return redirect(get_redirect_url())
+
+
+@user_blueprint.route('/signup', methods=['GET'])
+def signup_get():
+    # Check if user logged in
+    if current_user.is_authenticated:
+        return redirect(get_redirect_url())
+
+    form = SignupForm()
+    return render_template('signup.html', title='Sign Up', form=form)
+
+
+@user_blueprint.route('/signup', methods=['POST'])
+def signup_post():
+    # Check if user logged in
+    if current_user.is_authenticated:
+        return redirect(get_redirect_url())
+
     form = SignupForm()
 
     if not form.validate_on_submit():
-        return render_template('signup.html', title='Sign Up', form=form)
+        return render_template('signup.html', title='Sign Up', form=form), \
+               status.HTTP_400_BAD_REQUEST
 
-    hashed_password = generate_password_hash(form.password.data, method='sha256')
     new_user = models.Customer(username=form.username.data,
                                email=form.email.data,
-                               password=hashed_password,
                                lastname=form.lastname.data,
                                firstname=form.firstname.data)
+    new_user.set_password(form.password.data)
+
     db.session.add(new_user)
     db.session.commit()
 
-    token = generate_confirmation_token(new_user.email)
+    # Generate and send confirmation email
+    token = new_user.get_email_confirm_token()
     confirm_url = url_for('user.confirm_email', token=token, _external=True)
-    html = render_template('activate.html', title='Activate Account', confirm_url=confirm_url)
-    send_mail(new_user.email, token, html)
+
+    helper_functions.send_email(
+        subject='Confirm your account',
+        sender=app.config['MAIL_USERNAME'],
+        recipients=[new_user.email],
+        text_body=render_template('email/confirm_email_body.txt', confirm_url=confirm_url),
+        html_body=render_template('email/confirm_email_body.html', confirm_url=confirm_url)
+    )
 
     flash("new account created", "success")
-    return render_template('login.html', title='Login', form=form)
-
-
-def send_mail(email, token, template, **kwargs):
-    try:
-        msg = Message('Thanks for registering!',
-                      sender=app.config['MAIL_USERNAME'],
-                      recipients=[email],
-                      html=template
-                      )
-        msg.body = 'An activation link from moviebox'
-        mail.send(msg)
-        return 'Sent'
-    except IOError:
-        print('plz set correct email and pass in config')
-        return False
-
-
-def confirm_token(token, expiration=360000):
-    serializer = Serializer(app.config['SECRET_KEY'])
-    try:
-        email = serializer.loads(
-            token,
-            salt=app.config['SECURITY_PASSWORD_SALT'],
-            max_age=expiration
-        )
-    except token.invalid:
-        return False
-    return email
-
-
-def generate_confirmation_token(email):
-    serializer = Serializer(app.config['SECRET_KEY'])
-    return serializer.dumps(email, salt=app.config['SECURITY_PASSWORD_SALT'])
+    return redirect(url_for('user.login_get'))
 
 
 @user_blueprint.route('/confirm/<token>')
-@login_required
 def confirm_email(token):
-    if current_user.confirmed:
-        flash("Account already confirmed.", "success")
-        return redirect(url_for('user.signup'))
-    email = confirm_token(token)
-    user = models.Customer.query.filter_by(email=current_user.email).first_or_404()
+    u = Customer.verify_email_confirm_token(token)
+    if u.confirmed:
+        flash("Account already confirmed.", "danger")
+        return redirect(get_redirect_url())
 
-    if email == user.email:
-        user.confirmed = True
-        db.session.add(user)
-        db.session.commit()
-        flash("You have confirmed your account. Thanks!", "success")
-        return redirect(url_for('user.signup'))
-
-    flash("The confirmation link is invalid or has expired.", "warning")
-    return redirect(url_for('user.login'))
+    u.confirmed = True
+    db.session.commit()
+    flash(f'User [{u.username}] has been successfully confirmed', "success")
+    return redirect(get_redirect_url())
 
 
 @user_blueprint.route('/logout')

@@ -1,9 +1,10 @@
-from Flask_Cinema_Site import db
-from datetime import datetime
+from Flask_Cinema_Site import db, app, bcrypt
+
 from flask_login import UserMixin
+
+from datetime import datetime
 from time import time
 import jwt
-from Flask_Cinema_Site import app
 
 
 class Customer(db.Model, UserMixin):
@@ -18,9 +19,11 @@ class Customer(db.Model, UserMixin):
     firstname = db.Column(db.String(20), nullable=False)
     lastname = db.Column(db.String(20), nullable=False)
     username = db.Column(db.String(20), unique=True, nullable=False)
-    password = db.Column(db.String(20), nullable=False)
-    date = db.Column(db.DateTime, nullable=False, default=datetime.now())
+    password_hash = db.Column(db.String(60), nullable=False)
     confirmed = db.Column(db.Boolean, nullable=False, default=False)
+
+    created = db.Column(db.DateTime, nullable=False, default=datetime.now())
+    last_login = db.Column(db.DateTime, nullable=True)
 
     def get_reset_password_token(self, expires_in=86400):
         return jwt.encode(
@@ -39,6 +42,30 @@ class Customer(db.Model, UserMixin):
         except jwt.InvalidTokenError:
             return
         return Customer.query.get(id)
+
+    def get_email_confirm_token(self, expires_in=86400):
+        return jwt.encode(
+            {'email_confirm': self.id, 'exp': time() + expires_in},
+            app.config['SECRET_KEY'], algorithm='HS256')
+
+    @staticmethod
+    def verify_email_confirm_token(token):
+        try:
+            user_id = jwt.decode(token, app.config['SECRET_KEY'],
+                                 algorithms=['HS256'])['email_confirm']
+        except jwt.ExpiredSignatureError:
+            return
+        except jwt.DecodeError:
+            return
+        except jwt.InvalidTokenError:
+            return
+        return Customer.query.get(user_id)
+
+    def check_password(self, password):
+        return bcrypt.check_password_hash(self.password_hash, password)
+
+    def set_password(self, password):
+        self.password_hash = bcrypt.generate_password_hash(password).decode('utf-8')
 
 
 class CustomerViewing(db.Model):
