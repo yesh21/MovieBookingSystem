@@ -5,7 +5,6 @@ html {
 
 body {
   /* Dark purple gradient */
-  background: rgb(10,1,20);
   background: linear-gradient(155deg, rgba(10,1,20,1) 0%, rgba(25,1,52,1) 49%, rgba(10,1,20,1) 100%);
 }
 

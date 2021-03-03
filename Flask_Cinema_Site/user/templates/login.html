@@ -25,7 +25,7 @@
                     <div class="form-group">
                         {{ form.login_btn(class="btn btn-primary d-block") }}
                         <small class="text-muted">
-                            <a class="ml-1" href="{{ url_for('user.reset') }}">Forgot password</a>
+                            <a class="ml-1" href="{{ url_for('user.forgot_password') }}">Forgot password</a>
                         </small>
                     </div>
 
@@ -33,7 +33,7 @@
                 </form>
                 <div class="border-top pt-2">
                     <small class="text-muted">
-                        Not got an account? <a class="ml-1" href="{{ url_for('user.signup') }}">Register
+                        Not got an account? <a class="ml-1" href="{{ url_for('user.signup_get') }}">Register
                         Now</a>
                     </small>
                 </div>

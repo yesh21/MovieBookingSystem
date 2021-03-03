@@ -13,7 +13,8 @@ from threading import Thread
 
 def get_redirect_url():
     # TODO ?next= dont work on POST requests???
-    url = request.args.get('next') or request.referrer
+    # TODO STOP redirect loops
+    url = request.args.get('next')  # or request.referrer
     if url and is_safe_url(url, app.config['SAFE_URL_HOSTS']):
         return url
     return url_for('home.home')
@@ -95,7 +96,7 @@ def send_async_email(app, msg):
 
 
 def send_email(subject, sender, recipients, text_body, html_body):
-    msg = Message(subject, sender=sender, recipients=recipients)
+    msg = Message(subject=subject, sender=sender, recipients=recipients)
     msg.body = text_body
     msg.html = html_body
     Thread(target=send_async_email, args=(app, msg)).start()
