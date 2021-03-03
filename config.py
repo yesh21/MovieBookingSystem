@@ -14,18 +14,17 @@ class DefaultConfig(object):
     SECRET_KEY = 'e327924a6b8846030dbd537a6a33c7f0f2149593b50bc235016e022846915444'
 
     # Flask mail
+    # Comment me out
+    MAIL_SERVER = 'ssl0.ovh.net'
+    MAIL_PORT = 465
+    MAIL_USERNAME = 'comp2913-group40@aaronrosser.xyz'
+    MAIL_PASSWORD = 'hIYcrp3Rxg61OwJ'
+
     # click "allow less secure apps" in google for working
     # MAIL_SERVER = 'smtp.gmail.com'
     # MAIL_PORT = 465
-    # MAIL_USERNAME = 'yourid@gmail.com'
-    # MAIL_PASSWORD = 'yourpassword'
-    # MAIL_USE_TLS = False
-    # MAIL_USE_SSL = True
-    # Plz no spam
-    MAIL_SERVER = 'smtp.gmail.com'
-    MAIL_PORT = 465
-    MAIL_USERNAME = 'alan.ashford.786123@gmail.com'
-    MAIL_PASSWORD = 'Laughing522'
+    # MAIL_USERNAME = 'alan.ashford.786123@gmail.com'
+    # MAIL_PASSWORD = 'Laughing522'
     MAIL_USE_TLS = False
     MAIL_USE_SSL = True
 

@@ -39,11 +39,11 @@ app.config['FLASK_ADMIN_SWATCH'] = 'cerulean'
 
 # Add custom functions to all templates
 from Flask_Cinema_Site.helper_functions import get_field_html, get_field_group_html, \
-    get_file_upload_group_html, get_field_errors_html
+    get_file_upload_group_html, get_file_upload_errors_html
 app.jinja_env.globals.update(get_field_html=get_field_html,
                              get_field_group_html=get_field_group_html,
                              get_file_upload_group_html=get_file_upload_group_html,
-                             get_field_errors_html=get_field_errors_html)
+                             get_file_upload_errors_html=get_file_upload_errors_html)
 
 # Register blueprints
 from Flask_Cinema_Site.home.views import home_blueprint
