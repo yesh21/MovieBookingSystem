@@ -1,4 +1,4 @@
-from Flask_Cinema_Site import db, models, bcrypt
+from Flask_Cinema_Site import db, models
 
 from flask_login import current_user
 from flask_wtf import FlaskForm

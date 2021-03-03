@@ -1,4 +1,4 @@
-from Flask_Cinema_Site import app, db, models, mail, helper_functions
+from Flask_Cinema_Site import app, db, models, helper_functions
 from Flask_Cinema_Site.models import Customer
 from Flask_Cinema_Site.helper_functions import get_redirect_url
 from .forms import LoginForm, SignupForm, ForgotPasswordForm, ResetPasswordForm
@@ -7,7 +7,6 @@ from flask import render_template, Blueprint, flash, redirect, url_for
 from flask_login import LoginManager, login_user, logout_user, current_user, login_required
 from flask_api import status
 
-from itsdangerous import URLSafeTimedSerializer as Serializer
 from datetime import datetime
 
 user_blueprint = Blueprint(
@@ -32,7 +31,7 @@ def send_password_reset_email(user):
         sender=app.config['MAIL_USERNAME'],
         recipients=[user.email],
         text_body=render_template('email/reset_password_email_body.txt', user=user, token=token),
-        html_body=render_template('email/reset_password_email_body.txt',user=user, token=token)
+        html_body=render_template('email/reset_password_email_body.txt', user=user, token=token)
     )
 
 
@@ -61,7 +60,7 @@ def reset():
 
 @user_blueprint.route('/', methods=['GET'])
 def user():
-    return render_template('email/confirm_email_body.html', title='User')
+    return render_template('user.html', title='User')
 
 
 @user_blueprint.route('/login', methods=['GET'])
@@ -89,7 +88,7 @@ def login_post():
     # Check for user
     u = Customer.query.filter_by(email=form.email.data).first()
     if not u or not u.check_password(form.password.data):
-        flash(f'Login failed. Provided details were incorrect.', 'danger')
+        flash('Login failed. Provided details were incorrect.', 'danger')
         return render_template('login.html', title='Login', form=form), status.HTTP_400_BAD_REQUEST
 
     # Login successful
@@ -122,8 +121,8 @@ def signup_post():
     form = SignupForm()
 
     if not form.validate_on_submit():
-        return render_template('signup.html', title='Sign Up', form=form), \
-               status.HTTP_400_BAD_REQUEST
+        return render_template('signup.html', title='Sign Up', form=form), status.\
+            HTTP_400_BAD_REQUEST
 
     new_user = models.Customer(username=form.username.data,
                                email=form.email.data,
