@@ -27,24 +27,38 @@ def load_user(customer_id):
 def send_password_reset_email(user):
     token = user.get_reset_password_token()
     helper_functions.send_email(
-        '[Microblog] Reset Your Password',
+        subject='[Microblog] Reset Your Password',
         sender=app.config['MAIL_USERNAME'],
         recipients=[user.email],
-        text_body=render_template('email/reset_password_email_body.txt', user=user, token=token),
-        html_body=render_template('email/reset_password_email_body.txt', user=user, token=token)
+        text_body=render_template('email/reset_password_body.txt', user=user, token=token),
+        html_body=render_template('email/reset_password_body.html', user=user, token=token)
     )
 
 
 @app.route('/reset_password/<token>', methods=['GET', 'POST'])
 def reset_password(token):
+    u = Customer.verify_reset_password_token(token)
+    if not u:
+        flash('Invalid reset password link', 'danger')
+        return redirect(get_redirect_url())
+
     form = ResetPasswordForm()
-    if form.validate_on_submit():
-        pass
-    return render_template('reset_password.html', form=form)
+    if not form.validate_on_submit():
+        return render_template('reset_password.html', form=form)
+
+    u.set_password(form.password.data)
+    db.session.commit()
+
+    flash('Password updated successfully', 'success')
+    return redirect(url_for('user.login_get'))
 
 
-@user_blueprint.route('/reset', methods=['GET', 'POST'])
-def reset():
+@user_blueprint.route('/forgot_password', methods=['GET', 'POST'])
+def forgot_password():
+    # Check if user logged in
+    if current_user.is_authenticated:
+        return redirect(get_redirect_url())
+
     form = ForgotPasswordForm()
     if form.validate_on_submit():
         customer = db.session.query(models.Customer) \
@@ -168,3 +182,8 @@ def logout():
     logout_user()
     flash("successfully logged out!", "warning")
     return redirect(get_redirect_url())
+
+
+@user_blueprint.route('/test', methods=['GET'])
+def user_test():
+    return render_template('email/reset_password_body.html', title='User')
