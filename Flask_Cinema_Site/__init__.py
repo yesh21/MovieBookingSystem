@@ -45,6 +45,12 @@ app.jinja_env.globals.update(get_field_html=get_field_html,
                              get_file_upload_group_html=get_file_upload_group_html,
                              get_file_upload_errors_html=get_file_upload_errors_html)
 
+# Add simple form to all templates
+from Flask_Cinema_Site.forms import SimpleForm
+@app.context_processor
+def inject_simple_form():
+    return dict(simple_form=SimpleForm())
+
 # Register blueprints
 from Flask_Cinema_Site.home.views import home_blueprint
 app.register_blueprint(home_blueprint)

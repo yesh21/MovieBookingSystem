@@ -1,7 +1,8 @@
 from Flask_Cinema_Site import app, db, models, helper_functions
 from Flask_Cinema_Site.models import Customer
 from Flask_Cinema_Site.helper_functions import get_redirect_url
-from .forms import LoginForm, SignupForm, ForgotPasswordForm, ResetPasswordForm
+from Flask_Cinema_Site.forms import SimpleForm
+from .forms import LoginForm, SignupForm, ForgotPasswordForm, ResetPasswordForm, ChangePasswordForm, ChangeDetailsForm
 
 from flask import render_template, Blueprint, flash, redirect, url_for
 from flask_login import LoginManager, login_user, logout_user, current_user, login_required
@@ -176,14 +177,75 @@ def confirm_email(token):
     return redirect(get_redirect_url())
 
 
-@user_blueprint.route('/logout')
-@login_required
+@user_blueprint.route('/logout', methods=['POST'])
 def logout():
+    if not current_user.is_authenticated:
+        flash('Logout failed. No user logged in', 'danger')
+        return redirect(get_redirect_url())
+
+    form = SimpleForm()
+    del form.id
+    if not form.validate_on_submit():
+        flash('Logout failed', 'danger')
+        return redirect(url_for('home.home'))
+
     logout_user()
-    flash("successfully logged out!", "warning")
-    return redirect(get_redirect_url())
+    flash('Logout successful', 'success')
+    return redirect(url_for('home.home'))
 
 
-@user_blueprint.route('/test', methods=['GET'])
-def user_test():
-    return render_template('email/reset_password_body.html', title='User')
+def render_manage_user(change_details_form=None, change_password_form=None, res_status=status.HTTP_200_OK):
+    if change_details_form is None:
+        change_details_form = ChangeDetailsForm()
+        # Initialize form
+        change_details_form.first_name.data = current_user.first_name
+        change_details_form.last_name.data = current_user.last_name
+        change_details_form.username.data = current_user.username
+        change_details_form.email.data = current_user.email
+    if change_password_form is None:
+        change_password_form = ChangePasswordForm()
+
+    return render_template('manage_user.html', title='Manage Account', details_form=change_details_form,
+                           password_form=change_password_form), res_status
+
+
+@user_blueprint.route('/manage')
+@login_required
+def manage():
+    return render_manage_user()
+
+
+@user_blueprint.route('/manage/update_user_details', methods=['POST'])
+@login_required
+def update_user_details():
+    form = ChangeDetailsForm()
+
+    # Validate submitted details
+    if not form.validate_on_submit():
+        return render_manage_user(change_details_form=form, res_status=status.HTTP_400_BAD_REQUEST)
+
+    current_user.first_name = form.first_name.data
+    current_user.last_name = form.last_name.data
+    current_user.username = form.username.data
+    current_user.email = form.email.data
+    current_user.confirmed = False
+    db.session.commit()
+
+    flash(f'Details successfully updated', 'success')
+
+    return render_manage_user(change_details_form=form)
+
+
+@user_blueprint.route('/manage/change_password', methods=['POST'])
+@login_required
+def change_password():
+    form = ChangePasswordForm()
+
+    if not form.validate_on_submit():
+        return render_manage_user(change_password_form=form, res_status=status.HTTP_400_BAD_REQUEST)
+
+    # Update password
+    current_user.set_password(form.password.data)
+    db.session.commit()
+    flash(f'Password updated successfully', 'success')
+    return render_manage_user(change_password_form=form)

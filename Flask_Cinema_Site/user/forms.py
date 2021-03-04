@@ -1,4 +1,5 @@
 from Flask_Cinema_Site import db, models
+from Flask_Cinema_Site.models import Customer
 
 from flask_login import current_user
 from flask_wtf import FlaskForm
@@ -6,6 +7,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField
 from wtforms import BooleanField, SubmitField
 from wtforms.validators import DataRequired, Email, Length, ValidationError, EqualTo
+from wtforms.fields.html5 import EmailField
 
 
 class LoginForm(FlaskForm):
@@ -90,3 +92,32 @@ class ChangePasswordForm(FlaskForm):
             return
 
         raise ValidationError('Incorrect password')
+
+
+class ChangeDetailsForm(FlaskForm):
+    first_name = StringField('Name', validators=[DataRequired(), Length(min=2, max=25)])
+    last_name = StringField('Name', validators=[DataRequired(), Length(min=2, max=25)])
+    username = StringField('Username', validators=[DataRequired(), Length(min=2, max=25)])
+    email = EmailField('Email', validators=[DataRequired(), Length(max=320), Email()])
+
+    submit = SubmitField('Save')
+
+    # Check email is not already taken by another user
+    def validate_email(self, email):
+        if email.data == current_user.email:
+            return
+
+        u = Customer.query.filter_by(email=email.data).first()
+        if not u:
+            return
+        raise ValidationError('Email already registered to an account')
+
+    # Check username is not already taken by another user
+    def validate_username(self, username):
+        if username.data == current_user.username:
+            return
+
+        u = Customer.query.filter_by(username=username.data).first()
+        if not u:
+            return
+        raise ValidationError('Username already registered to an account')
