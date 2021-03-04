@@ -18,7 +18,8 @@ class LoginTestCase(UserBaseTestCase):
         with self.client:
             params = dict(
                 email=self.cA.email,
-                password=self.cA.plain_test_password
+                password=self.cA.plain_test_password,
+                csrf_token=self.csrf_token
             )
             res = self.client.post('/user/login?next=%2Fuser%2Fmanage', data=params)
             self.assertRedirects(res, '/user/manage')

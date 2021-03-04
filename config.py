@@ -52,7 +52,7 @@ class TestConfig(DefaultConfig):
     TESTING = True
 
     # Flask-WTF
-    WTF_CSRF_ENABLED = False
+    # WTF_CSRF_ENABLED = False
 
     # SQLAlchemy
     SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'
