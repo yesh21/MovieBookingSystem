@@ -140,8 +140,8 @@ def signup_post():
 
     new_user = models.Customer(username=form.username.data,
                                email=form.email.data,
-                               lastname=form.lastname.data,
-                               firstname=form.firstname.data)
+                               last_name=form.lastname.data,
+                               first_name=form.firstname.data)
     new_user.set_password(form.password.data)
 
     db.session.add(new_user)
