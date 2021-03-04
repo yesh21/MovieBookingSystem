@@ -1,0 +1,76 @@
+{% extends 'user_base.html' %}
+
+{% block content %}
+    <div class="container">
+        <!-- Update Details -->
+        <div class="card bg-black my-4">
+            <h4 class="card-header border-bottom">Update Details</h4>
+            <div class="card-body">
+                <form method="post" action="{{ url_for('user.update_user_details') }}">
+                    <fieldset class="form-groups">
+                        <!-- First name -->
+                        {{ get_field_group_html(details_form.first_name) }}
+
+                        <!-- Last name -->
+                        {{ get_field_group_html(details_form.last_name) }}
+
+                        <!-- Username -->
+                        {{ get_field_group_html(details_form.username) }}
+
+                        <!-- Email -->
+                        {{ get_field_group_html(details_form.email) }}
+                    </fieldset>
+                    <!-- Save Button -->
+                    <div class="form-group">
+                        {{ details_form.submit(class="btn btn-dark", id="change_details_submit") }}
+                    </div>
+                    <!-- CSRF token -->
+                    {{ details_form.csrf_token(id="changeDetailsCsrfToken") }}
+                </form>
+            </div>
+        </div>
+
+        <!-- Change Password -->
+        <div class="card bg-black my-4">
+            <h4 class="card-header border-bottom">Change Password</h4>
+            <div class="card-body">
+                <form method="post" action="{{ url_for('user.change_password') }}">
+                    <fieldset class="form-groups">
+                        <!-- Current Password -->
+                        {{ get_field_group_html(password_form.current_password) }}
+
+                        <!-- New Password -->
+                        {{ get_field_group_html(password_form.password) }}
+
+                        <!-- New Password Confirm -->
+                        {{ get_field_group_html(password_form.password_confirm) }}
+                    </fieldset>
+                    <!-- Save Button -->
+                    <div class="form-group">
+                        {{ password_form.submit(class="btn btn-dark", id="change_password_submit") }}
+                    </div>
+                    <!-- CSRF token -->
+                    {{ password_form.csrf_token(id="changePasswordCsrfToken") }}
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block end_of_page %}
+    <script>
+        let password_field = $('#{{ password_form.password.id }}')
+        let password_confirm_field = $('#{{ password_form.password_confirm.id }}')
+
+        $('form').submit(function (event) {
+            if (password_field.val() !== password_confirm_field.val()) {
+                event.preventDefault();
+                if (!password_confirm_field.attr('class').includes('is-invalid')) {
+                    password_confirm_field.nextAll('.invalid-feedback:first')
+                        .append('<p class="mb-0">Passwords must match.</p>');
+                    password_confirm_field.addClass('is-invalid');
+                }
+            }
+        });
+    </script>
+{% endblock %}
