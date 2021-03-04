@@ -2,7 +2,8 @@ from Flask_Cinema_Site import app, db, models, helper_functions
 from Flask_Cinema_Site.models import Customer
 from Flask_Cinema_Site.helper_functions import get_redirect_url
 from Flask_Cinema_Site.forms import SimpleForm
-from .forms import LoginForm, SignupForm, ForgotPasswordForm, ResetPasswordForm, ChangePasswordForm, ChangeDetailsForm
+from .forms import LoginForm, SignupForm, ForgotPasswordForm, ResetPasswordForm, \
+    ChangePasswordForm, ChangeDetailsForm
 
 from flask import render_template, Blueprint, flash, redirect, url_for
 from flask_login import LoginManager, login_user, logout_user, current_user, login_required
@@ -194,7 +195,8 @@ def logout():
     return redirect(url_for('home.home'))
 
 
-def render_manage_user(change_details_form=None, change_password_form=None, res_status=status.HTTP_200_OK):
+def render_manage_user(change_details_form=None, change_password_form=None,
+                       res_status=status.HTTP_200_OK):
     if change_details_form is None:
         change_details_form = ChangeDetailsForm()
         # Initialize form
@@ -205,7 +207,8 @@ def render_manage_user(change_details_form=None, change_password_form=None, res_
     if change_password_form is None:
         change_password_form = ChangePasswordForm()
 
-    return render_template('manage_user.html', title='Manage Account', details_form=change_details_form,
+    return render_template('manage_user.html', title='Manage Account',
+                           details_form=change_details_form,
                            password_form=change_password_form), res_status
 
 
@@ -231,7 +234,7 @@ def update_user_details():
     current_user.confirmed = False
     db.session.commit()
 
-    flash(f'Details successfully updated', 'success')
+    flash('Details successfully updated', 'success')
 
     return render_manage_user(change_details_form=form)
 
@@ -247,5 +250,5 @@ def change_password():
     # Update password
     current_user.set_password(form.password.data)
     db.session.commit()
-    flash(f'Password updated successfully', 'success')
+    flash('Password updated successfully', 'success')
     return render_manage_user(change_password_form=form)

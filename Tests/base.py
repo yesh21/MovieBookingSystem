@@ -2,6 +2,7 @@ from flask_testing import TestCase
 
 from Flask_Cinema_Site import app, db
 from Flask_Cinema_Site.models import Customer
+from Flask_Cinema_Site.forms import SimpleForm
 
 import warnings
 
@@ -54,6 +55,12 @@ class BaseTestCase(TestCase):
         self.add_managers()
         self.add_movies()
 
+        # Generate csrf token in session
+        with self.client:
+            self.client.get('/')
+        # Get csrf token
+        self.csrf_token = SimpleForm().csrf_token.current_token
+
     def tearDown(self):
         db.session.remove()
         db.drop_all()
@@ -61,7 +68,8 @@ class BaseTestCase(TestCase):
     def login(self, email, password):
         return self.client.post('/user/login', data=dict(
             email=email,
-            password=password
+            password=password,
+            csrf_token=self.csrf_token
         ), follow_redirects=True)
 
     def login_customerA(self):
