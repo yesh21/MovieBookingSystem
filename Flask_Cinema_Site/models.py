@@ -15,7 +15,7 @@ class Customer(db.Model, UserMixin):
     basket = db.relationship('Basket', backref='customer', lazy=True)
 
     # Data fields
-    email = db.Column(db.String(70), nullable=False, unique=True)
+    email = db.Column(db.String(320), nullable=False, unique=True)
     first_name = db.Column(db.String(20), nullable=False)
     last_name = db.Column(db.String(20), nullable=False)
     username = db.Column(db.String(20), unique=True, nullable=False)

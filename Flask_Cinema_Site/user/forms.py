@@ -11,33 +11,30 @@ from wtforms.fields.html5 import EmailField
 
 
 class LoginForm(FlaskForm):
-    email = StringField('Email', validators=[DataRequired(), Email(message='Invalid email')],
-                        render_kw={"placeholder": "Email"})
-    password = PasswordField('Password', validators=[DataRequired()],
-                             render_kw={"placeholder": "Password"})
+    email = StringField('Email', validators=[DataRequired(), Email(message='Invalid email')])
+    password = PasswordField('Password', validators=[DataRequired()])
     remember = BooleanField('Remember me')
     login_btn = SubmitField('Login')
 
 
 class SignupForm(FlaskForm):
-    firstname = StringField('First name', validators=[DataRequired(), Length(min=3, max=20)],
-                            render_kw={"placeholder": "First Name"})
-    lastname = StringField('Last name', validators=[DataRequired(), Length(min=3, max=20)],
-                           render_kw={"placeholder": "Last Name"})
+    first_name = StringField('First name',
+                             validators=[DataRequired(),
+                                         Length(min=3, max=Customer.first_name.type.length)])
+    last_name = StringField('Last name',
+                            validators=[DataRequired(),
+                                        Length(min=3, max=Customer.last_name.type.length)])
 
-    username = StringField('Username', validators=[DataRequired(), Length(min=3, max=20)],
-                           render_kw={"placeholder": "Username"})
-    email = StringField('Email', validators=[DataRequired(),
-                                             Email(message='Invalid email'),
-                                             Length(min=3, max=70)],
-                        render_kw={"placeholder": "Email"})
+    username = StringField('Username',
+                           validators=[DataRequired(),
+                                       Length(min=3, max=Customer.username.type.length)])
+    email = StringField('Email', validators=[DataRequired(), Email(),
+                                             Length(min=3, max=Customer.email.type.length)])
 
     password = PasswordField('Password', validators=[DataRequired(), Length(min=3),
-                                                     EqualTo('confirm_password',
-                                                             message='Passwords must match')],
-                             render_kw={"placeholder": "Password"})
-    confirm_password = PasswordField('Confirm Password', validators=[DataRequired()],
-                                     render_kw={"placeholder": "Confirm Password"})
+                                                     EqualTo('password_confirm',
+                                                             message='Passwords must match')])
+    password_confirm = PasswordField('Confirm Password', validators=[DataRequired()])
 
     consent = BooleanField('I consent for storing all my data securely, including passwords',
                            validators=[DataRequired()])
@@ -50,7 +47,7 @@ class SignupForm(FlaskForm):
             .filter(models.Customer.username.ilike(self.username.data))\
             .first()
         if userdata:
-            raise ValidationError(f" Username ['{userdata.username}'] already exists")
+            raise ValidationError(f"Username '{userdata.username}' already exists")
         for char in self.username.data:
             if char in excluded_chars:
                 raise ValidationError(
@@ -95,10 +92,17 @@ class ChangePasswordForm(FlaskForm):
 
 
 class ChangeDetailsForm(FlaskForm):
-    first_name = StringField('Name', validators=[DataRequired(), Length(min=2, max=25)])
-    last_name = StringField('Name', validators=[DataRequired(), Length(min=2, max=25)])
-    username = StringField('Username', validators=[DataRequired(), Length(min=2, max=25)])
-    email = EmailField('Email', validators=[DataRequired(), Length(max=320), Email()])
+    first_name = StringField('Name',
+                             validators=[DataRequired(),
+                                         Length(min=2, max=Customer.first_name.type.length)])
+    last_name = StringField('Name',
+                            validators=[DataRequired(),
+                                        Length(min=2, max=Customer.last_name.type.length)])
+    username = StringField('Username',
+                           validators=[DataRequired(),
+                                       Length(min=2, max=Customer.username.type.length)])
+    email = EmailField('Email', validators=[DataRequired(),
+                                            Length(max=Customer.email.type.length), Email()])
 
     submit = SubmitField('Save')
 
