@@ -5,7 +5,7 @@ from Flask_Cinema_Site.forms import SimpleForm
 from .forms import LoginForm, SignupForm, ForgotPasswordForm, ResetPasswordForm, \
     ChangePasswordForm, ChangeDetailsForm
 
-from flask import render_template, Blueprint, flash, redirect, url_for
+from flask import render_template, Blueprint, flash, redirect, url_for, request
 from flask_login import LoginManager, login_user, logout_user, current_user, login_required
 from flask_api import status
 
@@ -79,23 +79,15 @@ def user():
     return render_template('user.html', title='User')
 
 
-@user_blueprint.route('/login', methods=['GET'])
-def login_get():
+@user_blueprint.route('/login', methods=['GET', 'POST'])
+def login():
     # Check if user logged in
     if current_user.is_authenticated:
         return redirect(get_redirect_url())
 
     form = LoginForm()
-    return render_template('login.html', title='Login', form=form)
-
-
-@user_blueprint.route('/login', methods=['POST'])
-def login_post():
-    # Check if user logged in
-    if current_user.is_authenticated:
-        return redirect(get_redirect_url())
-
-    form = LoginForm()
+    if request.method == 'GET':
+        return render_template('login.html', title='Login', form=form)
 
     # Validate form submission
     if not form.validate_on_submit():
@@ -118,32 +110,24 @@ def login_post():
     return redirect(get_redirect_url())
 
 
-@user_blueprint.route('/signup', methods=['GET'])
-def signup_get():
+@user_blueprint.route('/signup', methods=['GET', 'POST'])
+def signup():
     # Check if user logged in
     if current_user.is_authenticated:
         return redirect(get_redirect_url())
 
     form = SignupForm()
-    return render_template('signup.html', title='Sign Up', form=form)
-
-
-@user_blueprint.route('/signup', methods=['POST'])
-def signup_post():
-    # Check if user logged in
-    if current_user.is_authenticated:
-        return redirect(get_redirect_url())
-
-    form = SignupForm()
+    if request.method == 'GET':
+        return render_template('signup.html', title='Sign Up', form=form)
 
     if not form.validate_on_submit():
         return render_template('signup.html', title='Sign Up', form=form), status.\
             HTTP_400_BAD_REQUEST
 
-    new_user = models.Customer(username=form.username.data,
-                               email=form.email.data,
-                               last_name=form.lastname.data,
-                               first_name=form.firstname.data)
+    new_user = models.Customer(first_name=form.first_name.data,
+                               last_name=form.last_name.data,
+                               username=form.username.data,
+                               email=form.email.data)
     new_user.set_password(form.password.data)
 
     db.session.add(new_user)
@@ -161,8 +145,8 @@ def signup_post():
         html_body=render_template('email/confirm_email_body.html', confirm_url=confirm_url)
     )
 
-    flash("new account created", "success")
-    return redirect(url_for('user.login_get'))
+    flash(f'New user \'{new_user.username}\' was successfully created', 'success')
+    return redirect(url_for('user.login'))
 
 
 @user_blueprint.route('/confirm/<token>')
@@ -174,7 +158,7 @@ def confirm_email(token):
 
     u.confirmed = True
     db.session.commit()
-    flash(f'User [{u.username}] has been successfully confirmed', "success")
+    flash(f'User \'{u.username}\' has been successfully confirmed', "success")
     return redirect(get_redirect_url())
 
 
