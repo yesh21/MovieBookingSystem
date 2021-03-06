@@ -4,6 +4,4 @@ from Tests.base import BaseTestCase
 
 
 class UserBaseTestCase(BaseTestCase):
-    def setUp(self):
-        super().setUp()
-        self.prefix = '/user'
+    pass
