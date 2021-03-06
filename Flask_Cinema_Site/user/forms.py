@@ -114,7 +114,7 @@ class ChangeDetailsForm(FlaskForm):
         u = Customer.query.filter_by(email=email.data).first()
         if not u:
             return
-        raise ValidationError('Email already registered to an account')
+        raise ValidationError('Email already registered to an account.')
 
     # Check username is not already taken by another user
     def validate_username(self, username):
@@ -124,4 +124,4 @@ class ChangeDetailsForm(FlaskForm):
         u = Customer.query.filter_by(username=username.data).first()
         if not u:
             return
-        raise ValidationError('Username already registered to an account')
+        raise ValidationError('Username already registered to an account.')

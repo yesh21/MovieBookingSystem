@@ -211,11 +211,12 @@ def update_user_details():
     if not form.validate_on_submit():
         return render_manage_user(change_details_form=form, res_status=status.HTTP_400_BAD_REQUEST)
 
+    # Update details
+    current_user.confirmed = current_user.confirmed and current_user.email == form.email.data
     current_user.first_name = form.first_name.data
     current_user.last_name = form.last_name.data
     current_user.username = form.username.data
     current_user.email = form.email.data
-    current_user.confirmed = False
     db.session.commit()
 
     flash('Details successfully updated', 'success')
