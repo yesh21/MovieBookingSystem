@@ -21,7 +21,10 @@ m1 = Movie(
     cover_art_name='black_widow.jpg',
     directors='Cate Shortland',
     cast='Rachel Weisz, David Harbour, O-T Fagbenle, Ray Winstone, Florence '
-         'Pugh, Scarlett Johansson'
+         'Pugh, Scarlett Johansson',
+    duration=123,
+    rating=4.2,
+    hidden=True
 )
 db.session.add(m1)
 
@@ -36,7 +39,10 @@ m2 = Movie(
     cover_art_name='ghostbusters.jpg',
     directors='Jason Reitman',
     cast='Finn Wolfhard, Bill Murray, Dan Aykroyd, Sigourney Weaver, Ernie Hudson, Paul Rudd, '
-         'McKenna Grace, Carrie Coon, Bokeem Woodbine, Annie Potts'
+         'McKenna Grace, Carrie Coon, Bokeem Woodbine, Annie Potts',
+    duration=125,
+    rating=3.5,
+    hidden=False
 )
 
 db.session.add(m2)

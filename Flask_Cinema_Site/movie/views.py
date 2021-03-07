@@ -1,9 +1,10 @@
 from Flask_Cinema_Site import db
 from Flask_Cinema_Site.movie.forms import NewMovieForm
 from Flask_Cinema_Site.models import Movie, Viewing
-from Flask_Cinema_Site.helper_functions import get_redirect_url, save_picture
+from Flask_Cinema_Site.helper_functions import get_redirect_url, save_picture, get_json_response
 
 from flask import render_template, redirect, url_for, Blueprint, flash
+from flask_api import status
 
 
 movies_blueprint = Blueprint(
@@ -15,7 +16,7 @@ movies_blueprint = Blueprint(
 
 @movies_blueprint.route('/', methods=['GET'])
 def view_multiple():
-    movies = Movie.query.all()
+    movies = Movie.query.filter_by(hidden=False).all()
     return render_template('view_multiple_movies.html', title='Browse Movies', movies=movies)
 
 
@@ -77,8 +78,38 @@ def edit_post(movie_id):
     return render_template('edit_movie.html')
 
 
+# Probably should use flak-api or flask-restful idk?
+@movies_blueprint.route('/<int:movie_id>/hide', methods=['POST'])
+def hide(movie_id):
+    # TODO Check user is manager
+
+    m = Movie.query.get(movie_id)
+    if not m:
+        return get_json_response(f'Movie with id \'{movie_id}\' not found', status.HTTP_400_BAD_REQUEST)
+
+    m.hidden = True
+    db.session.commit()
+
+    return get_json_response(f'Movie with id \'{movie_id}\' successfully hidden', status.HTTP_200_OK)
+
+
+# Probably should use flak-api or flask-restful idk?
+@movies_blueprint.route('/<int:movie_id>/show', methods=['POST'])
+def show(movie_id):
+    # TODO Check user is manager
+
+    m = Movie.query.get(movie_id)
+    if not m:
+        return get_json_response(f'Movie with id \'{movie_id}\' not found', status.HTTP_400_BAD_REQUEST)
+
+    m.hidden = False
+    db.session.commit()
+
+    return get_json_response(f'Movie with id \'{movie_id}\' successfully unhidden', status.HTTP_200_OK)
+
+
 @movies_blueprint.route('/delete', methods=['POST'])
-def delete(film_id):
+def delete():
     # TODO Check user is manager
 
     return redirect(url_for('movie.view_multiple'))
