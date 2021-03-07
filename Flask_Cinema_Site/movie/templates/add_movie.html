@@ -8,22 +8,49 @@
                 <form method="post" enctype="multipart/form-data">
                     <fieldset class="form-groups">
                         <!-- Name -->
-                        {{  get_field_group_html(form.name) }}
+                        {{ get_field_group_html(form.name) }}
 
                         <!-- Overview -->
-                        {{  get_field_group_html(form.overview) }}
+                        {{ get_field_group_html(form.overview) }}
 
                         <!-- Released -->
-                        {{  get_field_group_html(form.released) }}
+                        {{ get_field_group_html(form.released) }}
+
+                        <!-- Duration -->
+                        {{ get_field_group_html(form.duration) }}
+
+                        <!-- Rating -->
+                        <div class="form-group" aria-label="Review rating">
+                            {{ form.rating.label(class='form-control-label') }}
+                            <div>
+                                {{ form.rating(class='d-none') }}
+                                <!-- Rating buttons -->
+                                <button id="star_1" type="button" aria-label="1 star" class="py-1 px-2 star_btn btn-dark"
+                                        data-star-number="1">
+                                    <i class="bi bi-star"></i></button>
+                                <button id="star_2" type="button" aria-label="2 star" class="py-1 px-2 star_btn btn-dark"
+                                        data-star-number="2">
+                                    <i class="bi bi-star"></i></button>
+                                <button id="star_3" type="button" aria-label="3 star" class="py-1 px-2 star_btn btn-dark"
+                                        data-star-number="3">
+                                    <i class="bi bi-star"></i></button>
+                                <button id="star_4" type="button" aria-label="4 star" class="py-1 px-2 star_btn btn-dark"
+                                        data-star-number="4">
+                                    <i class="bi bi-star"></i></button>
+                                <button id="star_5" type="button" aria-label="5 star" class="py-1 px-2 star_btn btn-dark"
+                                        data-star-number="5">
+                                    <i class="bi bi-star"></i></button>
+                            </div>
+                        </div>
 
                         <!-- Directors -->
-                        {{  get_field_group_html(form.directors) }}
+                        {{ get_field_group_html(form.directors) }}
 
                         <!-- Cast -->
-                        {{  get_field_group_html(form.cast_list) }}
+                        {{ get_field_group_html(form.cast_list) }}
 
                         <!-- Genre -->
-                        {{  get_field_group_html(form.genres) }}
+                        {{ get_field_group_html(form.genres) }}
 
                         <!-- Movie cover art upload -->
                         {{ get_file_upload_group_html(form.picture, accept='image/png,image/jpeg') }}
@@ -38,4 +65,28 @@
             </div>
         </div>
     </div>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        // Update star buttons and hidden rating value
+        $('.star_btn').on('click', function () {
+            let star_num = $(this).data('star-number');
+            $('#rating').val(star_num);
+
+            // Update button colours
+            $('#star_1').removeClass().addClass('py-1 px-2 star_btn btn-primary');
+            $('#star_2').removeClass().addClass('py-1 px-2 star_btn btn-' + (star_num >= 2 ? 'primary' : 'dark'));
+            $('#star_3').removeClass().addClass('py-1 px-2 star_btn btn-' + (star_num >= 3 ? 'primary' : 'dark'));
+            $('#star_4').removeClass().addClass('py-1 px-2 star_btn btn-' + (star_num >= 4 ? 'primary' : 'dark'));
+            $('#star_5').removeClass().addClass('py-1 px-2 star_btn btn-' + (star_num >= 5 ? 'primary' : 'dark'));
+
+            // Update button stars
+            $('#star_1').children('i').removeClass().addClass('bi bi-star-fill');
+            $('#star_2').children('i').removeClass().addClass('bi bi-star' + (star_num >= 2 ? '-fill' : ''));
+            $('#star_3').children('i').removeClass().addClass('bi bi-star' + (star_num >= 3 ? '-fill' : ''));
+            $('#star_4').children('i').removeClass().addClass('bi bi-star' + (star_num >= 4 ? '-fill' : ''));
+            $('#star_5').children('i').removeClass().addClass('bi bi-star' + (star_num >= 5 ? '-fill' : ''));
+        });
+    </script>
 {% endblock %}

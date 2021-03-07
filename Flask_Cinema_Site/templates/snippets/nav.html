@@ -57,20 +57,21 @@
                         </a>
                         <div class="dropdown-menu dropdown-menu-right"
                              aria-labelledby="userDropdown">
-                            <a class="dropdown-item" href="#">Manage Account</a>
+                            <a class="dropdown-item" href="#">My Bookings</a>
+                            <a class="dropdown-item" href="{{ url_for('user.manage') }}">Manage Account</a>
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item" href="{{ url_for('user.logout') }}">Logout (No CSRF)</a>
-                            <form action="#" method="post">
-                                <!-- Insert CSRF token -->
+                            <form action="{{ url_for('user.logout') }}" method="post">
+                                {{ simple_form.csrf_token(id="logoutCsrfToken") }}
                                 <button class="dropdown-item" type="submit">Logout</button>
                             </form>
                         </div>
                     </li>
                 {% else %}
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('user.login_get', next=request.path) }}">Login</a>
+                        <a class="nav-link" href="{{ url_for('user.login', next=request.path) }}">Login</a>
                     </li>
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('user.signup_get') }}">Register</a>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('user.signup') }}">Register</a>
                     </li>
                 {% endif %}
             </ul>

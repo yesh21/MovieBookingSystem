@@ -51,11 +51,13 @@ class TestConfig(DefaultConfig):
     # Flask
     TESTING = True
 
-    # Flask-WTF
-    WTF_CSRF_ENABLED = False
-
     # SQLAlchemy
     SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'
+
+    MAIL_SERVER = ''
+    MAIL_PORT = 1
+    MAIL_USERNAME = ''
+    MAIL_PASSWORD = ''
 
     # Check redirect links
     SAFE_URL_HOSTS = {'127.0.0.1:5000'}
