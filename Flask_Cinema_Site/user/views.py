@@ -1,16 +1,11 @@
 from Flask_Cinema_Site import app, db, models, helper_functions
 from Flask_Cinema_Site.models import Customer
 from Flask_Cinema_Site.helper_functions import get_redirect_url
-<<<<<<< Flask_Cinema_Site/user/views.py
 from Flask_Cinema_Site.forms import SimpleForm
 from .forms import LoginForm, SignupForm, ForgotPasswordForm, ResetPasswordForm, \
     ChangePasswordForm, ChangeDetailsForm
 
 from flask import render_template, Blueprint, flash, redirect, url_for, request
-=======
-from .forms import LoginForm, SignupForm, ForgotPasswordForm, ResetPasswordForm
-from flask import render_template, Blueprint, flash, redirect, url_for
->>>>>>> Flask_Cinema_Site/user/views.py
 from flask_login import LoginManager, login_user, logout_user, current_user, login_required
 from flask_api import status
 
