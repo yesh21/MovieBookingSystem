@@ -1,11 +1,16 @@
 from Flask_Cinema_Site import app, db, models, helper_functions
 from Flask_Cinema_Site.models import Customer
 from Flask_Cinema_Site.helper_functions import get_redirect_url
+<<<<<<< Flask_Cinema_Site/user/views.py
 from Flask_Cinema_Site.forms import SimpleForm
 from .forms import LoginForm, SignupForm, ForgotPasswordForm, ResetPasswordForm, \
     ChangePasswordForm, ChangeDetailsForm
 
 from flask import render_template, Blueprint, flash, redirect, url_for, request
+=======
+from .forms import LoginForm, SignupForm, ForgotPasswordForm, ResetPasswordForm
+from flask import render_template, Blueprint, flash, redirect, url_for
+>>>>>>> Flask_Cinema_Site/user/views.py
 from flask_login import LoginManager, login_user, logout_user, current_user, login_required
 from flask_api import status
 
@@ -160,6 +165,29 @@ def confirm_email(token):
     db.session.commit()
     flash(f'User \'{u.username}\' has been successfully confirmed', "success")
     return redirect(get_redirect_url())
+
+
+@login_required
+@user_blueprint.route('/activate')
+def activate():
+    return render_template('verify_account.html')
+
+
+@login_required
+@user_blueprint.route('/resend')
+def resend():
+    # Generate and send confirmation email
+    token = current_user.get_email_confirm_token()
+    confirm_url = url_for('user.confirm_email', token=token, _external=True)
+    helper_functions.send_email(
+        subject='Confirm your account',
+        sender=app.config['MAIL_USERNAME'],
+        recipients=[current_user.email],
+        text_body=render_template('email/confirm_email_body.txt', confirm_url=confirm_url),
+        html_body=render_template('email/confirm_email_body.html', confirm_url=confirm_url)
+    )
+    flash("Activation link sent!", "warning")
+    return redirect(url_for('user.activate'))
 
 
 @user_blueprint.route('/logout', methods=['POST'])
