@@ -17,9 +17,8 @@ class NewMovieForm(FlaskForm):
                                     FileAllowed(['jpg', 'jpeg', 'png'])])
 
     duration = IntegerField('Duration *', validators=[DataRequired()])
-    rating = DecimalField('Rating *', validators=[DataRequired(),
-                                                NumberRange(min=1, max=5,
-                                                            message='Ratings must be between 1 and 5 stars')])
+    rating = DecimalField('Rating *', validators=[DataRequired(), NumberRange(
+        message='Ratings must be between 1 and 5 stars', min=1, max=5,)])
 
     directors = TextAreaField('Directors', validators=[Length(min=0, max=250)])
     cast_list = TextAreaField('Cast list', validators=[Length(min=0, max=250)])
