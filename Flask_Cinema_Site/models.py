@@ -1,9 +1,11 @@
 from Flask_Cinema_Site import db, app, bcrypt
 
+from flask import Markup
 from flask_login import UserMixin
 
 from datetime import datetime
 from time import time
+from math import floor
 import jwt
 
 
@@ -109,6 +111,10 @@ class Movie(db.Model):
     overview = db.Column(db.String(250), nullable=False)
     released = db.Column(db.Date, nullable=False)
 
+    duration = db.Column(db.Integer, nullable=False)
+    rating = db.Column(db.Float, nullable=False)
+    hidden = db.Column(db.Boolean, nullable=False)
+
     cover_art_name = db.Column(db.String(35), nullable=False)
 
     # Should probably be own table cba
@@ -118,6 +124,16 @@ class Movie(db.Model):
 
     def rel_cover_art_path(self):
         return 'static/cover_arts/' + self.cover_art_name
+
+    def get_star_rating_html(self):
+        # Full stars
+        stars = '<i class="bi bi-star-fill mr-1"></i>' * floor(self.rating)
+        # Half star
+        if self.rating != floor(self.rating):
+            stars += '<i class="bi bi-star-half mr-1"></i>'
+        # Empty stars
+        stars += '<i class="bi bi-star mr-1"></i>' * floor(5 - self.rating)
+        return Markup(stars)
 
 
 class ViewingSeat(db.Model):

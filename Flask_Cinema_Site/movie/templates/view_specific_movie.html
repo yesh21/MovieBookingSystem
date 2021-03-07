@@ -19,20 +19,20 @@
                         <h5 class="card-title">{{ movie.name }}</h5>
                         <!-- Price / Rating -->
                         <div class="d-flex justify-content-between pb-2 border-bottom">
-                            <div>999 mins</div>
+                            <div>{{ movie.duration }} mins</div>
                             <div>
-                                <i class="bi bi-star-fill"></i>
-                                <i class="bi bi-star-fill"></i>
-                                <i class="bi bi-star-fill"></i>
-                                <i class="bi bi-star-half"></i>
-                                <i class="bi bi-star"></i>
+                                {{ movie.get_star_rating_html() }}
                             </div>
                         </div>
                         <p class="card-text py-2 mb-0 border-bottom">{{ movie.overview }}</p>
-                        <p class="card-text py-2 mb-0 border-bottom">Release date: {{ movie.released.strftime("%B %d, %Y") }}</p>
-                        <p class="card-text py-2 mb-0">Director: {{ movie.directors  if movie.directors is not none else 'Unkown' }}</p>
-                        <p class="card-text pb-2 mb-0">Cast: {{ movie.cast  if movie.cast is not none else 'Unkown' }}</p>
-                        <p class="card-text mb-0">Genres: {{ movie.genres if movie.genres is not none else 'Unkown' }}</p>
+                        <p class="card-text py-2 mb-0 border-bottom">Release
+                            date: {{ movie.released.strftime("%B %d, %Y") }}</p>
+                        <p class="card-text py-2 mb-0">
+                            Director: {{ movie.directors  if movie.directors is not none else 'Unkown' }}</p>
+                        <p class="card-text pb-2 mb-0">
+                            Cast: {{ movie.cast  if movie.cast is not none else 'Unkown' }}</p>
+                        <p class="card-text mb-0">
+                            Genres: {{ movie.genres if movie.genres is not none else 'Unkown' }}</p>
                     </div>
 
                     {% if True %}
@@ -44,12 +44,17 @@
                                        class="btn btn-dark w-100">Edit movie</a>
                                 </div>
                                 <div class="col">
-                                    <button type="button" class="btn btn-primary w-100" data-toggle="modal"
-                                            data-target="#">Hide movie</button>
+                                    <button class="btn btn-primary w-100 {{ 'd-none' if movie.hidden }}"
+                                            type="button" id="hideMovieBtn">Hide movie
+                                    </button>
+                                    <button class="btn btn-primary w-100 {{ 'd-none' if not movie.hidden }}"
+                                            type="button" id="showMovieBtn">Show movie
+                                    </button>
                                 </div>
                                 <div class="col">
                                     <button type="button" class="btn btn-danger w-100" data-toggle="modal"
-                                            data-target="#deleteMovieModal">Delete movie</button>
+                                            data-target="#deleteMovieModal">Delete movie
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -68,11 +73,12 @@
                             <div class="bg-dark px-2 text-center rounded">
                                 <p class="h6 my-1">Mon 25/02/21</p>
                                 {% for viewing in viewings %}
-                                <div class="bg-black d-inline-block mx-auto my-1 rounded">
-                                    <a href="#">
-                                        <span class="px-2 "><a href="{{ '/book/slot?viewing=%s&movie=%s' % (movie.id,viewing.id) }}">{{viewing.time}}</a></span>
-                                    </a>
-                                </div>
+                                    <div class="bg-black d-inline-block mx-auto my-1 rounded">
+                                        <a href="#">
+                                            <span class="px-2 "><a
+                                                    href="{{ '/book/slot?viewing=%s&movie=%s' % (movie.id,viewing.id) }}">{{ viewing.time }}</a></span>
+                                        </a>
+                                    </div>
                                 {% endfor %}
                             </div>
                         </div>
@@ -130,5 +136,46 @@
 {% endblock %}
 
 {% block scripts %}
+    <script>
+        // Show hide
+        let show_movie_url = '{{ url_for('movie.show', movie_id=movie.id) }}';
+        let show_movie_btn = $('#showMovieBtn');
+        let hide_movie_url = '{{ url_for('movie.hide', movie_id=movie.id) }}';
+        let hide_movie_btn = $('#hideMovieBtn');
+        let params = {
+            'csrf_token': '{{ simple_form.csrf_token.current_token }}'
+        }
 
+        // Add to wishlist
+        show_movie_btn.on('click', function () {
+            $.post(show_movie_url, params)
+                .done(function () {
+                    // Hide / show buttons
+                    show_movie_btn.addClass('d-none');
+                    hide_movie_btn.removeClass('d-none');
+                })
+                .fail(function (data) {
+                    // Display error message as alert at top of page
+                    if (!('responseJSON' in data) || !('msg' in data.responseJSON))
+                        flash_message('Show movie failed', 'danger');
+                    flash_message(data.responseJSON['msg'], 'danger');
+                });
+        });
+
+        // Remove from wishlist
+        hide_movie_btn.on('click', function () {
+            $.post(hide_movie_url, params)
+                .done(function () {
+                    // Hide / show buttons
+                    hide_movie_btn.addClass('d-none');
+                    show_movie_btn.removeClass('d-none');
+                })
+                .fail(function (data) {
+                    // Display error message as alert at top of page
+                    if (!('responseJSON' in data) || !('msg' in data.responseJSON))
+                        flash_message('Hide movie failed', 'danger');
+                    flash_message(data.responseJSON['msg'], 'danger');
+                });
+        });
+    </script>
 {% endblock %}
