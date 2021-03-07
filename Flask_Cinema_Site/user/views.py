@@ -1,8 +1,11 @@
 from Flask_Cinema_Site import app, db, models, helper_functions
 from Flask_Cinema_Site.models import Customer
 from Flask_Cinema_Site.helper_functions import get_redirect_url
-from .forms import LoginForm, SignupForm, ForgotPasswordForm, ResetPasswordForm
-from flask import render_template, Blueprint, flash, redirect, url_for
+from Flask_Cinema_Site.forms import SimpleForm
+from .forms import LoginForm, SignupForm, ForgotPasswordForm, ResetPasswordForm, \
+    ChangePasswordForm, ChangeDetailsForm
+
+from flask import render_template, Blueprint, flash, redirect, url_for, request
 from flask_login import LoginManager, login_user, logout_user, current_user, login_required
 from flask_api import status
 
@@ -76,23 +79,15 @@ def user():
     return render_template('user.html', title='User')
 
 
-@user_blueprint.route('/login', methods=['GET'])
-def login_get():
+@user_blueprint.route('/login', methods=['GET', 'POST'])
+def login():
     # Check if user logged in
     if current_user.is_authenticated:
         return redirect(get_redirect_url())
 
     form = LoginForm()
-    return render_template('login.html', title='Login', form=form)
-
-
-@user_blueprint.route('/login', methods=['POST'])
-def login_post():
-    # Check if user logged in
-    if current_user.is_authenticated:
-        return redirect(get_redirect_url())
-
-    form = LoginForm()
+    if request.method == 'GET':
+        return render_template('login.html', title='Login', form=form)
 
     # Validate form submission
     if not form.validate_on_submit():
@@ -115,32 +110,24 @@ def login_post():
     return redirect(get_redirect_url())
 
 
-@user_blueprint.route('/signup', methods=['GET'])
-def signup_get():
+@user_blueprint.route('/signup', methods=['GET', 'POST'])
+def signup():
     # Check if user logged in
     if current_user.is_authenticated:
         return redirect(get_redirect_url())
 
     form = SignupForm()
-    return render_template('signup.html', title='Sign Up', form=form)
-
-
-@user_blueprint.route('/signup', methods=['POST'])
-def signup_post():
-    # Check if user logged in
-    if current_user.is_authenticated:
-        return redirect(get_redirect_url())
-
-    form = SignupForm()
+    if request.method == 'GET':
+        return render_template('signup.html', title='Sign Up', form=form)
 
     if not form.validate_on_submit():
         return render_template('signup.html', title='Sign Up', form=form), status.\
             HTTP_400_BAD_REQUEST
 
-    new_user = models.Customer(username=form.username.data,
-                               email=form.email.data,
-                               lastname=form.lastname.data,
-                               firstname=form.firstname.data)
+    new_user = models.Customer(first_name=form.first_name.data,
+                               last_name=form.last_name.data,
+                               username=form.username.data,
+                               email=form.email.data)
     new_user.set_password(form.password.data)
 
     db.session.add(new_user)
@@ -158,8 +145,8 @@ def signup_post():
         html_body=render_template('email/confirm_email_body.html', confirm_url=confirm_url)
     )
 
-    flash("new account created", "success")
-    return redirect(url_for('user.login_get'))
+    flash(f'New user \'{new_user.username}\' was successfully created', 'success')
+    return redirect(url_for('user.login'))
 
 
 @user_blueprint.route('/confirm/<token>')
@@ -171,7 +158,7 @@ def confirm_email(token):
 
     u.confirmed = True
     db.session.commit()
-    flash(f'User [{u.username}] has been successfully confirmed', "success")
+    flash(f'User \'{u.username}\' has been successfully confirmed', "success")
     return redirect(get_redirect_url())
 
 
@@ -198,14 +185,78 @@ def resend():
     return redirect(url_for('user.activate'))
 
 
-@user_blueprint.route('/logout')
-@login_required
+@user_blueprint.route('/logout', methods=['POST'])
 def logout():
+    if not current_user.is_authenticated:
+        flash('Logout failed. No user logged in', 'danger')
+        return redirect(get_redirect_url())
+
+    form = SimpleForm()
+    del form.id
+    if not form.validate_on_submit():
+        flash('Logout failed', 'danger')
+        return redirect(url_for('home.home'))
+
     logout_user()
-    flash("successfully logged out!", "warning")
-    return redirect(get_redirect_url())
+    flash('Logout successful', 'success')
+    return redirect(url_for('home.home'))
 
 
-@user_blueprint.route('/test', methods=['GET'])
-def user_test():
-    return render_template('email/reset_password_body.html', title='User')
+def render_manage_user(change_details_form=None, change_password_form=None,
+                       res_status=status.HTTP_200_OK):
+    if change_details_form is None:
+        change_details_form = ChangeDetailsForm()
+        # Initialize form
+        change_details_form.first_name.data = current_user.first_name
+        change_details_form.last_name.data = current_user.last_name
+        change_details_form.username.data = current_user.username
+        change_details_form.email.data = current_user.email
+    if change_password_form is None:
+        change_password_form = ChangePasswordForm()
+
+    return render_template('manage_user.html', title='Manage Account',
+                           details_form=change_details_form,
+                           password_form=change_password_form), res_status
+
+
+@user_blueprint.route('/manage')
+@login_required
+def manage():
+    return render_manage_user()
+
+
+@user_blueprint.route('/manage/update_user_details', methods=['POST'])
+@login_required
+def update_user_details():
+    form = ChangeDetailsForm()
+
+    # Validate submitted details
+    if not form.validate_on_submit():
+        return render_manage_user(change_details_form=form, res_status=status.HTTP_400_BAD_REQUEST)
+
+    # Update details
+    current_user.confirmed = current_user.confirmed and current_user.email == form.email.data
+    current_user.first_name = form.first_name.data
+    current_user.last_name = form.last_name.data
+    current_user.username = form.username.data
+    current_user.email = form.email.data
+    db.session.commit()
+
+    flash('Details successfully updated', 'success')
+
+    return render_manage_user(change_details_form=form)
+
+
+@user_blueprint.route('/manage/change_password', methods=['POST'])
+@login_required
+def change_password():
+    form = ChangePasswordForm()
+
+    if not form.validate_on_submit():
+        return render_manage_user(change_password_form=form, res_status=status.HTTP_400_BAD_REQUEST)
+
+    # Update password
+    current_user.set_password(form.password.data)
+    db.session.commit()
+    flash('Password updated successfully', 'success')
+    return render_manage_user(change_password_form=form)

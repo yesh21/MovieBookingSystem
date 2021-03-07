@@ -1,6 +1,6 @@
 from Flask_Cinema_Site import app, mail
 
-from flask import request, url_for, current_app, Markup
+from flask import request, url_for, current_app, Markup, jsonify
 
 from is_safe_url import is_safe_url
 from PIL import Image, ImageOps
@@ -18,6 +18,14 @@ def get_redirect_url():
     if url and is_safe_url(url, app.config['SAFE_URL_HOSTS']):
         return url
     return url_for('home.home')
+
+
+def get_json_response(message, status_code):
+    response = {
+        'code': status_code,
+        'msg': message
+    }
+    return jsonify(response), status_code
 
 
 def save_picture(picture, rel_folder_path):
