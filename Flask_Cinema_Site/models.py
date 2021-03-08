@@ -108,7 +108,7 @@ class Movie(db.Model):
     # Data fields
     # TODO Fix string lengths
     name = db.Column(db.String(100), nullable=False)
-    overview = db.Column(db.String(250), nullable=False)
+    overview = db.Column(db.String(500), nullable=False)
     released = db.Column(db.Date, nullable=False)
 
     duration = db.Column(db.Integer, nullable=False)
@@ -123,7 +123,7 @@ class Movie(db.Model):
     genres = db.Column(db.String(250), nullable=True)
 
     def rel_cover_art_path(self):
-        return 'static/cover_arts/' + self.cover_art_name
+        return '/cover_arts/' + self.cover_art_name
 
     def get_star_rating_html(self):
         # Full stars
