@@ -54,6 +54,9 @@ def add_post():
         overview=form.overview.data,
         released=form.released.data,
         directors=form.directors.data,
+        duration=form.duration.data,
+        rating=form.rating.data,
+        hidden=0,
         cast=form.cast_list.data,
         genres=form.genres.data,
         cover_art_name=cover_art_filename
