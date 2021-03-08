@@ -121,6 +121,7 @@ def manage():
 
     return redirect(url_for('movie.view_multiple'))
 
+
 @movies_blueprint.route('/search', methods=['POST'])
 def search():
     search = request.form.get("search")
@@ -134,7 +135,7 @@ def search_results(query):
     results2 = db.session.query(models.Movie).filter(models.Movie.cover_art_name.ilike(query)).all()
     results3 = db.session.query(models.Movie).filter(models.Movie.released.ilike(query)).all()
     results = results1 + results2 + results3
-    #results = set(results)
+    # results = set(results)
     if len(results) == 0:
         message += "No results found"
     return "Done"
