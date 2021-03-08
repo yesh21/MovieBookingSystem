@@ -3,8 +3,10 @@ from Flask_Cinema_Site.movie.forms import NewMovieForm
 from Flask_Cinema_Site.models import Movie, Viewing
 from Flask_Cinema_Site.helper_functions import get_redirect_url, save_picture, get_json_response
 
-from flask import render_template, redirect, url_for, Blueprint, flash, request
+from flask import render_template, redirect, url_for, Blueprint, flash, request, jsonify
 from flask_api import status
+from flask_cors import cross_origin
+import sqlite3 as sql
 
 
 movies_blueprint = Blueprint(
@@ -125,10 +127,27 @@ def manage():
     return redirect(url_for('movie.view_multiple'))
 
 
+def Convert(lst):
+    res_dct = {lst[i]: 0 for i in range(0, len(lst), 1)}
+    return res_dct
+
+
+@cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
 @movies_blueprint.route('/search', methods=['POST'])
 def search():
-    search = request.form.get("search")
-    return redirect(url_for('movie.search_results', query=search))
+    con = sql.connect("site.db")
+    cur = con.cursor()
+    term = request.form['q']
+    print('term: ', term)
+    cur.execute("SELECT name FROM movie ")
+    con.commit()
+    rows = {}
+    rows = cur.fetchmany(5)
+    my_list = []
+    for i in range(len(rows)):
+        my_list.append(rows[i][0])
+    print(rows[0])
+    return jsonify(my_list)
 
 
 @movies_blueprint.route('/search_results/<query>')
