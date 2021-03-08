@@ -1,9 +1,9 @@
-from Flask_Cinema_Site import db
+from Flask_Cinema_Site import db, models
 from Flask_Cinema_Site.movie.forms import NewMovieForm
 from Flask_Cinema_Site.models import Movie, Viewing
 from Flask_Cinema_Site.helper_functions import get_redirect_url, save_picture, get_json_response
 
-from flask import render_template, redirect, url_for, Blueprint, flash
+from flask import render_template, redirect, url_for, Blueprint, flash, request
 from flask_api import status
 
 
@@ -120,3 +120,21 @@ def manage():
     # TODO Check user is manager
 
     return redirect(url_for('movie.view_multiple'))
+
+@movies_blueprint.route('/search', methods=['POST'])
+def search():
+    search = request.form.get("search")
+    return redirect(url_for('movie.search_results', query=search))
+
+
+@movies_blueprint.route('/search_results/<query>')
+def search_results(query):
+    message = ""
+    results1 = db.session.query(models.Movie).filter(models.Movie.name.ilike(query)).all()
+    results2 = db.session.query(models.Movie).filter(models.Movie.cover_art_name.ilike(query)).all()
+    results3 = db.session.query(models.Movie).filter(models.Movie.released.ilike(query)).all()
+    results = results1 + results2 + results3
+    #results = set(results)
+    if len(results) == 0:
+        message += "No results found"
+    return "Done"
