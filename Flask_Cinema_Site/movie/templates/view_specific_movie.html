@@ -7,7 +7,7 @@
             <div class="col-md">
                 <div class="card mb-4 px-1 h-100 bg-black">
                     <img class="y-100 w-100 m-auto"
-                         src="{{ movie.rel_cover_art_path() }}"
+                         src="{{ url_for('movie.static', filename=movie.rel_cover_art_path()) }}"
                          alt="Movie cover art">
                 </div>
             </div>
@@ -40,7 +40,7 @@
                         <div class="card-footer">
                             <div class="row">
                                 <div class="col">
-                                    <a href="{{ url_for('movie.edit_get', movie_id=movie.id) }}"
+                                    <a href="{{ url_for('movie.edit', movie_id=movie.id) }}"
                                        class="btn btn-dark w-100">Edit movie</a>
                                 </div>
                                 <div class="col">
@@ -138,12 +138,13 @@
 {% block scripts %}
     <script>
         // Show hide
-        let show_movie_url = '{{ url_for('movie.show', movie_id=movie.id) }}';
+        let show_movie_url = '{{ url_for('movie.show') }}';
         let show_movie_btn = $('#showMovieBtn');
-        let hide_movie_url = '{{ url_for('movie.hide', movie_id=movie.id) }}';
+        let hide_movie_url = '{{ url_for('movie.hide') }}';
         let hide_movie_btn = $('#hideMovieBtn');
         let params = {
-            'csrf_token': '{{ simple_form.csrf_token.current_token }}'
+            'csrf_token': '{{ simple_form.csrf_token.current_token }}',
+            'id': {{ movie.id }}
         }
 
         // Add to wishlist
