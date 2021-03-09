@@ -157,4 +157,6 @@ def search_results(query):
     # results = set(results)
     if len(results) == 0:
         message += "No results found"
-    return "Done"
+    return render_template('search_results.html',
+                           query=query,
+                           results=results, message=message)
