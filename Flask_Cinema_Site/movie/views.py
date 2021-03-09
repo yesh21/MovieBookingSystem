@@ -137,7 +137,7 @@ def search():
     cur = con.cursor()
     term = request.form['q']
     print('term: ', term)
-    cur.execute("SELECT name FROM movie ")
+    cur.execute("SELECT name FROM movie WHERE name LIKE ?""", ('%' + term + '%', ))
     con.commit()
     rows = {}
     rows = cur.fetchmany(5)
@@ -149,14 +149,17 @@ def search():
 
 @movies_blueprint.route('/search_results/<query>')
 def search_results(query):
-    message = ""
-    results1 = db.session.query(models.Movie).filter(models.Movie.name.ilike(query)).all()
-    results2 = db.session.query(models.Movie).filter(models.Movie.cover_art_name.ilike(query)).all()
-    results3 = db.session.query(models.Movie).filter(models.Movie.released.ilike(query)).all()
-    results = results1 + results2 + results3
-    # results = set(results)
+    noresults = False
+    search = "%{}%".format(query)
+    results1 = db.session.query(models.Movie).filter(models.Movie.name.like(search)).all()
+    results2 = db.session.query(models.Movie).filter(models.Movie.genres.like(search)).all()
+    results3 = db.session.query(models.Movie).filter(models.Movie.cast.like(search)).all()
+    results4 = db.session.query(models.Movie).filter(models.Movie.directors.like(search)).all()
+    results = results1 + results2 + results3 + results4
+    results = set(results)
     if len(results) == 0:
-        message += "No results found"
+        noresults = True
+        results=db.session.query(models.Movie).order_by(models.Movie.released.desc()).limit(2).all()
     return render_template('search_results.html',
                            query=query,
-                           results=results, message=message)
+                           results=results, noresults=noresults)

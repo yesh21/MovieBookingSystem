@@ -12,10 +12,12 @@
 </head>
 
 <body>
-    <h1 style="margin-left: 5%;">Search results for "{{query}}":</h1>
-    <h2 style="text-align-last: center;margin-top: 50px;"><strong>{{message}}</strong></h2>
+    <h1 style="margin-left: 5%;font-family: cursive;">Search results for "{{query}}":</h1>
+    {%if noresults %}
+    <h2 style="text-align-last: center;margin-top: 50px;font-family: cursive;"><strong>No results found</strong></h2>
     <title>Search Results</title>
-    {% for movie in results %}
+    <h3 style="margin-left: 5%;">New Suggestions:</h3>
+    {%endif%} {% for movie in results %}
     <div class="card gedf-card m-5" style="background-color: black;">
         <div class="card-header">
             <div class="text-right">
@@ -44,8 +46,7 @@
             </div>
         </div>
     </div>
-    <br>
-    <br>
+
 </body>
 
 </html>
