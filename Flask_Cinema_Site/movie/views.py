@@ -127,14 +127,12 @@ def manage():
     return redirect(url_for('movie.view_multiple'))
 
 
-def Convert(lst):
-    res_dct = {lst[i]: 0 for i in range(0, len(lst), 1)}
-    return res_dct
-
-
 @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
 @movies_blueprint.route('/search', methods=['POST'])
 def search():
+    if request.method == 'POST' and request.form.get("search_button") == 'search_results':
+        search = request.form.get("search")
+        return redirect(url_for('movie.search_results', query=search))
     con = sql.connect("site.db")
     cur = con.cursor()
     term = request.form['q']
@@ -146,7 +144,6 @@ def search():
     my_list = []
     for i in range(len(rows)):
         my_list.append(rows[i][0])
-    print(rows[0])
     return jsonify(my_list)
 
 
