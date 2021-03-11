@@ -144,6 +144,11 @@ def search():
     my_list = []
     for i in range(len(rows)):
         my_list.append(rows[i][0])
+    if len(my_list) == 0:
+        my_list.append("No results found-" + term)
+        rows += db.session.query(models.Movie.name).order_by(models.Movie.released.desc()).limit(2).all()
+        for i in range(len(rows)):
+            my_list.append(rows[i][0] + '(suggestion)')
     return jsonify(my_list)
 
 
@@ -159,7 +164,7 @@ def search_results(query):
     results = set(results)
     if len(results) == 0:
         noresults = True
-        results=db.session.query(models.Movie).order_by(models.Movie.released.desc()).limit(2).all()
+        results = db.session.query(models.Movie).order_by(models.Movie.released.desc()).limit(2).all()
     return render_template('search_results.html',
                            query=query,
                            results=results, noresults=noresults)
