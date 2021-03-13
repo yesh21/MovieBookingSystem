@@ -1,0 +1,59 @@
+<!-- extend base layout -->
+{% extends "base.html" %} {% block content %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Movie Search- {{query}}</title>
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+</head>
+
+<body>
+    <h1 style="margin-left: 5%;font-family: cursive;">Search results for "{{query}}":</h1>
+    {%if noresults %}
+    <h2 style="text-align-last: center;margin-top: 50px;font-family: cursive;"><strong>No results found</strong></h2>
+    <title>Search Results</title>
+    <h3 style="margin-left: 5%;">New Suggestions:</h3>
+    {%endif%} {% for movie in results %}
+    <div class="card gedf-card m-5" style="background-color: black;">
+        <div class="card-header">
+            <div class="text-right">
+                <span class="badge badge-secondary">MOVIE RATING : <h10>{{movie.rating}}/5</h10></span>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="d-flex">
+
+                    <div class="m-3">
+                        <img src="{{url_for('movie.static', filename='cover_arts/'+'2ba5bc607ed90ab38fef7bbf.jpg')}}" alt="Admin" width="150" height="150">
+                    </div>
+                    <div class="m-3">
+                        <div class="h1 m-1" style="font-family: initial;">{{movie.name}}</div>
+                        <div class="h7 text-muted">overview: {{movie.overview}}</div>
+                        <div class="h3 m-1" style="font-family: monospace;">{{movie.duration}}mins . {{movie.released.strftime('%d-%m-%Y')}}</div>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="m-3" style="margin: 50px;">
+                            <p>genre: {{movie.genres}}</p>
+                            <p>director: {{movie.directors}}</p>
+                            <p>cast: {{movie.cast}}</p>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="text-right">
+                <a class="btn btn-primary" href="/movie/{{movie.id}}">View details »</a>
+                <a class="btn btn-success" href="">Book Now »</a>
+
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>
+{% endfor %} {% endblock %}

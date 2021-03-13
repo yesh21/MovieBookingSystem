@@ -5,9 +5,12 @@ from flask import Flask
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 from flask_admin.menu import MenuLink
+from flask_cors import CORS
 
 app = Flask(__name__)
 # Load config
+CORS(app)
+app.config['CORS_HEADERS'] = 'Content-Type'
 if app.config['ENV'] == 'development':
     app.config.from_object('config.DevelopmentConfig')
 elif app.config['ENV'] == 'testing':
