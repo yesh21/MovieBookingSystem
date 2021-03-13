@@ -1,10 +1,12 @@
-from Flask_Cinema_Site import db
+from Flask_Cinema_Site import db, models
 from Flask_Cinema_Site.movie.forms import NewMovieForm
 from Flask_Cinema_Site.models import Movie, Viewing
 from Flask_Cinema_Site.helper_functions import get_redirect_url, save_picture, get_json_response
 
-from flask import render_template, redirect, url_for, Blueprint, flash
+from flask import render_template, redirect, url_for, Blueprint, flash, request, jsonify
 from flask_api import status
+from flask_cors import cross_origin
+import sqlite3 as sql
 
 
 movies_blueprint = Blueprint(
@@ -54,6 +56,9 @@ def add_post():
         overview=form.overview.data,
         released=form.released.data,
         directors=form.directors.data,
+        duration=form.duration.data,
+        rating=form.rating.data,
+        hidden=0,
         cast=form.cast_list.data,
         genres=form.genres.data,
         cover_art_name=cover_art_filename
@@ -120,3 +125,46 @@ def manage():
     # TODO Check user is manager
 
     return redirect(url_for('movie.view_multiple'))
+
+
+@cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
+@movies_blueprint.route('/search', methods=['POST'])
+def search():
+    if request.method == 'POST' and request.form.get("search_button") == 'search_results':
+        search = request.form.get("search")
+        return redirect(url_for('movie.search_results', query=search))
+    con = sql.connect("site.db")
+    cur = con.cursor()
+    term = request.form['q']
+    print('term: ', term)
+    cur.execute("SELECT name FROM movie WHERE name LIKE ?""", ('%' + term + '%', ))
+    con.commit()
+    rows = {}
+    rows = cur.fetchmany(5)
+    my_list = []
+    for i in range(len(rows)):
+        my_list.append(rows[i][0])
+    if len(my_list) == 0:
+        my_list.append("No results found-" + term)
+        rows += db.session.query(models.Movie.name).order_by(models.Movie.released.desc()).limit(2).all()
+        for i in range(len(rows)):
+            my_list.append(rows[i][0] + '(suggestion)')
+    return jsonify(my_list)
+
+
+@movies_blueprint.route('/search_results/<query>')
+def search_results(query):
+    noresults = False
+    search = "%{}%".format(query)
+    results1 = db.session.query(models.Movie).filter(models.Movie.name.like(search)).all()
+    results2 = db.session.query(models.Movie).filter(models.Movie.genres.like(search)).all()
+    results3 = db.session.query(models.Movie).filter(models.Movie.cast.like(search)).all()
+    results4 = db.session.query(models.Movie).filter(models.Movie.directors.like(search)).all()
+    results = results1 + results2 + results3 + results4
+    results = set(results)
+    if len(results) == 0:
+        noresults = True
+        results = db.session.query(models.Movie).order_by(models.Movie.released.desc()).limit(2).all()
+    return render_template('search_results.html',
+                           query=query,
+                           results=results, noresults=noresults)
