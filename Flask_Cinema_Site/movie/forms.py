@@ -30,10 +30,10 @@ class NewMovieForm(FlaskForm):
 
 
 class EditMovieForm(NewMovieForm):
-    picture = FileField('Upload cover art',validators=[FileAllowed(['jpg', 'jpeg', 'png'])])
+    picture = FileField('Upload cover art', validators=[FileAllowed(['jpg', 'jpeg', 'png'])])
     submit = SubmitField('Save')
 
-    def init_with_movie(self, m : Movie):
+    def init_with_movie(self, m: Movie):
         self.name.data = m.name
         self.overview.data = m.overview
         self.released.data = m.released
