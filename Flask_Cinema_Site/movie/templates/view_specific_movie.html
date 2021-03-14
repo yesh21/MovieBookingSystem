@@ -68,15 +68,14 @@
             <div class="card-header">Upcoming viewings</div>
             <div class="card-body">
                 <div class="row mx-neg-1">
-                    {% for i in range(7) %}
+                    {% for day in viewing_days %}
                         <div class="col-lg col-md-12 mb-2 px-1">
-                            <div class="bg-dark px-2 text-center rounded">
-                                <p class="h6 my-1">Mon 25/02/21</p>
-                                {% for viewing in viewings %}
+                            <div class="bg-dark px-2 text-center rounded h-100">
+                                <p class="h6 my-1">{{ day[0].strftime("%a %d/%m/%y") }}</p>
+                                {% for v in day[1] %}
                                     <div class="bg-black d-inline-block mx-auto my-1 rounded">
-                                        <a href="#">
-                                            <span class="px-2 "><a
-                                                    href="{{ '/book/slot?viewing=%s&movie=%s' % (movie.id,viewing.id) }}">{{ viewing.time }}</a></span>
+                                        <a href="{{ url_for('bookings.view_specific', viewing=v.id, movie=v.movie_id) }}">
+                                            <span class="px-2 ">{{ v.time.strftime("%H:%M") }}</span>
                                         </a>
                                     </div>
                                 {% endfor %}

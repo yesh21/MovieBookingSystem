@@ -93,6 +93,7 @@ class BasketViewing(db.Model):
 class Viewing(db.Model):
     __tablename__ = "viewing"
     id = db.Column(db.Integer, unique=True, primary_key=True)
+    # TODO Rename to datetime?
     time = db.Column(db.DateTime, nullable=False)
     movie_id = db.Column(db.Integer, db.ForeignKey('movie.id'), unique=True)
 
