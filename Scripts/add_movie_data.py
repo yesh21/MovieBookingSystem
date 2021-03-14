@@ -57,7 +57,7 @@ cycleHour = cycle(hourShowing)
 cycleMinute = cycle(minuteShowing)
 viewingTimes = []
 for i in range(len(Movies)):
-    viewingTimes.append(datetime(2012, 3, 3, next(cycleHour), next(cycleMinute)))
+    viewingTimes.append(datetime.now())
 
 for count, movie in enumerate(Movies):
     viewing1 = Viewing(movie_id=movie.id, time=viewingTimes[count])

@@ -7,6 +7,9 @@ from Flask_Cinema_Site.helper_functions import get_redirect_url, save_picture, g
 from flask import render_template, redirect, url_for, Blueprint, flash, request
 from flask_api import status
 
+from sqlalchemy import func
+from datetime import date, timedelta
+
 
 movies_blueprint = Blueprint(
     'movie', __name__,
@@ -28,8 +31,15 @@ def view_specific(movie_id):
         flash(f'Movie with id [{movie_id}] not found', 'danger')
         return redirect(get_redirect_url())
 
-    viewings = Viewing.query.filter_by(movie_id=m.id).all()
-    return render_template('view_specific_movie.html', title=m.name, movie=m, viewings=viewings)
+    viewing_days = []
+    for i in range(7):
+        d = date.today() + timedelta(days=i)
+        viewings = Viewing.query\
+            .filter(Viewing.movie_id == movie_id)\
+            .filter(func.date(Viewing.time) == d)\
+            .all()
+        viewing_days.append((d, viewings))
+    return render_template('view_specific_movie.html', title=m.name, movie=m, viewing_days=viewing_days)
 
 
 @movies_blueprint.route('/add', methods=['GET', 'POST'])
