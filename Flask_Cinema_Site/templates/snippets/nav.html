@@ -43,8 +43,8 @@
                         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
                             <a class="dropdown-item" href="{{ url_for('admin.index') }}">Admin</a>
                             <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="{{ url_for('movie.add_get') }}">Add new film</a>
-                            <a class="dropdown-item" href="#">Manage films</a>
+                            <a class="dropdown-item" href="{{ url_for('movie.add') }}">Add new film</a>
+                            <a class="dropdown-item" href="{{ url_for('movie.manage') }}">Manage films</a>
                         </div>
                     </li>
                 {% endif %}
