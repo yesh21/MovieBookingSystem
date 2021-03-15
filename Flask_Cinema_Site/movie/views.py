@@ -1,12 +1,16 @@
 from Flask_Cinema_Site import db, models
-from Flask_Cinema_Site.movie.forms import NewMovieForm
+from Flask_Cinema_Site.forms import SimpleForm
+from Flask_Cinema_Site.movie.forms import NewMovieForm, EditMovieForm
 from Flask_Cinema_Site.models import Movie, Viewing
-from Flask_Cinema_Site.helper_functions import get_redirect_url, save_picture, get_json_response
+from Flask_Cinema_Site.helper_functions import save_picture, delete_picture, get_json_response
 
-from flask import render_template, redirect, url_for, Blueprint, flash, request, jsonify
+from flask import render_template, redirect, url_for, Blueprint, flash, request, abort, jsonify
 from flask_api import status
 from flask_cors import cross_origin
+
 import sqlite3 as sql
+from sqlalchemy import func, asc
+from datetime import date, timedelta
 
 
 movies_blueprint = Blueprint(
@@ -27,27 +31,30 @@ def view_specific(movie_id):
     m = Movie.query.get(movie_id)
     if not m:
         flash(f'Movie with id [{movie_id}] not found', 'danger')
-        return redirect(get_redirect_url())
+        abort(404)
 
-    viewings = Viewing.query.filter_by(movie_id=m.id).all()
-    return render_template('view_specific_movie.html', title=m.name, movie=m, viewings=viewings)
+    viewing_days = []
+    for i in range(7):
+        d = date.today() + timedelta(days=i)
+        viewings = Viewing.query\
+            .filter(Viewing.movie_id == movie_id)\
+            .filter(func.date(Viewing.time) == d) \
+            .order_by(asc(Viewing.time))\
+            .all()
+        viewing_days.append((d, viewings))
+    return render_template('view_specific_movie.html', title=m.name, movie=m, viewing_days=viewing_days)
 
 
-@movies_blueprint.route('/add', methods=['GET'])
-def add_get():
+@movies_blueprint.route('/add', methods=['GET', 'POST'])
+def add():
     # TODO Check user is manager
 
     form = NewMovieForm()
-    return render_template('add_movie.html', title='Add Movie', form=form)
-
-
-@movies_blueprint.route('/add', methods=['POST'])
-def add_post():
-    # TODO Check user is manager
-
-    form = NewMovieForm()
-    if not form.validate_on_submit():
+    if request.method == 'GET':
         return render_template('add_movie.html', title='Add Movie', form=form)
+
+    if not form.validate_on_submit():
+        return render_template('add_movie.html', title='Add Movie', form=form), status.HTTP_400_BAD_REQUEST
 
     cover_art_filename = save_picture(form.picture.data, 'movie/static/cover_arts')
 
@@ -55,76 +62,122 @@ def add_post():
         name=form.name.data,
         overview=form.overview.data,
         released=form.released.data,
-        directors=form.directors.data,
         duration=form.duration.data,
         rating=form.rating.data,
-        hidden=0,
+        directors=form.directors.data,
         cast=form.cast_list.data,
         genres=form.genres.data,
-        cover_art_name=cover_art_filename
+        cover_art_name=cover_art_filename,
+        hidden=True
     )
     db.session.add(m)
     db.session.commit()
 
+    flash(f'Movie \'{m.name}\' added successfully', 'success')
     return redirect(url_for('movie.view_multiple'))
 
 
-@movies_blueprint.route('/<int:movie_id>/edit', methods=['GET'])
-def edit_get(movie_id):
-    # TODO Check user is manager
-
-    return render_template('edit_movie.html')
-
-
-@movies_blueprint.route('/<int:movie_id>/edit', methods=['POST'])
-def edit_post(movie_id):
-    # TODO Check user is manager
-
-    return render_template('edit_movie.html')
-
-
-# Probably should use flak-api or flask-restful idk?
-@movies_blueprint.route('/<int:movie_id>/hide', methods=['POST'])
-def hide(movie_id):
+@movies_blueprint.route('/<int:movie_id>/edit', methods=['GET', 'POST'])
+def edit(movie_id):
     # TODO Check user is manager
 
     m = Movie.query.get(movie_id)
     if not m:
-        return get_json_response(f'Movie with id \'{movie_id}\' not found', status.HTTP_400_BAD_REQUEST)
+        flash(f'Movie with id \'{movie_id}\' does not exist', 'danger')
+        abort(404)
+
+    form = EditMovieForm()
+    if request.method == 'GET':
+        form.init_with_movie(m)
+        return render_template('edit_movie.html', title='Edit Movie', form=form, movie=m)
+
+    if not form.validate_on_submit():
+        return render_template('edit_movie.html', title='Edit Movie', form=form, movie=m), status.HTTP_400_BAD_REQUEST
+
+    m.name = form.name.data
+    m.overview = form.overview.data
+    m.released = form.released.data
+    m.rating = form.rating.data
+    m.directors = form.directors.data
+    m.cast = form.cast_list.data
+    m.genres = form.genres.data
+
+    db.session.commit()
+
+    # Save picture / delete old one
+    if form.picture.data:
+        new_picture_name = save_picture(form.picture.data, 'movie', 'static', 'cover_arts')
+        delete_picture('movie', 'static', 'cover_arts', m.cover_art_name)
+        m.cover_art_name = new_picture_name
+
+    flash(f'Movie \'{m.name}\' saved successfully', 'success')
+    return redirect(url_for('movie.view_specific', movie_id=m.id))
+
+
+# Probably should use flak-api or flask-restful idk?
+@movies_blueprint.route('/hide', methods=['POST'])
+def hide():
+    # TODO Check user is manager
+
+    form = SimpleForm()
+    if not form.validate_on_submit():
+        return get_json_response('Error hide movie failed', status.HTTP_400_BAD_REQUEST)
+
+    m = Movie.query.get(form.id.data)
+    if not m:
+        return get_json_response(f'Movie with id \'{form.id.data}\' not found', status.HTTP_400_BAD_REQUEST)
 
     m.hidden = True
     db.session.commit()
 
-    return get_json_response(f'Movie with id \'{movie_id}\' successfully hidden', status.HTTP_200_OK)
+    return get_json_response(f'Movie with id \'{form.id.data}\' successfully hidden', status.HTTP_200_OK)
 
 
 # Probably should use flak-api or flask-restful idk?
-@movies_blueprint.route('/<int:movie_id>/show', methods=['POST'])
-def show(movie_id):
+@movies_blueprint.route('/show', methods=['POST'])
+def show():
     # TODO Check user is manager
 
-    m = Movie.query.get(movie_id)
+    form = SimpleForm()
+    if not form.validate_on_submit():
+        return get_json_response('Error show movie failed', status.HTTP_400_BAD_REQUEST)
+
+    m = Movie.query.get(form.id.data)
     if not m:
-        return get_json_response(f'Movie with id \'{movie_id}\' not found', status.HTTP_400_BAD_REQUEST)
+        return get_json_response(f'Movie with id \'{form.id.data}\' not found', status.HTTP_400_BAD_REQUEST)
 
     m.hidden = False
     db.session.commit()
 
-    return get_json_response(f'Movie with id \'{movie_id}\' successfully unhidden', status.HTTP_200_OK)
+    return get_json_response(f'Movie with id \'{form.id.data}\' successfully unhidden', status.HTTP_200_OK)
 
 
 @movies_blueprint.route('/delete', methods=['POST'])
 def delete():
     # TODO Check user is manager
 
-    return redirect(url_for('movie.view_multiple'))
+    form = SimpleForm()
+    if not form.validate_on_submit():
+        return get_json_response('Delete movie failed', status.HTTP_400_BAD_REQUEST)
+
+    m = Movie.query.get(form.id.data)
+    if not m:
+        return get_json_response(f'Movie with id \'{form.id.data}\' not found', status.HTTP_400_BAD_REQUEST)
+
+    delete_picture('movie', 'static', 'cover_arts', m.cover_art_name)
+    db.session.delete(m)
+    db.session.commit()
+
+    flash(f'Movie with id \'{form.id.data}\' successfully deleted', 'success')
+    return get_json_response(f'Movie with id \'{form.id.data}\' successfully deleted', status.HTTP_200_OK)
 
 
 @movies_blueprint.route('/manage', methods=['GET'])
 def manage():
     # TODO Check user is manager
 
-    return redirect(url_for('movie.view_multiple'))
+    movies = Movie.query.all()
+    return render_template('manage_movie.html', title='Manage Movies', movies=movies)
 
 
 @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])

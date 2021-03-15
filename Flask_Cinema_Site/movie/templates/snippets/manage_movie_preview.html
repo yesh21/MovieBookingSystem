@@ -1,0 +1,25 @@
+<tr>
+    <th scope="row">{{ m.id }}</th>
+    <td><a href="{{ url_for('movie.view_specific', movie_id=m.id) }}">{{ m.name }}</a></td>
+    <td>{{ m.released.strftime("%B %d, %Y") }}</td>
+    <td>{{ m.duration }}</td>
+    <td>
+        <div class="row">
+            <div class="col">
+                <a href="{{ url_for('movie.edit', movie_id=m.id) }}">
+                    <button class="btn btn-dark w-100 mb-1">Edit</button>
+                </a>
+            </div>
+            <div class="col">
+                {% if m.hidden %}
+                    <button class="btn btn-primary w-100 mb-1 show-movie-btn" data-movie-id="{{ m.id }}">Show</button>
+                {% else %}
+                    <button class="btn btn-primary w-100 mb-1 hide-movie-btn" data-movie-id="{{ m.id }}">Hide</button>
+                {% endif %}
+            </div>
+            <div class="col">
+                <button class="btn btn-success w-100 mb-1 disabled">View analytics</button>
+            </div>
+        </div>
+    </td>
+</tr>

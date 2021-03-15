@@ -7,7 +7,7 @@
             <div class="col-md">
                 <div class="card mb-4 px-1 h-100 bg-black">
                     <img class="y-100 w-100 m-auto"
-                         src="{{ movie.rel_cover_art_path() }}"
+                         src="{{ url_for('movie.static', filename=movie.rel_cover_art_path()) }}"
                          alt="Movie cover art">
                 </div>
             </div>
@@ -40,7 +40,7 @@
                         <div class="card-footer">
                             <div class="row">
                                 <div class="col">
-                                    <a href="{{ url_for('movie.edit_get', movie_id=movie.id) }}"
+                                    <a href="{{ url_for('movie.edit', movie_id=movie.id) }}"
                                        class="btn btn-dark w-100">Edit movie</a>
                                 </div>
                                 <div class="col">
@@ -68,15 +68,14 @@
             <div class="card-header">Upcoming viewings</div>
             <div class="card-body">
                 <div class="row mx-neg-1">
-                    {% for i in range(7) %}
+                    {% for day in viewing_days %}
                         <div class="col-lg col-md-12 mb-2 px-1">
-                            <div class="bg-dark px-2 text-center rounded">
-                                <p class="h6 my-1">Mon 25/02/21</p>
-                                {% for viewing in viewings %}
+                            <div class="bg-dark px-2 text-center rounded h-100">
+                                <p class="h6 my-1">{{ day[0].strftime("%a %d/%m/%y") }}</p>
+                                {% for v in day[1] %}
                                     <div class="bg-black d-inline-block mx-auto my-1 rounded">
-                                        <a href="#">
-                                            <span class="px-2 "><a
-                                                    href="{{ '/book/slot?viewing=%s&movie=%s' % (movie.id,viewing.id) }}">{{ viewing.time }}</a></span>
+                                        <a href="{{ url_for('bookings.view_specific', viewing=v.id, movie=v.movie_id) }}">
+                                            <span class="px-2 ">{{ v.time.strftime("%H:%M") }}</span>
                                         </a>
                                     </div>
                                 {% endfor %}
@@ -120,14 +119,8 @@
                         delete all associated viewings.
                     </div>
                     <div class="modal-footer">
-                        <form action="#" method="post">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                            <button type="submit" class="btn btn-danger">Delete</button>
-                            <!-- Movie id -->
-
-                            <!-- CSRF token -->
-
-                        </form>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-danger" id="deleteMovieBtn">Delete</button>
                     </div>
                 </div>
             </div>
@@ -137,16 +130,18 @@
 
 {% block scripts %}
     <script>
-        // Show hide
-        let show_movie_url = '{{ url_for('movie.show', movie_id=movie.id) }}';
-        let show_movie_btn = $('#showMovieBtn');
-        let hide_movie_url = '{{ url_for('movie.hide', movie_id=movie.id) }}';
-        let hide_movie_btn = $('#hideMovieBtn');
         let params = {
-            'csrf_token': '{{ simple_form.csrf_token.current_token }}'
+            'csrf_token': '{{ simple_form.csrf_token.current_token }}',
+            'id': {{ movie.id }}
         }
 
-        // Add to wishlist
+        // Show hide
+        let show_movie_url = '{{ url_for('movie.show') }}';
+        let show_movie_btn = $('#showMovieBtn');
+        let hide_movie_url = '{{ url_for('movie.hide') }}';
+        let hide_movie_btn = $('#hideMovieBtn');
+
+        // Show movie
         show_movie_btn.on('click', function () {
             $.post(show_movie_url, params)
                 .done(function () {
@@ -162,7 +157,7 @@
                 });
         });
 
-        // Remove from wishlist
+        // Hide movie
         hide_movie_btn.on('click', function () {
             $.post(hide_movie_url, params)
                 .done(function () {
@@ -174,6 +169,23 @@
                     // Display error message as alert at top of page
                     if (!('responseJSON' in data) || !('msg' in data.responseJSON))
                         flash_message('Hide movie failed', 'danger');
+                    flash_message(data.responseJSON['msg'], 'danger');
+                });
+        });
+
+        // Delete movie
+        let delete_movie_url = '{{ url_for('movie.delete') }}';
+        let delete_movie_btn = $('#deleteMovieBtn');
+        delete_movie_btn.on('click', function () {
+            $.post(delete_movie_url, params)
+                .done(function () {
+                    // Redirect
+                    window.location.href = {{ url_for('movie.view_multiple') }};
+                })
+                .fail(function (data) {
+                    // Display error message as alert at top of page
+                    if (!('responseJSON' in data) || !('msg' in data.responseJSON))
+                        flash_message('Delete movie failed', 'danger');
                     flash_message(data.responseJSON['msg'], 'danger');
                 });
         });
