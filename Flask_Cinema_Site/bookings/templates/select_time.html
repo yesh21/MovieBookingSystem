@@ -2,6 +2,7 @@
 
 {% block head %}
 <link rel="stylesheet" href="{{ url_for('bookings.static', filename='css/bookings.css') }}">
+
 {% endblock %}
 
 {% block content %}
@@ -20,31 +21,115 @@
     <div class="row">
         <h2>Select Seat: </h2>
     </div>
-    <!--Very rudimentary seats will change!!-->
-    <div class="row justify-content-md-center">
-        <span class="border border-primary">
-            <table class="table">
-            {% for i in range(10) %}
-                <tr>
-                    <th scope="row">{{i}}</th>
-             {% for j in range(10) %}
-                <td>{{j}}</td>
-             {% endfor %}
-                </tr>
-            {% endfor %}
-            </table>
-    </span>
-    </div>
+
+    <!--Seating-->
     <div class="row">
         <span class="border border-primary w-100">
             <p class="text-monospace text-center">Screen</p>
         </span>
+    </div>
+
+    <div class="container">
+        {% for char in "ABCDEFG"|list %}
+        <div class="row justify-content-center pt-2">
+            <div class="col-sm-1">
+                <p class="pos_fixed">{{char}}</p>
+            </div>
+            <div class="col-sm-1">
+                <div class="d-flex justify-content-center">
+                    <button type="button" class="btn btn-info disabled" id="{{char}}1">1</button>
+                    <button type="button" class="btn btn-info" id="{{char}}2">2</button>
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <div class="d-flex justify-content-center">
+                    <button type="button" class="btn btn-info" id="{{char}}3">3</button>
+                    <button type="button" class="btn btn-info" id="{{char}}4">4</button>
+                    <button type="button" class="btn btn-info" id="{{char}}5">5</button>
+                    <button type="button" class="btn btn-info" id="{{char}}6">6</button>
+                    <button type="button" class="btn btn-info" id="{{char}}7">7</button>
+                </div>
+            </div>
+            <div class="col-sm-1">
+                <div class="d-flex justify-content-center">
+                    <button type="button" class="btn btn-info" id="{{char}}8">8</button>
+                    <button type="button" class="btn btn-info" id="{{char}}9">9</button>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+
+        <div class="row justify-content-center pt-5">
+            <div class="col-sm-1">
+                <p class="pos_fixed">H</p>
+            </div>
+            <div class="col-sm-1">
+                <div class="d-flex justify-content-center">
+                    <button type="button" class="btn btn-success" id="H1">1</button>
+                    <button type="button" class="btn btn-info" id="H2">2</button>
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <div class="d-flex justify-content-center">
+                    <button type="button" class="btn btn-info" id="H3">3</button>
+                    <button type="button" class="btn btn-info" id="H4">4</button>
+                    <button type="button" class="btn btn-info" id="H5">5</button>
+                    <button type="button" class="btn btn-info" id="H6">6</button>
+                    <button type="button" class="btn btn-info" id="H7">7</button>
+                </div>
+            </div>
+            <div class="col-sm-1">
+                <div class="d-flex justify-content-center">
+                    <button type="button" class="btn btn-info" id="H8">8</button>
+                    <button type="button" class="btn btn-info" id="H9">9</button>
+                </div>
+            </div>
         </div>
 
+        {% for char in "IJK"|list %}
+        <div class="row justify-content-center pt-2">
+            <div class="col-sm-1">
+                <p class="pos_fixed">{{char}}</p>
+            </div>
+            <div class="col-sm-1">
+                <div class="d-flex justify-content-center">
+                    <button type="button" class="btn btn-info" id="{{char}}1">1</button>
+                    <button type="button" class="btn btn-info" id="{{char}}2">2</button>
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <div class="d-flex justify-content-center">
+                    <button type="button" class="btn btn-info" id="{{char}}3">3</button>
+                    <button type="button" class="btn btn-info" id="{{char}}4">4</button>
+                    <button type="button" class="btn btn-info" id="{{char}}5">5</button>
+                    <button type="button" class="btn btn-info" id="{{char}}6">6</button>
+                    <button type="button" class="btn btn-info" id="{{char}}7">7</button>
+                </div>
+            </div>
+            <div class="col-sm-1">
+                <div class="d-flex justify-content-center">
+                    <button type="button" class="btn btn-info" id="{{char}}8">8</button>
+                    <button type="button" class="btn btn-info" id="{{char}}9">9</button>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!--Payment-->
+    <div id="PaymentsButton">
+        <button>Book Now.</button>
+    </div>
+
+    <!--Alternative Times on same day-->
     <div class="row pt-5">
-    <div class="col"><hr></div>
-    <div class="col-auto">Alternative Times</div>
-    <div class="col"><hr></div>
+        <div class="col">
+            <hr>
+        </div>
+        <div class="col-auto">Alternative Times</div>
+        <div class="col">
+            <hr>
+        </div>
     </div>
     <!--Insert list of times in the same day here-->
 </div>
@@ -54,4 +139,5 @@
 
 {% block scripts %}
 <script src="{{ url_for('bookings.static', filename='js/seating.js') }}"></script>
+
 {% endblock %}
