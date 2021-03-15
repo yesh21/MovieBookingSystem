@@ -52,8 +52,22 @@ def seat_book():
     return json.dumps({'status': 'OK'})
 
 
-@bookings_blueprint.route("/pay", methods=['GET'])
+@bookings_blueprint.route("/pay", methods=['GET', 'POST'])
 def payment():
     # Final Transaction
     payment_form = PaymentForm()
+    if payment_form.validate_on_submit():
+        # Form needs proper input here <<<
+
+        send_ticket()
+        flash("Thank you for booking with us, confirmation email will arrive soon!")
+        return redirect(get_redirect_url())
+
     return render_template('payment.html', seats=seats, title=m.name, times=v, form=payment_form)
+
+
+# Confirmation Email sent from this function
+def send_ticket():
+    # Ticket confirmation sent here
+
+    return None
