@@ -14,7 +14,7 @@ class NewMovieForm(FlaskForm):
 
     released = DateField('Released *', validators=[DataRequired()])
 
-    picture = FileField('Upload cover art *', validators=[DataRequired(message='Cover art is required'),
+    picture = FileField('Upload cover art *', validators=[DataRequired(message='Cover art is required.'),
                                                           FileAllowed(['jpg', 'jpeg', 'png'])])
 
     duration = IntegerField('Duration *', validators=[DataRequired()])

@@ -4,12 +4,6 @@ from flask import url_for
 
 
 class LogoutTestCase(UserBaseTestCase):
-    @classmethod
-    def setUpClass(cls):
-        # Only setup database once since database should not be affected by tests
-        cls.db_per_class = True
-        super().setUpClass()
-
     def test_logout_correct(self):
         with self.client:
             self.login_customerA()

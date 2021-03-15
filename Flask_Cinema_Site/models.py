@@ -95,7 +95,7 @@ class Viewing(db.Model):
     id = db.Column(db.Integer, unique=True, primary_key=True)
     # TODO Rename to datetime?
     time = db.Column(db.DateTime, nullable=False)
-    movie_id = db.Column(db.Integer, db.ForeignKey('movie.id'), unique=True)
+    movie_id = db.Column(db.Integer, db.ForeignKey('movie.id'))
 
     customer_viewings = db.relationship('CustomerViewing', backref='viewing', lazy=True)
     basket_viewing = db.relationship('BasketViewing', backref='customer', lazy=True)

@@ -69,11 +69,7 @@
 
 {% block scripts %}
     <script>
-        // Update star buttons and hidden rating value
-        $('.star_btn').on('click', function () {
-            let star_num = $(this).data('star-number');
-            $('#rating').val(star_num);
-
+        let update_stars = function (star_num) {
             // Update button colours
             $('#star_1').removeClass().addClass('py-1 px-2 star_btn btn-primary');
             $('#star_2').removeClass().addClass('py-1 px-2 star_btn btn-' + (star_num >= 2 ? 'primary' : 'dark'));
@@ -87,6 +83,17 @@
             $('#star_3').children('i').removeClass().addClass('bi bi-star' + (star_num >= 3 ? '-fill' : ''));
             $('#star_4').children('i').removeClass().addClass('bi bi-star' + (star_num >= 4 ? '-fill' : ''));
             $('#star_5').children('i').removeClass().addClass('bi bi-star' + (star_num >= 5 ? '-fill' : ''));
+        }
+
+        // Update star buttons and hidden rating value
+        $('.star_btn').on('click', function () {
+            let star_num = $(this).data('star-number');
+            $('#rating').val(star_num);
+            update_stars(star_num);
+        });
+
+        $(document).ready(function () {
+            update_stars($('#rating').val());
         });
     </script>
 {% endblock %}
