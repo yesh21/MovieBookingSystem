@@ -43,7 +43,7 @@ def view_specific():
 
 # Stores currently selected seats.
 @bookings_blueprint.route("/slot/seats", methods=['POST'])
-def seatbook():
+def seat_book():
     global seats
     seats = json.loads(request.data)
 
@@ -55,6 +55,6 @@ def seatbook():
 @bookings_blueprint.route("/pay", methods=['GET'])
 def payment():
     # Final Transaction
-    paymentForm = PaymentForm()
-    return render_template('payment.html', seats=seats, title=m.name, times=v, form=paymentForm)
+    payment_form = PaymentForm()
+    return render_template('payment.html', seats=seats, title=m.name, times=v, form=payment_form)
 
