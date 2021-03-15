@@ -2,12 +2,12 @@ from Flask_Cinema_Site import db
 from Flask_Cinema_Site.forms import SimpleForm
 from Flask_Cinema_Site.movie.forms import NewMovieForm, EditMovieForm
 from Flask_Cinema_Site.models import Movie, Viewing
-from Flask_Cinema_Site.helper_functions import get_redirect_url, save_picture, get_json_response
+from Flask_Cinema_Site.helper_functions import save_picture, delete_picture, get_json_response
 
-from flask import render_template, redirect, url_for, Blueprint, flash, request
+from flask import render_template, redirect, url_for, Blueprint, flash, request, abort
 from flask_api import status
 
-from sqlalchemy import func
+from sqlalchemy import func, asc
 from datetime import date, timedelta
 
 
@@ -29,14 +29,15 @@ def view_specific(movie_id):
     m = Movie.query.get(movie_id)
     if not m:
         flash(f'Movie with id [{movie_id}] not found', 'danger')
-        return redirect(get_redirect_url())
+        abort(404)
 
     viewing_days = []
     for i in range(7):
         d = date.today() + timedelta(days=i)
         viewings = Viewing.query\
             .filter(Viewing.movie_id == movie_id)\
-            .filter(func.date(Viewing.time) == d)\
+            .filter(func.date(Viewing.time) == d) \
+            .order_by(asc(Viewing.time))\
             .all()
         viewing_days.append((d, viewings))
     return render_template('view_specific_movie.html', title=m.name, movie=m, viewing_days=viewing_days)
@@ -51,7 +52,7 @@ def add():
         return render_template('add_movie.html', title='Add Movie', form=form)
 
     if not form.validate_on_submit():
-        return render_template('add_movie.html', title='Add Movie', form=form)
+        return render_template('add_movie.html', title='Add Movie', form=form), status.HTTP_400_BAD_REQUEST
 
     cover_art_filename = save_picture(form.picture.data, 'movie/static/cover_arts')
 
@@ -59,15 +60,18 @@ def add():
         name=form.name.data,
         overview=form.overview.data,
         released=form.released.data,
+        duration=form.duration.data,
         rating=form.rating.data,
         directors=form.directors.data,
         cast=form.cast_list.data,
         genres=form.genres.data,
-        cover_art_name=cover_art_filename
+        cover_art_name=cover_art_filename,
+        hidden=True
     )
     db.session.add(m)
     db.session.commit()
 
+    flash(f'Movie \'{m.name}\' added successfully', 'success')
     return redirect(url_for('movie.view_multiple'))
 
 
@@ -76,6 +80,9 @@ def edit(movie_id):
     # TODO Check user is manager
 
     m = Movie.query.get(movie_id)
+    if not m:
+        flash(f'Movie with id \'{movie_id}\' does not exist', 'danger')
+        abort(404)
 
     form = EditMovieForm()
     if request.method == 'GET':
@@ -95,11 +102,13 @@ def edit(movie_id):
 
     db.session.commit()
 
+    # Save picture / delete old one
     if form.picture.data:
-        # TODO delete picture
-        m.cover_art_filename = save_picture(form.picture.data, 'movie/static/cover_arts')
+        new_picture_name = save_picture(form.picture.data, 'movie', 'static', 'cover_arts')
+        delete_picture('movie', 'static', 'cover_arts', m.cover_art_name)
+        m.cover_art_name = new_picture_name
 
-    flash('Movie saved successfully', 'success')
+    flash(f'Movie \'{m.name}\' saved successfully', 'success')
     return redirect(url_for('movie.view_specific', movie_id=m.id))
 
 
@@ -153,10 +162,11 @@ def delete():
     if not m:
         return get_json_response(f'Movie with id \'{form.id.data}\' not found', status.HTTP_400_BAD_REQUEST)
 
+    delete_picture('movie', 'static', 'cover_arts', m.cover_art_name)
     db.session.delete(m)
     db.session.commit()
 
-    flash(f'Movie with id \'{form.id}\' successfully deleted', 'success')
+    flash(f'Movie with id \'{form.id.data}\' successfully deleted', 'success')
     return get_json_response(f'Movie with id \'{form.id.data}\' successfully deleted', status.HTTP_200_OK)
 
 
