@@ -28,10 +28,10 @@ def get_json_response(message, status_code):
     return jsonify(response), status_code
 
 
-def save_picture(picture, rel_folder_path):
+def save_picture(picture, *rel_folder_path):
     extension = os.path.splitext(picture.filename)[-1]
     name = secrets.token_hex(12) + extension
-    path = os.path.join(current_app.root_path, rel_folder_path, name)
+    path = os.path.join(current_app.root_path, *rel_folder_path, name)
 
     # output_size = (500, 500)
     pic = Image.open(picture)
@@ -42,6 +42,15 @@ def save_picture(picture, rel_folder_path):
     pic.save(path)
 
     return name
+
+
+def delete_picture(*rel_picture_path):
+    path = os.path.join(current_app.root_path, *rel_picture_path)
+    if not os.path.exists(path):
+        return False
+
+    os.remove(path)
+    return True
 
 
 def get_field_errors_html(errors):

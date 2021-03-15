@@ -5,9 +5,8 @@ sys.path.insert(0, os.path.dirname(__file__) + '/..')
 
 from Flask_Cinema_Site import db
 from Flask_Cinema_Site.models import Movie, Viewing
-from itertools import cycle
 
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 
 m1 = Movie(
     name='Black Widow',
@@ -48,19 +47,31 @@ m2 = Movie(
 db.session.add(m2)
 db.session.commit()
 
-# Add random times for each movie id
-Movies = Movie.query.all()
-hourShowing = [10, 12, 14, 16, 18]
-minuteShowing = [15, 45]
+# Add some times for each movie
+viewing_times = [
+    datetime.today().replace(hour=10, minute=0, second=0, microsecond=0),
+    datetime.today().replace(hour=14, minute=15, second=0, microsecond=0),
+    datetime.today().replace(hour=17, minute=30, second=0, microsecond=0),
+    datetime.today().replace(hour=19, minute=20, second=0, microsecond=0),
+    datetime.today().replace(hour=20, minute=45, second=0, microsecond=0)
+]
 
-cycleHour = cycle(hourShowing)
-cycleMinute = cycle(minuteShowing)
-viewingTimes = []
-for i in range(len(Movies)):
-    viewingTimes.append(datetime(2012, 3, 3, next(cycleHour), next(cycleMinute)))
+for m in Movie.query.all():
+    # Add viewings for the next 14 days
+    for day_num in range(14):
+        for viewing_time in viewing_times:
+            m.viewings.append(Viewing(
+                time=viewing_time + timedelta(days=day_num, minutes=20 * day_num)
+            ))
 
-for count, movie in enumerate(Movies):
-    viewing1 = Viewing(movie_id=movie.id, time=viewingTimes[count])
-    db.session.add(viewing1)
+        # Add extra same time viewings on fridays
+        if (datetime.today() + timedelta(days=day_num)).weekday() == 4:
+            m.viewings.append(Viewing(
+                time=viewing_times[2] + timedelta(days=day_num, minutes=20 * day_num)
+            ))
+
+            m.viewings.append(Viewing(
+                time=viewing_times[-1] + timedelta(days=day_num, minutes=20 * day_num)
+            ))
 
 db.session.commit()

@@ -1,0 +1,90 @@
+{% extends 'movies_base.html' %}
+
+{% block content %}
+    <section class="jumbotron bg-transparent text-center p-0">
+        <div class="container">
+            <h1 class="jumbotron-heading">Manage Movies</h1>
+        </div>
+    </section>
+
+    <div class="container">
+        <a href="{{ url_for('movie.add') }}">
+            <button class="btn btn-dark mb-3 w-100">Add new movie</button>
+        </a>
+
+        <table class="table bg-black">
+            <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Name</th>
+                <th scope="col">Released</th>
+                <th scope="col">Length (mins)</th>
+                <th scope="col">Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for m in movies %}
+                {% include("snippets/manage_movie_preview.html") %}
+            {% endfor %}
+            {% if movies|length == 0 %}
+                <tr>
+                    <th colspan="5">No movies found</th>
+                </tr>
+            {% endif %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        // Show hide
+        let show_movie_url = '{{ url_for('movie.show') }}';
+        let hide_movie_url = '{{ url_for('movie.hide') }}';
+
+        // Show movie
+        $('.show-movie-btn').on('click', function () {
+            let btn = $(this);
+            let params = {
+                'csrf_token': '{{ simple_form.csrf_token.current_token }}',
+                'id': btn.data('movie-id')
+            }
+            $.post(show_movie_url, params)
+                .done(function () {
+                    // Switch functionality
+                    btn.removeClass('show-movie-btn');
+                    btn.addClass('hide-movie-btn');
+                    btn.text('Hide');
+                })
+                .fail(function (data) {
+                    // Display error message as alert at top of page
+                    if (!('responseJSON' in data) || !('msg' in data.responseJSON))
+                        flash_message('Show movie failed', 'danger');
+                    flash_message(data.responseJSON['msg'], 'danger');
+                });
+        });
+
+        // Hide movie
+        $('.hide-movie-btn').on('click', function () {
+            let btn = $(this);
+            let params = {
+                'csrf_token': '{{ simple_form.csrf_token.current_token }}',
+                'id': btn.data('movie-id')
+            }
+            $.post(hide_movie_url, params)
+                .done(function () {
+                    // Switch functionality
+                    btn.removeClass('hide-movie-btn');
+                    btn.addClass('show-movie-btn');
+                    btn.text('Show');
+                })
+                .fail(function (data) {
+                    // Display error message as alert at top of page
+                    if (!('responseJSON' in data) || !('msg' in data.responseJSON))
+                        flash_message('Show movie failed', 'danger');
+                    flash_message(data.responseJSON['msg'], 'danger');
+                });
+        });
+
+    </script>
+{% endblock %}
