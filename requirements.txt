@@ -60,3 +60,5 @@ PyJWT==2.0.1
 # Werkzeug==1.0.1
 # WTForms==2.3.3
 # zipp==3.4.0
+
+WTForms~=2.3.3

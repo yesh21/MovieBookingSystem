@@ -2,3 +2,11 @@ hr{
     border: 5px solid red;
     border-top: 10px;
 }
+p.pos_fixed {
+    position: relative;
+    height: 100%;
+    margin: 0;
+    text-align:center;
+    font-style: oblique;
+    font-size: 25px;
+}
