@@ -1,4 +1,4 @@
-from flask import render_template, redirect, Blueprint, flash, request, url_for
+from flask import render_template, redirect, Blueprint, flash, request
 
 from Flask_Cinema_Site.bookings.forms import PaymentForm
 from Flask_Cinema_Site.helper_functions import get_redirect_url
@@ -57,4 +57,3 @@ def payment():
     # Final Transaction
     payment_form = PaymentForm()
     return render_template('payment.html', seats=seats, title=m.name, times=v, form=payment_form)
-
