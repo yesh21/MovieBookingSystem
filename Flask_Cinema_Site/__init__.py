@@ -1,7 +1,8 @@
+from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_mail import Mail
-from flask import Flask
+from flask_principal import Principal
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 from flask_admin.menu import MenuLink
@@ -9,7 +10,6 @@ from flask_cors import CORS
 
 app = Flask(__name__)
 # Load config
-CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
 if app.config['ENV'] == 'development':
     app.config.from_object('config.DevelopmentConfig')
@@ -21,6 +21,8 @@ else:
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
 mail = Mail(app)
+cors = CORS(app)
+principals = Principal(app)
 
 # Add administrative views here
 from .models import Customer, CustomerViewing, Basket, BasketViewing, Viewing,\
