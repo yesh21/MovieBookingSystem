@@ -8,6 +8,7 @@ def check_confirmed(func):
     def activateAccount(*args, **kwargs):
         if current_user.confirmed is False:
             flash('Please confirm your account!', 'warning')
+            print("hey")
             return redirect(url_for('user.activate'))
         return func(*args, **kwargs)
 
