@@ -3,6 +3,7 @@ from Flask_Cinema_Site.forms import SimpleForm
 from Flask_Cinema_Site.movie.forms import NewMovieForm, EditMovieForm
 from Flask_Cinema_Site.models import Movie, Viewing
 from Flask_Cinema_Site.helper_functions import save_picture, delete_picture, get_json_response
+from Flask_Cinema_Site.roles import manager_permission
 
 from flask import render_template, redirect, url_for, Blueprint, flash, request, abort, jsonify
 from flask_api import status
@@ -46,6 +47,7 @@ def view_specific(movie_id):
 
 
 @movies_blueprint.route('/add', methods=['GET', 'POST'])
+@manager_permission.require(status.HTTP_401_UNAUTHORIZED)
 def add():
     # TODO Check user is manager
 

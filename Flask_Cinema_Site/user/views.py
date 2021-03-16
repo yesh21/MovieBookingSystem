@@ -6,9 +6,10 @@ from .forms import LoginForm, SignupForm, ForgotPasswordForm, ResetPasswordForm,
     ChangePasswordForm, ChangeDetailsForm
 
 from Flask_Cinema_Site.decorators import check_confirmed
-from flask import render_template, Blueprint, flash, redirect, url_for, request
+from flask import render_template, Blueprint, flash, redirect, url_for, request, current_app, session
 from flask_login import LoginManager, login_user, logout_user, current_user, login_required
 from flask_api import status
+from flask_principal import identity_changed, Identity, AnonymousIdentity
 
 from datetime import datetime
 
@@ -100,14 +101,16 @@ def login():
         flash('Login failed. Provided details were incorrect.', 'danger')
         return render_template('login.html', title='Login', form=form), status.HTTP_400_BAD_REQUEST
 
-    # Login successful
-    login_user(u, form.remember.data)
-    flash('Login successful', 'success')
-
     # Update last login date time
     u.last_login = datetime.now()
     db.session.commit()
 
+    # Login successful
+    login_user(u, form.remember.data)
+    # Tell Flask-Principal the identity changed
+    identity_changed.send(current_app._get_current_object(), identity=Identity(user.id))
+
+    flash('Login successful', 'success')
     return redirect(get_redirect_url())
 
 
@@ -197,6 +200,13 @@ def logout():
     if not form.validate_on_submit():
         flash('Logout failed', 'danger')
         return redirect(url_for('home.home'))
+
+    # Remove session keys set by Flask-Principal
+    for key in ('identity.name', 'identity.auth_type'):
+        session.pop(key, None)
+
+    # Tell Flask-Principal the user is anonymous
+    identity_changed.send(current_app._get_current_object(), identity=AnonymousIdentity())
 
     logout_user()
     flash('Logout successful', 'success')
