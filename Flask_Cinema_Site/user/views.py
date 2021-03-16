@@ -108,7 +108,7 @@ def login():
     # Login successful
     login_user(u, form.remember.data)
     # Tell Flask-Principal the identity changed
-    identity_changed.send(current_app._get_current_object(), identity=Identity(user.id))
+    identity_changed.send(current_app._get_current_object(), identity=Identity(u.id))
 
     flash('Login successful', 'success')
     return redirect(get_redirect_url())
