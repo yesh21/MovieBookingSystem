@@ -9,16 +9,10 @@ from math import floor
 import jwt
 
 
-# class CustomerRole(db.Model):
-#     id = db.Column(db.Integer, primary_key=True)
-#     customer_id = db.Column(db.Integer, db.ForeignKey('customer.id'), unique=True, primary_key=True)
-#     role_id = db.Column(db.Integer, db.ForeignKey('role.id'), unique=True, primary_key=True)
-
-# Create many to many relationship join table
-customer_roles = db.Table('customer_roles',
-                          db.Column('customer_id', db.Integer, db.ForeignKey('customer.id'), nullable=False),
-                          db.Column('role_id', db.Integer, db.ForeignKey('role.id'), nullable=False)
-                          )
+class CustomerRole(db.Model):
+    __tablename__ = 'customer_role'
+    customer_id = db.Column(db.Integer, db.ForeignKey('customer.id'), unique=True, primary_key=True)
+    role_id = db.Column(db.Integer, db.ForeignKey('role.id'), unique=True, primary_key=True)
 
 
 class Customer(db.Model, UserMixin):
@@ -28,7 +22,7 @@ class Customer(db.Model, UserMixin):
     customer_viewings = db.relationship('CustomerViewing', backref='customer', lazy=True)
     basket = db.relationship('Basket', backref='customer', lazy=True)
 
-    roles = db.relationship('Role', secondary=customer_roles, backref=db.backref('customer_roles', lazy=True))
+    roles = db.relationship('Role', secondary='customer_role', backref=db.backref('customer_roles', lazy=True))
 
     # Data fields
     email = db.Column(db.String(320), nullable=False, unique=True)
