@@ -22,7 +22,13 @@ db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
 mail = Mail(app)
 cors = CORS(app)
+
+# User roles
 principals = Principal(app)
+from Flask_Cinema_Site.roles import customer_permission, manager_permission, admin_permission
+app.jinja_env.globals.update(is_customer=customer_permission.can,
+                             is_manager=manager_permission.can,
+                             is_admin=admin_permission.can)
 
 # Add administrative views here
 from .models import Customer, CustomerRole, Role, CustomerViewing, Basket, BasketViewing, Viewing,\
