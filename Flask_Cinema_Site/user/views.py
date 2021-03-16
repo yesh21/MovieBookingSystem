@@ -5,6 +5,7 @@ from Flask_Cinema_Site.forms import SimpleForm
 from .forms import LoginForm, SignupForm, ForgotPasswordForm, ResetPasswordForm, \
     ChangePasswordForm, ChangeDetailsForm
 
+from Flask_Cinema_Site.decorators import check_confirmed
 from flask import render_template, Blueprint, flash, redirect, url_for, request
 from flask_login import LoginManager, login_user, logout_user, current_user, login_required
 from flask_api import status
@@ -221,6 +222,7 @@ def render_manage_user(change_details_form=None, change_password_form=None,
 
 @user_blueprint.route('/manage')
 @login_required
+@check_confirmed
 def manage():
     return render_manage_user()
 
