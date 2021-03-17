@@ -14,7 +14,7 @@ class DeleteMovieTestCase(MovieBaseTestCase):
             self.login_managerA()
 
             params = dict(
-                id=self.mA.id,
+                id=self.movie_A.id,
                 csrf_token=self.csrf_token
             )
             res = self.client.post(url_for('movie.delete'), data=params, follow_redirects=True)
@@ -23,7 +23,7 @@ class DeleteMovieTestCase(MovieBaseTestCase):
             self.assertEqual(num_movies - 1, self.get_num_movies())
 
             # Check movie was deleted
-            m = Movie.query.get(self.mA.id)
+            m = Movie.query.get(self.movie_A.id)
             self.assertIsNone(m)
 
     # Fail
@@ -33,26 +33,26 @@ class DeleteMovieTestCase(MovieBaseTestCase):
             self.login_customerA()
 
             params = dict(
-                id=self.mA.id,
+                id=self.movie_A.id,
                 csrf_token=self.csrf_token
             )
             res = self.client.post(url_for('movie.delete'), data=params, follow_redirects=True)
 
-            # TODO
-            # self.assertEqual(num_movies, self.get_num_movies())
+            self.assert401(res)
+            self.assertEqual(num_movies, self.get_num_movies())
 
     def test_delete_movie_unauthenticated(self):
         with self.client:
             num_movies = self.get_num_movies()
 
             params = dict(
-                id=self.mA.id,
+                id=self.movie_A.id,
                 csrf_token=self.csrf_token
             )
             res = self.client.post(url_for('movie.delete'), data=params, follow_redirects=True)
 
-            # TODO
-            # self.assertEqual(num_movies, self.get_num_movies())
+            self.assert401(res)
+            self.assertEqual(num_movies, self.get_num_movies())
 
     def test_delete_movie_non_existent(self):
         with self.client:
@@ -87,7 +87,7 @@ class DeleteMovieTestCase(MovieBaseTestCase):
             self.login_managerA()
 
             params = dict(
-                id=self.mA.id
+                id=self.movie_A.id
             )
             res = self.client.post(url_for('movie.delete'), data=params, follow_redirects=True)
 
@@ -95,5 +95,5 @@ class DeleteMovieTestCase(MovieBaseTestCase):
             self.assertEqual(num_movies, self.get_num_movies())
 
             # Check movie still in db
-            m = Movie.query.get(self.mA.id)
+            m = Movie.query.get(self.movie_A.id)
             self.assertIsNotNone(m)

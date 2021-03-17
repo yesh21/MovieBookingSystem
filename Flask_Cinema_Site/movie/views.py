@@ -3,6 +3,7 @@ from Flask_Cinema_Site.forms import SimpleForm
 from Flask_Cinema_Site.movie.forms import NewMovieForm, EditMovieForm
 from Flask_Cinema_Site.models import Movie, Viewing
 from Flask_Cinema_Site.helper_functions import save_picture, delete_picture, get_json_response
+from Flask_Cinema_Site.roles import manager_permission
 
 from flask import render_template, redirect, url_for, Blueprint, flash, request, abort, jsonify
 from flask_api import status
@@ -33,6 +34,11 @@ def view_specific(movie_id):
         flash(f'Movie with id [{movie_id}] not found', 'danger')
         abort(404)
 
+    # If hidden movie and not manager
+    if m.hidden and not manager_permission.can():
+        flash(f'Movie with id [{movie_id}] not found', 'danger')
+        abort(404)
+
     viewing_days = []
     for i in range(7):
         d = date.today() + timedelta(days=i)
@@ -46,9 +52,8 @@ def view_specific(movie_id):
 
 
 @movies_blueprint.route('/add', methods=['GET', 'POST'])
+@manager_permission.require(status.HTTP_401_UNAUTHORIZED)
 def add():
-    # TODO Check user is manager
-
     form = NewMovieForm()
     if request.method == 'GET':
         return render_template('add_movie.html', title='Add Movie', form=form)
@@ -78,9 +83,8 @@ def add():
 
 
 @movies_blueprint.route('/<int:movie_id>/edit', methods=['GET', 'POST'])
+@manager_permission.require(status.HTTP_401_UNAUTHORIZED)
 def edit(movie_id):
-    # TODO Check user is manager
-
     m = Movie.query.get(movie_id)
     if not m:
         flash(f'Movie with id \'{movie_id}\' does not exist', 'danger')
@@ -116,9 +120,8 @@ def edit(movie_id):
 
 # Probably should use flak-api or flask-restful idk?
 @movies_blueprint.route('/hide', methods=['POST'])
+@manager_permission.require(status.HTTP_401_UNAUTHORIZED)
 def hide():
-    # TODO Check user is manager
-
     form = SimpleForm()
     if not form.validate_on_submit():
         return get_json_response('Error hide movie failed', status.HTTP_400_BAD_REQUEST)
@@ -135,9 +138,8 @@ def hide():
 
 # Probably should use flak-api or flask-restful idk?
 @movies_blueprint.route('/show', methods=['POST'])
+@manager_permission.require(status.HTTP_401_UNAUTHORIZED)
 def show():
-    # TODO Check user is manager
-
     form = SimpleForm()
     if not form.validate_on_submit():
         return get_json_response('Error show movie failed', status.HTTP_400_BAD_REQUEST)
@@ -153,9 +155,8 @@ def show():
 
 
 @movies_blueprint.route('/delete', methods=['POST'])
+@manager_permission.require(status.HTTP_401_UNAUTHORIZED)
 def delete():
-    # TODO Check user is manager
-
     form = SimpleForm()
     if not form.validate_on_submit():
         return get_json_response('Delete movie failed', status.HTTP_400_BAD_REQUEST)
@@ -173,9 +174,8 @@ def delete():
 
 
 @movies_blueprint.route('/manage', methods=['GET'])
+@manager_permission.require(status.HTTP_401_UNAUTHORIZED)
 def manage():
-    # TODO Check user is manager
-
     movies = Movie.query.all()
     return render_template('manage_movie.html', title='Manage Movies', movies=movies)
 

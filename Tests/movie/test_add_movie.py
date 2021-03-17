@@ -15,13 +15,14 @@ class AddMovieTestCase(MovieBaseTestCase):
     def test_add_movie_get_customer(self):
         with self.client:
             self.login_customerA()
-            # TODO
-            pass
+
+            res = self.client.get(url_for('movie.add'))
+            self.assert401(res)
 
     def test_add_movie_get_unauthenticated(self):
         with self.client:
-            # TODO
-            pass
+            res = self.client.get(url_for('movie.add'))
+            self.assert401(res)
 
     # POST
     def test_add_movie_post_manager(self):
@@ -45,8 +46,8 @@ class AddMovieTestCase(MovieBaseTestCase):
             params = self.get_correct_movie_params()
             res = self.client.post(url_for('movie.add'), data=params, follow_redirects=True)
 
-            # TODO
-            # self.assertEqual(num_movies, self.get_num_movies())
+            self.assert401(res)
+            self.assertEqual(num_movies, self.get_num_movies())
 
     def test_add_movie_post_unauthenticated(self):
         with self.client:
@@ -55,8 +56,8 @@ class AddMovieTestCase(MovieBaseTestCase):
             params = self.get_correct_movie_params()
             res = self.client.post(url_for('movie.add'), data=params, follow_redirects=True)
 
-            # TODO
-            # self.assertEqual(num_movies, self.get_num_movies())
+            self.assert401(res)
+            self.assertEqual(num_movies, self.get_num_movies())
 
     def test_add_movie_post_manager_invalid(self):
         with self.client:

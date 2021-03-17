@@ -4,8 +4,8 @@ $(function () {
 })
 
 // Flash message function for page javascript
-let flash_message = function(message, category) {
-    let new_msg = `<div class="alert alert-${ category }">${ message } </div>`;
+let flash_message = function (message, category) {
+    let new_msg = `<div class="alert alert-${category}">${message} </div>`;
     $('#flashContainer').append(new_msg);
 }
 
@@ -27,7 +27,7 @@ function getCookie(cname) {
     var name = cname + "=";
     var decodedCookie = decodeURIComponent(document.cookie);
     var ca = decodedCookie.split(';');
-    for(var i = 0; i <ca.length; i++) {
+    for (var i = 0; i < ca.length; i++) {
         var c = ca[i];
         while (c.charAt(0) == ' ') {
             c = c.substring(1);
@@ -40,12 +40,12 @@ function getCookie(cname) {
 }
 
 // Cookies warning
-$('#cookieDeny').on('click', function() {
+$('#cookieDeny').on('click', function () {
     $('#cookieAlert').addClass('d-none');
     setSessionCookie('allow_cookies', 1);
 });
 
-$('#cookieAccept').on('click', function() {
+$('#cookieAccept').on('click', function () {
     $('#cookieAlert').addClass('d-none');
     setCookie('allow_cookies', 1, 90);
     // Re-enable login remember me
@@ -59,3 +59,29 @@ $('#cookieAccept').on('click', function() {
 if (getCookie('allow_cookies') === '') {
     $('#cookieAlert').removeClass('d-none');
 }
+
+// Search
+$(function () {
+    $("#searchBox").autocomplete({
+        source: function (request, response) {
+            $.ajax({
+                type: "POST",
+                url: "http://localhost:5000/movie/search",
+                dataType: "json",
+                cache: false,
+                data: {
+                    q: request.term
+                },
+                success: function (data) {
+                    //alert(data);
+                    //console.log(data);
+                    response(data);
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.log(textStatus + " " + errorThrown);
+                }
+            });
+        },
+        minLength: 2
+    });
+});

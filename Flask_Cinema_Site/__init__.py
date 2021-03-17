@@ -1,7 +1,8 @@
+from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_mail import Mail
-from flask import Flask
+from flask_principal import Principal
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 from flask_admin.menu import MenuLink
@@ -9,7 +10,6 @@ from flask_cors import CORS
 
 app = Flask(__name__)
 # Load config
-CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
 if app.config['ENV'] == 'development':
     app.config.from_object('config.DevelopmentConfig')
@@ -21,14 +21,24 @@ else:
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
 mail = Mail(app)
+cors = CORS(app)
+
+# User roles
+principals = Principal(app)
+from Flask_Cinema_Site.roles import customer_permission, manager_permission, admin_permission
+app.jinja_env.globals.update(is_customer=customer_permission.can,
+                             is_manager=manager_permission.can,
+                             is_admin=admin_permission.can)
 
 # Add administrative views here
-from .models import Customer, CustomerViewing, Basket, BasketViewing, Viewing,\
+from .models import Customer, CustomerRole, Role, CustomerViewing, Basket, BasketViewing, Viewing,\
     Movie, ViewingSeat, Seat, Theatre
 
 admin = Admin(app, name='microblog', template_mode='bootstrap4')
 admin.add_link(MenuLink(name='Logout', category='', url="/"))
 admin.add_view(ModelView(Customer, db.session))
+admin.add_view(ModelView(CustomerRole, db.session))
+admin.add_view(ModelView(Role, db.session))
 admin.add_view(ModelView(CustomerViewing, db.session))
 admin.add_view(ModelView(Basket, db.session))
 admin.add_view(ModelView(BasketViewing, db.session))
@@ -57,7 +67,9 @@ def inject_simple_form():
     return dict(simple_form=SimpleForm())
 
 
-# Register blueprints
+# Register blueprints / views
+from Flask_Cinema_Site.errors.views import unauthorized, not_found
+
 from Flask_Cinema_Site.home.views import home_blueprint
 app.register_blueprint(home_blueprint)
 

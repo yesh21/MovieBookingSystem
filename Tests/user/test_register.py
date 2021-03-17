@@ -49,8 +49,8 @@ class RegisterTestCase(UserBaseTestCase):
             params = dict(
                 first_name='first',
                 last_name='last',
-                username=self.cA.username,
-                email=self.cA.email,
+                username=self.customer_A.username,
+                email=self.customer_A.email,
                 password='password',
                 password_confirm='password',
                 consent=True,
@@ -59,11 +59,11 @@ class RegisterTestCase(UserBaseTestCase):
             res = self.client.post(url_for('user.signup'), data=params, follow_redirects=True)
 
             self.assert400(res)
-            self.assertIn(f'Username \'{self.cA.username}\' already exists'.encode(), res.data)
-            self.assertIn(f'Email \'{self.cA.email}\' already exists'.encode(), res.data)
+            self.assertIn(f'Username \'{self.customer_A.username}\' already exists'.encode(), res.data)
+            self.assertIn(f'Email \'{self.customer_A.email}\' already exists'.encode(), res.data)
 
             users = Customer.query.filter_by(
-                email=self.cA.email
+                email=self.customer_A.email
             ).all()
             self.assertTrue(len(users) == 1)
 
