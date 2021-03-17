@@ -3,12 +3,11 @@ from Flask_Cinema_Site.forms import SimpleForm
 from Flask_Cinema_Site.movie.forms import NewMovieForm, EditMovieForm
 from Flask_Cinema_Site.models import Movie, Viewing
 from Flask_Cinema_Site.helper_functions import save_picture, delete_picture, get_json_response
-from Flask_Cinema_Site.roles import manager_permission, admin_permission
+from Flask_Cinema_Site.roles import manager_permission
 
 from flask import render_template, redirect, url_for, Blueprint, flash, request, abort, jsonify
 from flask_api import status
 from flask_cors import cross_origin
-from flask_principal import PermissionDenied
 
 import sqlite3 as sql
 from sqlalchemy import func, asc
@@ -32,6 +31,11 @@ def view_multiple():
 def view_specific(movie_id):
     m = Movie.query.get(movie_id)
     if not m:
+        flash(f'Movie with id [{movie_id}] not found', 'danger')
+        abort(404)
+
+    # If hidden movie and not manager
+    if m.hidden and not manager_permission.can():
         flash(f'Movie with id [{movie_id}] not found', 'danger')
         abort(404)
 

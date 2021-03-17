@@ -19,8 +19,8 @@ class LoginTestCase(UserBaseTestCase):
     def test_login_correct_redirect(self):
         with self.client:
             params = dict(
-                email=self.cA.email,
-                password=self.cA.plain_test_password,
+                email=self.customer_A.email,
+                password=self.customer_A.plain_test_password,
                 csrf_token=self.csrf_token
             )
             res = self.client.post(url_for('user.login', next=url_for('user.manage')), data=params)
@@ -34,27 +34,27 @@ class LoginTestCase(UserBaseTestCase):
 
     def test_login_invalid_email(self):
         with self.client:
-            res = self.login('not an email', self.cA.plain_test_password)
+            res = self.login('not an email', self.customer_A.plain_test_password)
             self.assert400(res)
             self.assertIn(b'Invalid email', res.data)
 
     def test_login_not_registered_email(self):
         with self.client:
-            res = self.login('not.registered@example.com', self.cA.plain_test_password)
+            res = self.login('not.registered@example.com', self.customer_A.plain_test_password)
             self.assert400(res)
             self.assertIn(b'Login failed', res.data)
 
     def test_login_incorrect_password(self):
         with self.client:
-            res = self.login(self.cA.email, 'wrong password')
+            res = self.login(self.customer_A.email, 'wrong password')
             self.assert400(res)
             self.assertIn(b'Login failed', res.data)
 
     def test_login_no_csrf(self):
         with self.client:
             params = dict(
-                email=self.cA.email,
-                password=self.cA.plain_test_password
+                email=self.customer_A.email,
+                password=self.customer_A.plain_test_password
             )
             res = self.client.post(url_for('user.login'), data=params)
             self.assert400(res)
