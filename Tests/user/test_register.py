@@ -1,6 +1,6 @@
 from Tests.user.base_user import UserBaseTestCase
 
-from Flask_Cinema_Site.models import Customer
+from Flask_Cinema_Site.models import User
 
 from flask import url_for
 
@@ -36,7 +36,7 @@ class RegisterTestCase(UserBaseTestCase):
             self.assert200(res)
             self.assert_message_flashed('New user \'username\' was successfully created', 'success')
 
-            u = Customer.query.filter_by(
+            u = User.query.filter_by(
                 email='email@example.com'
             ).first()
             self.assertEqual(u.first_name, 'first')
@@ -62,7 +62,7 @@ class RegisterTestCase(UserBaseTestCase):
             self.assertIn(f'Username \'{self.customer_A.username}\' already exists'.encode(), res.data)
             self.assertIn(f'Email \'{self.customer_A.email}\' already exists'.encode(), res.data)
 
-            users = Customer.query.filter_by(
+            users = User.query.filter_by(
                 email=self.customer_A.email
             ).all()
             self.assertTrue(len(users) == 1)
@@ -81,12 +81,12 @@ class RegisterTestCase(UserBaseTestCase):
             )
             res = self.client.post(url_for('user.signup'), data=params, follow_redirects=True)
             self.assert400(res)
-            self.assertIn(f'Field must be between 3 and {Customer.first_name.type.length}'
+            self.assertIn(f'Field must be between 3 and {User.first_name.type.length}'
                           f' characters long.'.encode(), res.data)
             self.assertIn(b'Invalid email address', res.data)
             self.assertIn(b'Passwords must match', res.data)
 
-            u = Customer.query.filter_by(
+            u = User.query.filter_by(
                 email='not an email'
             ).first()
             self.assertIsNone(u)
@@ -105,7 +105,7 @@ class RegisterTestCase(UserBaseTestCase):
             res = self.client.post(url_for('user.signup'), data=params, follow_redirects=True)
             self.assert400(res)
 
-            u = Customer.query.filter_by(
+            u = User.query.filter_by(
                 email='not an email'
             ).first()
             self.assertIsNone(u)

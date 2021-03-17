@@ -1,7 +1,7 @@
 from flask_testing import TestCase
 
 from Flask_Cinema_Site import app, db
-from Flask_Cinema_Site.models import Customer, Movie, Viewing, Role
+from Flask_Cinema_Site.models import User, Movie, Viewing, Role
 from Flask_Cinema_Site.forms import SimpleForm
 
 from flask import url_for, current_app
@@ -29,7 +29,7 @@ class BaseTestCase(TestCase):
 
         # Generate csrf token in session
         with self.client:
-            self.client.get('/')
+            self.client.get(url_for('user.login'))
         # Get csrf token
         self.csrf_token = SimpleForm().csrf_token.current_token
 
@@ -58,22 +58,22 @@ class BaseTestCase(TestCase):
     def add_customers(self):
         customer_role = Role.query.filter_by(name='customer').first()
 
-        self.customer_A = Customer(
+        self.customer_A = User(
             username='CustomerA',
-            first_name='First',
-            last_name='Last',
-            email='customerA@aaronrosser.xyz',
+            first_name='FirstA',
+            last_name='LastA',
+            email='customerA@example.com',
             confirmed=True
         )
         self.customer_A.plain_test_password = 'customerA'
         self.customer_A.set_password(self.customer_A.plain_test_password)
         customer_role.users.append(self.customer_A)
 
-        self.customer_B = Customer(
+        self.customer_B = User(
             username='CustomerB',
-            first_name='First',
-            last_name='Last',
-            email='customerB@aaronrosser.xyz',
+            first_name='FirstB',
+            last_name='LastB',
+            email='customerB@example.com',
             confirmed=True
         )
         self.customer_B.plain_test_password = 'customerB'
@@ -85,22 +85,22 @@ class BaseTestCase(TestCase):
     def add_managers(self):
         manager_role = Role.query.filter_by(name='manager').first()
 
-        self.manager_A = Customer(
+        self.manager_A = User(
             username='ManagerA',
-            first_name='First',
-            last_name='Last',
-            email='managerA@aaronrosser.xyz',
+            first_name='FirstA',
+            last_name='LastA',
+            email='managerA@example.com',
             confirmed=True
         )
         self.manager_A.plain_test_password = 'managerA'
         self.manager_A.set_password(self.manager_A.plain_test_password)
         manager_role.users.append(self.manager_A)
 
-        self.manager_B = Customer(
+        self.manager_B = User(
             username='ManagerB',
-            first_name='First',
-            last_name='Last',
-            email='managerB@aaronrosser.xyz',
+            first_name='FirstB',
+            last_name='LastB',
+            email='managerB@example.com',
             confirmed=True
         )
         self.manager_B.plain_test_password = 'managerB'
