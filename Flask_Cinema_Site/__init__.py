@@ -31,20 +31,16 @@ app.jinja_env.globals.update(is_customer=customer_permission.can,
                              is_admin=admin_permission.can)
 
 # Add administrative views here
-from .models import User, UserRole, Role, UserViewing, Basket, BasketViewing, Viewing,\
-    Movie, ViewingSeat, Seat, Theatre
+from .models import User, UserRole, Role, Viewing, Transaction, Movie, Seat, Theatre
 
 admin = Admin(app, name='microblog', template_mode='bootstrap4')
 admin.add_link(MenuLink(name='Logout', category='', url="/"))
 admin.add_view(ModelView(User, db.session, endpoint='user_'))
 admin.add_view(ModelView(UserRole, db.session))
 admin.add_view(ModelView(Role, db.session))
-admin.add_view(ModelView(UserViewing, db.session))
-admin.add_view(ModelView(Basket, db.session))
-admin.add_view(ModelView(BasketViewing, db.session))
+admin.add_view(ModelView(Transaction, db.session))
 admin.add_view(ModelView(Viewing, db.session))
 admin.add_view(ModelView(Movie, db.session, endpoint='movies'))
-admin.add_view(ModelView(ViewingSeat, db.session))
 admin.add_view(ModelView(Seat, db.session))
 admin.add_view(ModelView(Theatre, db.session))
 # set optional bootswatch theme
