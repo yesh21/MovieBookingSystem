@@ -9,6 +9,14 @@ from math import floor
 import jwt
 
 
+class Role(db.Model):
+    __tablename__ = 'role'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(20), nullable=False, unique=True)
+
+    users = db.relationship('User', secondary='user_role', back_populates='roles', sync_backref=False)
+
+
 class UserRole(db.Model):
     __tablename__ = 'user_role'
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
@@ -19,11 +27,10 @@ class User(db.Model, UserMixin):
     __tablename__ = "user"
     id = db.Column(db.Integer, primary_key=True)
 
-    user_viewings = db.relationship('UserViewing', backref='user', lazy=True)
-    basket = db.relationship('Basket', backref='user', lazy=True)
+    transactions = db.relationship('Transaction', backref='user', lazy=True)
 
-    roles = db.relationship('Role', secondary='user_role', backref=db.backref('user_roles', lazy=True),
-                            viewonly=True, sync_backref=False)
+    # Readonly list
+    roles = db.relationship('Role', secondary='user_role', back_populates='users', viewonly=True)
 
     # Data fields
     email = db.Column(db.String(320), nullable=False, unique=True)
@@ -79,43 +86,35 @@ class User(db.Model, UserMixin):
         self.password_hash = bcrypt.generate_password_hash(password).decode('utf-8')
 
 
-class Role(db.Model):
-    __tablename__ = 'role'
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(20), nullable=False)
+class Transaction(db.Model):
+    __tablename__ = "transaction"
+    id = db.Column(db.Integer, unique=True, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
-    users = db.relationship('User', secondary='user_role', backref=db.backref('user_roles', lazy=True),
-                            sync_backref=False)
+    seats = db.relationship('Seat', backref='transaction', lazy=True)
 
+    # Readonly list
+    viewings = db.relationship('Viewing', secondary='seat', back_populates='transactions', viewonly=True,
+                               sync_backref=False)
 
-class UserViewing(db.Model):
-    __tablename__ = "user_viewing"
-    transaction_id = db.Column(db.Integer, unique=True, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), unique=True, primary_key=True)
-    viewing_id = db.Column(db.Integer, db.ForeignKey('viewing.id'), unique=True, primary_key=True)
-
-
-class Basket(db.Model):
-    __tablename__ = "basket"
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), unique=True, primary_key=True)
-    basket_viewing = db.relationship('BasketViewing', backref='basket', lazy=True)
-
-
-class BasketViewing(db.Model):
-    __tablename__ = "basket_viewing"
-    user_basket_id = db.Column(db.Integer, db.ForeignKey('basket.user_id'), unique=True, primary_key=True)
-    viewing_id = db.Column(db.Integer, db.ForeignKey('viewing.id'), unique=True, primary_key=True)
+    datetime = db.Column(db.DateTime, nullable=False, default=datetime.now())
 
 
 class Viewing(db.Model):
     __tablename__ = "viewing"
     id = db.Column(db.Integer, unique=True, primary_key=True)
+    movie_id = db.Column(db.Integer, db.ForeignKey('movie.id'))
+    theatre_id = db.Column(db.Integer, db.ForeignKey('theatre.id'))
+
+    seats = db.relationship('Seat', backref='viewing', lazy=True)
+
+    # Readonly list
+    transactions = db.relationship('Transaction', secondary='seat', back_populates='viewings', viewonly=True,
+                                   sync_backref=False)
+
     # TODO Rename to datetime?
     time = db.Column(db.DateTime, nullable=False)
-    movie_id = db.Column(db.Integer, db.ForeignKey('movie.id'))
-
-    user_viewings = db.relationship('UserViewing', backref='viewing', lazy=True)
-    basket_viewing = db.relationship('BasketViewing', backref='user', lazy=True)
+    price = db.Column(db.Float, nullable=False)
 
 
 class Movie(db.Model):
@@ -154,23 +153,18 @@ class Movie(db.Model):
         return Markup(stars)
 
 
-class ViewingSeat(db.Model):
-    __tablename__ = "viewing_seat"
-    seat_id = db.Column(db.Integer, db.ForeignKey('seat.id'), unique=True, primary_key=True)
-    viewing_id = db.Column(db.Integer, db.ForeignKey('viewing.id'), unique=True, primary_key=True)
-
-
 class Seat(db.Model):
     __tablename__ = "seat"
-    id = db.Column(db.Integer, unique=True, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
+    viewing_id = db.Column(db.Integer, db.ForeignKey('viewing.id'), nullable=False)
+    transaction_id = db.Column(db.Integer, db.ForeignKey('transaction.id'), nullable=True)
 
-    theatre_id = db.Column(db.Integer, db.ForeignKey('theatre.id'), unique=True, primary_key=True)
-    # theatre = db.relationship('Theatre', backref='seats', lazy=True)
+    # Needs to be unique to viewing only
+    seat_number = db.Column(db.String(10), nullable=False)
 
 
 class Theatre(db.Model):
     __tablename__ = "theatre"
     id = db.Column(db.Integer, unique=True, primary_key=True)
 
-    # seat_id = db.Column(db.Integer, db.ForeignKey('seat.id'), unique=True)
-    seats = db.relationship('Seat', backref='theatre', lazy=True)
+    viewings = db.relationship('Viewing', backref='viewing', lazy=True)
