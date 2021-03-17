@@ -1,5 +1,5 @@
 from Flask_Cinema_Site import app, db, models, helper_functions
-from Flask_Cinema_Site.models import Customer
+from Flask_Cinema_Site.models import User, Role
 from Flask_Cinema_Site.helper_functions import get_redirect_url
 from Flask_Cinema_Site.forms import SimpleForm
 from .forms import LoginForm, SignupForm, ForgotPasswordForm, ResetPasswordForm, \
@@ -24,8 +24,8 @@ login_manager.login_view = 'user.login'
 
 
 @login_manager.user_loader
-def load_user(customer_id):
-    return Customer.query.get(int(customer_id))
+def load_user(user_id):
+    return User.query.get(int(user_id))
 
 
 def send_password_reset_email(user):
@@ -41,7 +41,7 @@ def send_password_reset_email(user):
 
 @app.route('/reset_password/<token>', methods=['GET', 'POST'])
 def reset_password(token):
-    u = Customer.verify_reset_password_token(token)
+    u = User.verify_reset_password_token(token)
     if not u:
         flash('Invalid reset password link', 'danger')
         return redirect(get_redirect_url())
@@ -64,21 +64,20 @@ def forgot_password():
         return redirect(get_redirect_url())
 
     form = ForgotPasswordForm()
-    if form.validate_on_submit():
-        customer = db.session.query(models.Customer) \
-            .filter_by(email=form.email.data).first()
-        if not customer:
-            flash('Unknown email has been entered.', 'danger')
-        else:
-            send_password_reset_email(customer)
-            flash('A link has been sent to your email to reset your password'
-                  ', the link will expire after 24 hours.', 'success')
+    if request.method == 'GET':
+        return render_template('forgot_password.html', title='Reset password', form=form)
+
+    if not form.validate_on_submit():
+        return render_template('forgot_password.html', title='Reset password', form=form), status.HTTP_400_BAD_REQUEST
+
+    u = db.session.query(models.User).filter_by(email=form.email.data).first()
+    if not u:
+        flash('Unknown email has been entered.', 'danger')
+        return render_template('forgot_password.html', title='Reset password', form=form)
+
+    send_password_reset_email(u)
+    flash('A link has been sent to your email to reset your password, the link will expire after 24 hours.', 'success')
     return render_template('forgot_password.html', title='Reset password', form=form)
-
-
-@user_blueprint.route('/', methods=['GET'])
-def user():
-    return render_template('user.html', title='User')
 
 
 @user_blueprint.route('/login', methods=['GET', 'POST'])
@@ -96,7 +95,7 @@ def login():
         return render_template('login.html', title='Login', form=form), status.HTTP_400_BAD_REQUEST
 
     # Check for user
-    u = Customer.query.filter_by(email=form.email.data).first()
+    u = User.query.filter_by(email=form.email.data).first()
     if not u or not u.check_password(form.password.data):
         flash('Login failed. Provided details were incorrect.', 'danger')
         return render_template('login.html', title='Login', form=form), status.HTTP_400_BAD_REQUEST
@@ -128,13 +127,16 @@ def signup():
         return render_template('signup.html', title='Sign Up', form=form), status.\
             HTTP_400_BAD_REQUEST
 
-    new_user = models.Customer(first_name=form.first_name.data,
-                               last_name=form.last_name.data,
-                               username=form.username.data,
-                               email=form.email.data)
+    new_user = models.User(first_name=form.first_name.data,
+                           last_name=form.last_name.data,
+                           username=form.username.data,
+                           email=form.email.data,
+                           confirmed=False)
     new_user.set_password(form.password.data)
 
-    db.session.add(new_user)
+    # Add user as customer
+    customer_role = Role.query.filter_by(name='customer').first()
+    customer_role.users.append(new_user)
     db.session.commit()
 
     # Generate and send confirmation email
@@ -155,15 +157,15 @@ def signup():
 
 @user_blueprint.route('/confirm/<token>')
 def confirm_email(token):
-    u = Customer.verify_email_confirm_token(token)
+    u = User.verify_email_confirm_token(token)
     if u.confirmed:
         flash("Account already confirmed.", "danger")
-        return redirect(get_redirect_url())
+        return redirect('home.home')
 
     u.confirmed = True
     db.session.commit()
     flash(f'User \'{u.username}\' has been successfully confirmed', "success")
-    return redirect(get_redirect_url())
+    return redirect('home.home')
 
 
 @login_required

@@ -1,5 +1,5 @@
 from Flask_Cinema_Site import db, models
-from Flask_Cinema_Site.models import Customer
+from Flask_Cinema_Site.models import User
 
 from flask_login import current_user
 from flask_wtf import FlaskForm
@@ -18,22 +18,14 @@ class LoginForm(FlaskForm):
 
 
 class SignupForm(FlaskForm):
-    first_name = StringField('First name',
-                             validators=[DataRequired(),
-                                         Length(min=3, max=Customer.first_name.type.length)])
-    last_name = StringField('Last name',
-                            validators=[DataRequired(),
-                                        Length(min=3, max=Customer.last_name.type.length)])
+    first_name = StringField('First name', validators=[DataRequired(), Length(min=3, max=User.first_name.type.length)])
+    last_name = StringField('Last name', validators=[DataRequired(), Length(min=3, max=User.last_name.type.length)])
 
-    username = StringField('Username',
-                           validators=[DataRequired(),
-                                       Length(min=3, max=Customer.username.type.length)])
-    email = StringField('Email', validators=[DataRequired(), Email(),
-                                             Length(min=3, max=Customer.email.type.length)])
+    username = StringField('Username', validators=[DataRequired(), Length(min=3, max=User.username.type.length)])
+    email = StringField('Email', validators=[DataRequired(), Email(), Length(min=3, max=User.email.type.length)])
 
     password = PasswordField('Password', validators=[DataRequired(), Length(min=3),
-                                                     EqualTo('password_confirm',
-                                                             message='Passwords must match')])
+                                                     EqualTo('password_confirm', message='Passwords must match')])
     password_confirm = PasswordField('Confirm Password', validators=[DataRequired()])
 
     consent = BooleanField('I consent for storing all my data securely, including passwords',
@@ -43,8 +35,8 @@ class SignupForm(FlaskForm):
     def validate_username(self, username):
         excluded_chars = " *?!'^+%&/()=}][{$#"
         userdata = db.session\
-            .query(models.Customer)\
-            .filter(models.Customer.username.ilike(self.username.data))\
+            .query(models.User)\
+            .filter(models.User.username.ilike(self.username.data))\
             .first()
         if userdata:
             raise ValidationError(f"Username '{userdata.username}' already exists")
@@ -55,8 +47,8 @@ class SignupForm(FlaskForm):
 
     def validate_email(self, email):
         userdata = db.session\
-            .query(models.Customer)\
-            .filter(models.Customer.email.ilike(self.email.data))\
+            .query(models.User)\
+            .filter(models.User.email.ilike(self.email.data))\
             .first()
         if userdata:
             raise ValidationError(f"Email '{userdata.email}' already exists")
@@ -70,8 +62,7 @@ class ForgotPasswordForm(FlaskForm):
 
 class ResetPasswordForm(FlaskForm):
     password = PasswordField('New Password', validators=[DataRequired()])
-    password2 = PasswordField('Confirm New Password', validators=[DataRequired(),
-                                                                  EqualTo('password')])
+    password2 = PasswordField('Confirm New Password', validators=[DataRequired(), EqualTo('password')])
     submit = SubmitField('Reset password')
 
 
@@ -79,8 +70,7 @@ class ChangePasswordForm(FlaskForm):
     current_password = PasswordField('Current Password', validators=[DataRequired()])
 
     password = PasswordField('New Password', validators=[DataRequired()])
-    password_confirm = PasswordField('Confirm New Password',
-                                     validators=[DataRequired(), EqualTo('password')])
+    password_confirm = PasswordField('Confirm New Password', validators=[DataRequired(), EqualTo('password')])
 
     submit = SubmitField('Save')
 
@@ -92,17 +82,10 @@ class ChangePasswordForm(FlaskForm):
 
 
 class ChangeDetailsForm(FlaskForm):
-    first_name = StringField('Name',
-                             validators=[DataRequired(),
-                                         Length(min=2, max=Customer.first_name.type.length)])
-    last_name = StringField('Name',
-                            validators=[DataRequired(),
-                                        Length(min=2, max=Customer.last_name.type.length)])
-    username = StringField('Username',
-                           validators=[DataRequired(),
-                                       Length(min=2, max=Customer.username.type.length)])
-    email = EmailField('Email', validators=[DataRequired(),
-                                            Length(max=Customer.email.type.length), Email()])
+    first_name = StringField('First name', validators=[DataRequired(), Length(min=3, max=User.first_name.type.length)])
+    last_name = StringField('Last name', validators=[DataRequired(), Length(min=3, max=User.last_name.type.length)])
+    username = StringField('Username', validators=[DataRequired(), Length(min=3, max=User.username.type.length)])
+    email = EmailField('Email', validators=[DataRequired(), Length(max=User.email.type.length), Email()])
 
     submit = SubmitField('Save')
 
@@ -111,7 +94,7 @@ class ChangeDetailsForm(FlaskForm):
         if email.data == current_user.email:
             return
 
-        u = Customer.query.filter_by(email=email.data).first()
+        u = User.query.filter_by(email=email.data).first()
         if not u:
             return
         raise ValidationError('Email already registered to an account.')
@@ -121,7 +104,7 @@ class ChangeDetailsForm(FlaskForm):
         if username.data == current_user.username:
             return
 
-        u = Customer.query.filter_by(username=username.data).first()
+        u = User.query.filter_by(username=username.data).first()
         if not u:
             return
         raise ValidationError('Username already registered to an account.')
