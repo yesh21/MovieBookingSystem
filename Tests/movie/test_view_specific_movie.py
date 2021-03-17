@@ -13,24 +13,24 @@ class ViewSpecificMovieTestCase(MovieBaseTestCase):
     # Success
     def test_view_specific_details(self):
         with self.client:
-            res = self.client.get(url_for('movie.view_specific', movie_id=self.mA.id))
+            res = self.client.get(url_for('movie.view_specific', movie_id=self.movie_A.id))
 
             self.assert200(res)
 
             # Check movie details
-            self.assertIn(self.mA.name.encode(), res.data)
-            self.assertIn(self.mA.overview.encode(), res.data)
-            self.assertIn(self.mA.cover_art_name.encode(), res.data)
-            self.assertIn(self.mA.directors.encode(), res.data)
-            self.assertIn(self.mA.cast.encode(), res.data)
-            self.assertIn(self.mA.genres.encode(), res.data)
+            self.assertIn(self.movie_A.name.encode(), res.data)
+            self.assertIn(self.movie_A.overview.encode(), res.data)
+            self.assertIn(self.movie_A.cover_art_name.encode(), res.data)
+            self.assertIn(self.movie_A.directors.encode(), res.data)
+            self.assertIn(self.movie_A.cast.encode(), res.data)
+            self.assertIn(self.movie_A.genres.encode(), res.data)
 
-            self.assertIn(self.mA.released.strftime("%B %d, %Y").encode(), res.data)
-            self.assertIn(str(self.mA.duration).encode(), res.data)
+            self.assertIn(self.movie_A.released.strftime("%B %d, %Y").encode(), res.data)
+            self.assertIn(str(self.movie_A.duration).encode(), res.data)
 
             # Check movie viewings
             viewings = Viewing.query\
-                .filter(Viewing.movie_id == self.mA.id)\
+                .filter(Viewing.movie_id == self.movie_A.id)\
                 .filter(func.date(Viewing.time) >= date.today())\
                 .filter(func.date(Viewing.time) <= date.today() + timedelta(days=6))\
                 .all()
@@ -41,7 +41,7 @@ class ViewSpecificMovieTestCase(MovieBaseTestCase):
     def test_view_specific_buttons_manager(self):
         with self.client:
             self.login_managerA()
-            res = self.client.get(url_for('movie.view_specific', movie_id=self.mA.id))
+            res = self.client.get(url_for('movie.view_specific', movie_id=self.movie_A.id))
 
             self.assert200(res)
 
@@ -53,9 +53,9 @@ class ViewSpecificMovieTestCase(MovieBaseTestCase):
     def test_view_specific_hidden_manager(self):
         with self.client:
             self.login_managerA()
-            self.mA.hidden = True
+            self.movie_A.hidden = True
             db.session.commit()
-            res = self.client.get(url_for('movie.view_specific', movie_id=self.mA.id))
+            res = self.client.get(url_for('movie.view_specific', movie_id=self.movie_A.id))
 
             self.assert200(res)
 
@@ -66,42 +66,38 @@ class ViewSpecificMovieTestCase(MovieBaseTestCase):
 
             self.assert404(res)
 
+    def view_specific_asset_no_buttons(self):
+        res = self.client.get(url_for('movie.view_specific', movie_id=self.movie_A.id))
+
+        self.assert200(res)
+
+        self.assertNotIn(b'Edit movie', res.data)
+        self.assertNotIn(b'Hide movie', res.data)
+        self.assertNotIn(b'Show movie', res.data)
+        self.assertNotIn(b'Delete movie', res.data)
+
     def test_view_specific_buttons_customer(self):
         with self.client:
             self.login_customerA()
-            res = self.client.get(url_for('movie.view_specific', movie_id=self.mA.id))
-
-            self.assert200(res)
-
-            # TODO
-            # self.assertNotIn(b'Edit movie', res.data)
-            # self.assertNotIn(b'Hide movie', res.data)
-            # self.assertNotIn(b'Show movie', res.data)
-            # self.assertNotIn(b'Delete movie', res.data)
-
-    def test_view_specific_hidden_customer(self):
-        with self.client:
-            self.login_customerA()
-            res = self.client.get(url_for('movie.view_specific', movie_id=self.mA.id))
-
-            # TODO
-            # self.assert404(res)
+            self.view_specific_asset_no_buttons()
 
     def test_view_specific_buttons_unauthenticated(self):
         with self.client:
-            res = self.client.get(url_for('movie.view_specific', movie_id=self.mA.id))
+            self.view_specific_asset_no_buttons()
 
-            self.assert200(res)
+    def test_view_specific_hidden_customer(self):
+        with self.client:
+            self.movie_A.hidden = True
+            db.session.commit()
 
-            # TODO
-            # self.assertNotIn(b'Edit movie', res.data)
-            # self.assertNotIn(b'Hide movie', res.data)
-            # self.assertNotIn(b'Show movie', res.data)
-            # self.assertNotIn(b'Delete movie', res.data)
+            self.login_customerA()
+            res = self.client.get(url_for('movie.view_specific', movie_id=self.movie_A.id))
+            self.assert404(res)
 
     def test_view_specific_hidden_unauthenticated(self):
         with self.client:
-            res = self.client.get(url_for('movie.view_specific', movie_id=self.mA.id))
+            self.movie_A.hidden = True
+            db.session.commit()
 
-            # TODO
-            # self.assert404(res)
+            res = self.client.get(url_for('movie.view_specific', movie_id=self.movie_A.id))
+            self.assert404(res)

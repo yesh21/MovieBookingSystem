@@ -29,10 +29,10 @@ class ManageMoviesTestCase(MovieBaseTestCase):
             self.login_customerA()
             res = self.client.get(url_for('movie.manage'))
 
-            # TODO
+            self.assert401(res)
 
     def test_view_specific_details_unauthenticated(self):
         with self.client:
             res = self.client.get(url_for('movie.manage'))
 
-            # TODO
+            self.assert401(res)

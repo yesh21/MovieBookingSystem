@@ -1,7 +1,7 @@
 from flask_testing import TestCase
 
 from Flask_Cinema_Site import app, db
-from Flask_Cinema_Site.models import Customer, Movie, Viewing
+from Flask_Cinema_Site.models import Customer, Movie, Viewing, Role
 from Flask_Cinema_Site.forms import SimpleForm
 
 from flask import url_for, current_app
@@ -43,41 +43,74 @@ class BaseTestCase(TestCase):
         db.create_all()
 
         # Add test data to database
+        self.add_roles()
         self.add_customers()
         self.add_managers()
         self.add_movies()
         self.add_viewings()
 
+    def add_roles(self):
+        db.session.add(Role(name='customer'))
+        db.session.add(Role(name='manager'))
+        db.session.add(Role(name='admin'))
+        db.session.commit()
+
     def add_customers(self):
-        self.cA = Customer(
+        customer_role = Role.query.filter_by(name='customer').first()
+
+        self.customer_A = Customer(
             username='CustomerA',
             first_name='First',
             last_name='Last',
             email='customerA@aaronrosser.xyz',
             confirmed=True
         )
-        self.cA.plain_test_password = 'customerA'
-        self.cA.set_password(self.cA.plain_test_password)
-        db.session.add(self.cA)
+        self.customer_A.plain_test_password = 'customerA'
+        self.customer_A.set_password(self.customer_A.plain_test_password)
+        customer_role.users.append(self.customer_A)
 
-        self.cB = Customer(
+        self.customer_B = Customer(
             username='CustomerB',
             first_name='First',
             last_name='Last',
             email='customerB@aaronrosser.xyz',
             confirmed=True
         )
-        self.cB.plain_test_password = 'customerB'
-        self.cB.set_password(self.cB.plain_test_password)
-        db.session.add(self.cB)
+        self.customer_B.plain_test_password = 'customerB'
+        self.customer_B.set_password(self.customer_B.plain_test_password)
+        customer_role.users.append(self.customer_B)
 
         db.session.commit()
 
     def add_managers(self):
-        pass
+        manager_role = Role.query.filter_by(name='manager').first()
+
+        self.manager_A = Customer(
+            username='ManagerA',
+            first_name='First',
+            last_name='Last',
+            email='managerA@aaronrosser.xyz',
+            confirmed=True
+        )
+        self.manager_A.plain_test_password = 'managerA'
+        self.manager_A.set_password(self.manager_A.plain_test_password)
+        manager_role.users.append(self.manager_A)
+
+        self.manager_B = Customer(
+            username='ManagerB',
+            first_name='First',
+            last_name='Last',
+            email='managerB@aaronrosser.xyz',
+            confirmed=True
+        )
+        self.manager_B.plain_test_password = 'managerB'
+        self.manager_B.set_password(self.manager_B.plain_test_password)
+        manager_role.users.append(self.manager_B)
+
+        db.session.commit()
 
     def add_movies(self):
-        self.mA = Movie(
+        self.movie_A = Movie(
             name='Black Widow',
             overview='In Marvel Studios’ action-packed spy thriller “Black Widow,” '
                      'Natasha Romanoff aka Black Widow confronts the darker parts of '
@@ -95,9 +128,9 @@ class BaseTestCase(TestCase):
             rating=4.2,
             hidden=False
         )
-        db.session.add(self.mA)
+        db.session.add(self.movie_A)
 
-        self.mB = Movie(
+        self.movie_B = Movie(
             name='Ghostbusters: Afterlife',
             overview='From director Jason Reitman and producer Ivan Reitman, comes the next chapter '
                      'in the original Ghostbusters universe. In Ghostbusters: Afterlife, when a single '
@@ -114,9 +147,9 @@ class BaseTestCase(TestCase):
             rating=3.5,
             hidden=False
         )
-        db.session.add(self.mB)
+        db.session.add(self.movie_B)
 
-        self.mB.viewings.append(Viewing(time=datetime.now()))
+        self.movie_B.viewings.append(Viewing(time=datetime.now()))
 
         db.session.commit()
 
@@ -163,16 +196,16 @@ class BaseTestCase(TestCase):
         ), follow_redirects=True)
 
     def login_customerA(self):
-        return self.login('customerA@aaronrosser.xyz', 'customerA')
+        return self.login(self.customer_A.email, self.customer_A.plain_test_password)
 
     def login_customerB(self):
-        return self.login('customerB@aaronrosser.xyz', 'customerB')
+        return self.login(self.customer_B.email, self.customer_B.plain_test_password)
 
     def login_managerA(self):
-        pass
+        return self.login(self.manager_A.email, self.manager_A.plain_test_password)
 
     def login_managerB(self):
-        pass
+        return self.login(self.manager_B.email, self.manager_B.plain_test_password)
 
     def logout(self):
         return self.client.post(url_for('user.logout'), data=dict(

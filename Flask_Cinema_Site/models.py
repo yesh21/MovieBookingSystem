@@ -9,12 +9,21 @@ from math import floor
 import jwt
 
 
+class CustomerRole(db.Model):
+    __tablename__ = 'customer_role'
+    customer_id = db.Column(db.Integer, db.ForeignKey('customer.id'), primary_key=True)
+    role_id = db.Column(db.Integer, db.ForeignKey('role.id'), primary_key=True)
+
+
 class Customer(db.Model, UserMixin):
     __tablename__ = "customer"
     id = db.Column(db.Integer, primary_key=True)
 
     customer_viewings = db.relationship('CustomerViewing', backref='customer', lazy=True)
     basket = db.relationship('Basket', backref='customer', lazy=True)
+
+    roles = db.relationship('Role', secondary='customer_role', backref=db.backref('customer_roles', lazy=True),
+                            viewonly=True)
 
     # Data fields
     email = db.Column(db.String(320), nullable=False, unique=True)
@@ -68,6 +77,14 @@ class Customer(db.Model, UserMixin):
 
     def set_password(self, password):
         self.password_hash = bcrypt.generate_password_hash(password).decode('utf-8')
+
+
+class Role(db.Model):
+    __tablename__ = 'role'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(20), nullable=False)
+
+    users = db.relationship('Customer', secondary='customer_role', backref=db.backref('customer_roles', lazy=True))
 
 
 class CustomerViewing(db.Model):
