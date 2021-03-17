@@ -149,8 +149,6 @@ class BaseTestCase(TestCase):
         )
         db.session.add(self.movie_B)
 
-        self.movie_B.viewings.append(Viewing(time=datetime.now()))
-
         db.session.commit()
 
     def add_viewings(self):
@@ -166,17 +164,20 @@ class BaseTestCase(TestCase):
             for day_num in range(10):
                 for viewing_time in viewing_times:
                     m.viewings.append(Viewing(
-                        time=viewing_time + timedelta(days=day_num, minutes=20 * day_num)
+                        time=viewing_time + timedelta(days=day_num, minutes=20 * day_num),
+                        price=4.40
                     ))
 
                 # Add extra same time viewings on fridays
                 if (datetime.today() + timedelta(days=day_num)).weekday() == 4:
                     m.viewings.append(Viewing(
-                        time=viewing_times[0] + timedelta(days=day_num, minutes=20 * day_num)
+                        time=viewing_times[0] + timedelta(days=day_num, minutes=20 * day_num),
+                        price=5.70
                     ))
 
                     m.viewings.append(Viewing(
-                        time=viewing_times[-1] + timedelta(days=day_num, minutes=20 * day_num)
+                        time=viewing_times[-1] + timedelta(days=day_num, minutes=20 * day_num),
+                        price=7.99
                     ))
 
         db.session.commit()

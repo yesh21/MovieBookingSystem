@@ -4,7 +4,7 @@ import os
 sys.path.insert(0, os.path.dirname(__file__) + '/..')
 
 from Flask_Cinema_Site import db
-from Flask_Cinema_Site.models import Movie, Viewing
+from Flask_Cinema_Site.models import Movie, Viewing, Seat
 
 from datetime import date, datetime, timedelta
 
@@ -61,17 +61,29 @@ for m in Movie.query.all():
     for day_num in range(14):
         for viewing_time in viewing_times:
             m.viewings.append(Viewing(
-                time=viewing_time + timedelta(days=day_num, minutes=20 * day_num)
+                time=viewing_time + timedelta(days=day_num, minutes=20 * day_num),
+                price=5.50
             ))
 
         # Add extra same time viewings on fridays
         if (datetime.today() + timedelta(days=day_num)).weekday() == 4:
             m.viewings.append(Viewing(
-                time=viewing_times[2] + timedelta(days=day_num, minutes=20 * day_num)
+                time=viewing_times[2] + timedelta(days=day_num, minutes=20 * day_num),
+                price=4.40
             ))
 
             m.viewings.append(Viewing(
-                time=viewing_times[-1] + timedelta(days=day_num, minutes=20 * day_num)
+                time=viewing_times[-1] + timedelta(days=day_num, minutes=20 * day_num),
+                price=7.77
             ))
+
+db.session.commit()
+
+# For each viewing add some seats
+for v in Viewing.query.all():
+    for i in range(20):
+        v.seats.append(Seat(
+            seat_number=f'A{i}'
+        ))
 
 db.session.commit()
