@@ -9,21 +9,21 @@ from math import floor
 import jwt
 
 
-class CustomerRole(db.Model):
-    __tablename__ = 'customer_role'
-    customer_id = db.Column(db.Integer, db.ForeignKey('customer.id'), primary_key=True)
+class UserRole(db.Model):
+    __tablename__ = 'user_role'
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
     role_id = db.Column(db.Integer, db.ForeignKey('role.id'), primary_key=True)
 
 
-class Customer(db.Model, UserMixin):
-    __tablename__ = "customer"
+class User(db.Model, UserMixin):
+    __tablename__ = "user"
     id = db.Column(db.Integer, primary_key=True)
 
-    customer_viewings = db.relationship('CustomerViewing', backref='customer', lazy=True)
-    basket = db.relationship('Basket', backref='customer', lazy=True)
+    user_viewings = db.relationship('UserViewing', backref='user', lazy=True)
+    basket = db.relationship('Basket', backref='user', lazy=True)
 
-    roles = db.relationship('Role', secondary='customer_role', backref=db.backref('customer_roles', lazy=True),
-                            viewonly=True)
+    roles = db.relationship('Role', secondary='user_role', backref=db.backref('user_roles', lazy=True),
+                            viewonly=True, sync_backref=False)
 
     # Data fields
     email = db.Column(db.String(320), nullable=False, unique=True)
@@ -52,7 +52,7 @@ class Customer(db.Model, UserMixin):
             return
         except jwt.InvalidTokenError:
             return
-        return Customer.query.get(id)
+        return User.query.get(id)
 
     def get_email_confirm_token(self, expires_in=86400):
         return jwt.encode(
@@ -70,7 +70,7 @@ class Customer(db.Model, UserMixin):
             return
         except jwt.InvalidTokenError:
             return
-        return Customer.query.get(user_id)
+        return User.query.get(user_id)
 
     def check_password(self, password):
         return bcrypt.check_password_hash(self.password_hash, password)
@@ -84,26 +84,26 @@ class Role(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(20), nullable=False)
 
-    users = db.relationship('Customer', secondary='customer_role', backref=db.backref('customer_roles', lazy=True))
+    users = db.relationship('User', secondary='user_role', backref=db.backref('user_roles', lazy=True),
+                            sync_backref=False)
 
 
-class CustomerViewing(db.Model):
-    __tablename__ = "customer_viewing"
+class UserViewing(db.Model):
+    __tablename__ = "user_viewing"
     transaction_id = db.Column(db.Integer, unique=True, primary_key=True)
-    customer_id = db.Column(db.Integer, db.ForeignKey('customer.id'), unique=True, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), unique=True, primary_key=True)
     viewing_id = db.Column(db.Integer, db.ForeignKey('viewing.id'), unique=True, primary_key=True)
 
 
 class Basket(db.Model):
     __tablename__ = "basket"
-    customer_id = db.Column(db.Integer, db.ForeignKey('customer.id'), unique=True, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), unique=True, primary_key=True)
     basket_viewing = db.relationship('BasketViewing', backref='basket', lazy=True)
 
 
 class BasketViewing(db.Model):
     __tablename__ = "basket_viewing"
-    customer_basket_id = db.Column(db.Integer, db.ForeignKey('basket.customer_id'), unique=True,
-                                   primary_key=True)
+    user_basket_id = db.Column(db.Integer, db.ForeignKey('basket.user_id'), unique=True, primary_key=True)
     viewing_id = db.Column(db.Integer, db.ForeignKey('viewing.id'), unique=True, primary_key=True)
 
 
@@ -114,8 +114,8 @@ class Viewing(db.Model):
     time = db.Column(db.DateTime, nullable=False)
     movie_id = db.Column(db.Integer, db.ForeignKey('movie.id'))
 
-    customer_viewings = db.relationship('CustomerViewing', backref='viewing', lazy=True)
-    basket_viewing = db.relationship('BasketViewing', backref='customer', lazy=True)
+    user_viewings = db.relationship('UserViewing', backref='viewing', lazy=True)
+    basket_viewing = db.relationship('BasketViewing', backref='user', lazy=True)
 
 
 class Movie(db.Model):
@@ -141,7 +141,7 @@ class Movie(db.Model):
     genres = db.Column(db.String(250), nullable=True)
 
     def rel_cover_art_path(self):
-        return '/cover_arts/' + self.cover_art_name
+        return 'cover_arts/' + self.cover_art_name
 
     def get_star_rating_html(self):
         # Full stars

@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template
+from flask import Blueprint, redirect, url_for
 
 home_blueprint = Blueprint(
     'home', __name__,
@@ -8,4 +8,4 @@ home_blueprint = Blueprint(
 
 @home_blueprint.route('/', methods=['GET'])
 def home():
-    return render_template('home.html')
+    return redirect(url_for('movie.view_multiple'))
