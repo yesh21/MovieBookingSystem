@@ -1,9 +1,13 @@
 from flask import render_template, redirect, Blueprint, flash, request
+from flask_login import current_user
 
 from Flask_Cinema_Site.bookings.forms import PaymentForm
 from Flask_Cinema_Site.helper_functions import get_redirect_url
-from Flask_Cinema_Site.models import Movie, Viewing
+from Flask_Cinema_Site.models import Movie, Viewing, User, Transaction, Seat
+from Flask_Cinema_Site import db
+
 import json
+from datetime import datetime
 
 bookings_blueprint = Blueprint(
     'bookings', __name__,
@@ -54,17 +58,33 @@ def seat_book():
 
 @bookings_blueprint.route("/pay", methods=['GET', 'POST'])
 def payment():
-    # Final Transaction
     payment_form = PaymentForm()
     if payment_form.validate_on_submit():
-        # Form needs proper input here <<<
+        for seat in seats:
+            double_booking = User.query.join(Transaction).join(Seat)\
+                            .filter(Transaction.id == Seat.transaction_id)\
+                            .filter(Seat.seat_number == seat).all()
+            print(double_booking)
+            if double_booking:
+                flash("Double booking detected!")
+                return redirect(get_redirect_url())
+        movie = Movie.query.filter(Movie.name == m.name).first()
+        viewing = Viewing.query.filter(Viewing.movie_id == movie.id).first()
+        current_date = datetime.now()
+
+        transaction = Transaction(user_id = current_user.id, datetime = current_date)
+        transaction.viewings.append(viewing)
+        for seat in seats:
+            seating = Seat.query.filter(seat == Seat.seat_number).first()
+            transaction.seats.append(seating)
+        db.session.add(transaction)
+        db.session.commit()
 
         send_ticket()
         flash("Thank you for booking with us, confirmation email will arrive soon!")
         return redirect(get_redirect_url())
 
     return render_template('payment.html', seats=seats, title=m.name, times=v, form=payment_form)
-
 
 # Confirmation Email sent from this function
 def send_ticket():
