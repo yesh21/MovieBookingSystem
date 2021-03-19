@@ -62,8 +62,8 @@ def payment():
     if payment_form.validate_on_submit():
         for seat in seats:
             double_booking = User.query.join(Transaction).join(Seat)\
-                            .filter(Transaction.id == Seat.transaction_id)\
-                            .filter(Seat.seat_number == seat).all()
+                          .filter(Transaction.id==Seat.transaction_id)\
+                          .filter(Seat.seat_number==seat).all()
             print(double_booking)
             if double_booking:
                 flash("Double booking detected!")
