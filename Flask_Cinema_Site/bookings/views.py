@@ -62,9 +62,8 @@ def payment():
     if payment_form.validate_on_submit():
         for seat in seats:
             double_booking = User.query.join(Transaction).join(Seat)\
-                          .filter(Transaction.id==Seat.transaction_id)\
-                          .filter(Seat.seat_number==seat).all()
-            print(double_booking)
+                          .filter(Transaction.id == Seat.transaction_id)\
+                          .filter(Seat.seat_number == seat).all()
             if double_booking:
                 flash("Double booking detected!")
                 return redirect(get_redirect_url())
@@ -85,6 +84,7 @@ def payment():
         return redirect(get_redirect_url())
 
     return render_template('payment.html', seats=seats, title=m.name, times=v, form=payment_form)
+
 
 # Confirmation Email sent from this function
 def send_ticket():
