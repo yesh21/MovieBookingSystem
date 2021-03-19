@@ -71,7 +71,7 @@ def payment():
         viewing = Viewing.query.filter(Viewing.movie_id == movie.id).first()
         current_date = datetime.now()
 
-        transaction = Transaction(user_id = current_user.id, datetime = current_date)
+        transaction = Transaction(user_id=current_user.id, datetime=current_date)
         transaction.viewings.append(viewing)
         for seat in seats:
             seating = Seat.query.filter(seat == Seat.seat_number).first()
