@@ -70,3 +70,5 @@ PyJWT==2.0.1
 # virtualenv==20.4.2
 # Werkzeug==1.0.1
 # zipp==3.4.0
+
+reportlab==3.5.66
