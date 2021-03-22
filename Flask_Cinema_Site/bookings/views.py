@@ -80,7 +80,7 @@ def payment():
                 .filter(Transaction.id == Seat.transaction_id)\
                 .filter(Seat.seat_number == seat).join(Viewing)\
                 .filter(Seat.viewing_id == Viewing.id).first()
-    #.filter(Viewing.time == v.time).first() PROBLEM WHEN ADDING TIME COMPARISON
+    # .filter(Viewing.time == v.time).first() PROBLEM WHEN ADDING TIME COMPARISON
 
             if double_booking:
                 flash("Double booking detected!")
