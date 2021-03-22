@@ -80,7 +80,7 @@ def payment():
                 .filter(Transaction.id == Seat.transaction_id)\
                 .filter(Seat.seat_number == seat).join(Viewing)\
                 .filter(Seat.viewing_id == Viewing.id).first()
-                #.filter(Viewing.time == v.time).first() ## PROBLEM WHEN ADDING TIME COMPARISON
+    #.filter(Viewing.time == v.time).first() ## PROBLEM WHEN ADDING TIME COMPARISON
 
             if double_booking:
                 flash("Double booking detected!")
@@ -136,12 +136,12 @@ def create_pdf(trans_id, user_id, movie):
 
     style = TableStyle(
         [
-            ( "BOX" , ( 0, 0 ), ( -1, -1 ), 1 , colors.black ),
-            ( "GRID" , ( 0, 0 ), ( 4 , 4 ), 1 , colors.black ),
-            ( "BACKGROUND" , ( 0, 0 ), ( 3, 0 ), colors.gray ),
-            ( "TEXTCOLOR" , ( 0, 0 ), ( -1, 0 ), colors.whitesmoke ),
-            ( "ALIGN" , ( 0, 0 ), ( -1, -1 ), "CENTER" ),
-            ( "BACKGROUND" , ( 0 , 1 ) , ( -1 , -1 ), colors.beige ),
+            ("BOX", (0, 0), (-1, -1), 1, colors.black),
+            ("GRID", (0, 0), (4, 4), 1, colors.black),
+            ("BACKGROUND", (0, 0), (3, 0), colors.gray),
+            ("TEXTCOLOR", (0, 0), (-1, 0), colors.whitesmoke),
+            ("ALIGN", (0, 0), (-1, -1), "CENTER"),
+            ("BACKGROUND", (0 , 1) ,(-1 , -1), colors.beige),
         ]
     )
 
@@ -180,6 +180,6 @@ def send_pdf(path, email):
     text = msg.as_string()
     s.sendmail(from_addr, toaddr, text)
     s.quit()
-    
+
     attachment.close()
     os.remove(path)
