@@ -80,7 +80,7 @@ def payment():
                 .filter(Transaction.id == Seat.transaction_id)\
                 .filter(Seat.seat_number == seat).join(Viewing)\
                 .filter(Seat.viewing_id == Viewing.id).first()
-    #.filter(Viewing.time == v.time).first() ## PROBLEM WHEN ADDING TIME COMPARISON
+    #.filter(Viewing.time == v.time).first() PROBLEM WHEN ADDING TIME COMPARISON
 
             if double_booking:
                 flash("Double booking detected!")
@@ -110,12 +110,12 @@ def create_pdf(trans_id, user_id, movie):
     count = 0
     data_array = []
 
-    data_array.append(["Email address", "Date" , "Movie", "Seats"])
+    data_array.append(["Email address", "Date", "Movie", "Seats"])
 
     for seat in transaction.seats:
         if count == 0:
-            data_array.append([str(user.email), str(transaction.datetime),
-                str(movie.name), str(seat.seat_number)])
+            data_array.append([str(user.email), str(transaction.datetime), str(movie.name),
+                              str(seat.seat_number)])
             count = count + 1
         else:
             data_array.append(["", "", "", str(seat.seat_number)])
@@ -128,11 +128,11 @@ def create_pdf(trans_id, user_id, movie):
     dir = os.getcwd()
     path = os.path.join(dir, "Flask_Cinema_Site", "bookings", "receipts", "receipt.pdf")
 
-    pdf = SimpleDocTemplate(path , pagesize = A4)
+    pdf = SimpleDocTemplate(path, pagesize=A4)
     styles = getSampleStyleSheet()
     title_style = styles["Heading1"]
     title_style.alignment = 1
-    title = Paragraph("MovieBox receipt" , title_style)
+    title = Paragraph("MovieBox receipt", title_style)
 
     style = TableStyle(
         [
@@ -141,11 +141,11 @@ def create_pdf(trans_id, user_id, movie):
             ("BACKGROUND", (0, 0), (3, 0), colors.gray),
             ("TEXTCOLOR", (0, 0), (-1, 0), colors.whitesmoke),
             ("ALIGN", (0, 0), (-1, -1), "CENTER"),
-            ("BACKGROUND", (0 , 1) ,(-1 , -1), colors.beige),
+            ("BACKGROUND", (0, 1), (-1, -1), colors.beige),
         ]
     )
 
-    table = Table(data_array, style = style)
+    table = Table(data_array, style=style)
     pdf.build([title, table])
     send_pdf(path, user.email)
 
