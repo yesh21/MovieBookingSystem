@@ -2,12 +2,26 @@ from flask import render_template, redirect, Blueprint, flash, request
 from flask_login import current_user
 
 from Flask_Cinema_Site.bookings.forms import PaymentForm
-from Flask_Cinema_Site.helper_functions import get_redirect_url
+from Flask_Cinema_Site.helper_functions import get_redirect_url, send_email
 from Flask_Cinema_Site.models import Movie, Viewing, User, Transaction, Seat
 from Flask_Cinema_Site import db
 
 import json
 from datetime import datetime
+
+from reportlab.platypus import SimpleDocTemplate, Table, Paragraph, TableStyle
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import A4
+from reportlab.lib.styles import getSampleStyleSheet
+
+import os
+
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email.mime.base import MIMEBase
+from email import encoders
+
 
 bookings_blueprint = Blueprint(
     'bookings', __name__,
@@ -61,9 +75,13 @@ def payment():
     payment_form = PaymentForm()
     if payment_form.validate_on_submit():
         for seat in seats:
-            double_booking = User.query.join(Transaction).join(Seat)\
+            double_booking = User.query.join(Transaction)\
+                .filter(User.id == Transaction.user_id).join(Seat)\
                 .filter(Transaction.id == Seat.transaction_id)\
-                .filter(Seat.seat_number == seat).all()
+                .filter(Seat.seat_number == seat).join(Viewing)\
+                .filter(Seat.viewing_id == Viewing.id).first()
+                #.filter(Viewing.time == v.time).first() ## PROBLEM WHEN ADDING TIME COMPARISON
+
             if double_booking:
                 flash("Double booking detected!")
                 return redirect(get_redirect_url())
@@ -79,15 +97,89 @@ def payment():
         db.session.add(transaction)
         db.session.commit()
 
-        send_ticket()
+        create_pdf(transaction.id, current_user.id, movie)
         flash("Thank you for booking with us, confirmation email will arrive soon!")
         return redirect(get_redirect_url())
 
     return render_template('payment.html', seats=seats, title=m.name, times=v, form=payment_form)
 
 
-# Confirmation Email sent from this function
-def send_ticket():
-    # Ticket confirmation sent here
+def create_pdf(trans_id, user_id, movie):
+    transaction = Transaction.query.filter(Transaction.id == trans_id).first()
+    user = User.query.filter(User.id == user_id).first()
+    count = 0
+    data_array = []
 
-    return None
+    data_array.append(["Email address", "Date" , "Movie", "Seats"])
+
+    for seat in transaction.seats:
+        if count == 0:
+            data_array.append([str(user.email), str(transaction.datetime),
+                str(movie.name), str(seat.seat_number)])
+            count = count + 1
+        else:
+            data_array.append(["", "", "", str(seat.seat_number)])
+
+    data_array.append(["", "", "", ""])
+    data_array.append(["Sub total", "", "", "initial price"])
+    data_array.append(["VAT", "", "", "VAT price added"])
+    data_array.append(["Total", "", "", "Total price"])
+
+    dir = os.getcwd()
+    path = os.path.join(dir, "Flask_Cinema_Site", "bookings", "receipts", "receipt.pdf")
+
+    pdf = SimpleDocTemplate(path , pagesize = A4)
+    styles = getSampleStyleSheet()
+    title_style = styles["Heading1"]
+    title_style.alignment = 1
+    title = Paragraph("MovieBox receipt" , title_style)
+
+    style = TableStyle(
+        [
+            ( "BOX" , ( 0, 0 ), ( -1, -1 ), 1 , colors.black ),
+            ( "GRID" , ( 0, 0 ), ( 4 , 4 ), 1 , colors.black ),
+            ( "BACKGROUND" , ( 0, 0 ), ( 3, 0 ), colors.gray ),
+            ( "TEXTCOLOR" , ( 0, 0 ), ( -1, 0 ), colors.whitesmoke ),
+            ( "ALIGN" , ( 0, 0 ), ( -1, -1 ), "CENTER" ),
+            ( "BACKGROUND" , ( 0 , 1 ) , ( -1 , -1 ), colors.beige ),
+        ]
+    )
+
+    table = Table(data_array, style = style)
+    pdf.build([title, table])
+    send_pdf(path, user.email)
+
+
+def send_pdf(path, email):
+    from_addr = "alan.ashford.786123@gmail.com"
+    toaddr = str(email)
+    today_date = datetime.now()
+
+    msg = MIMEMultipart()
+    msg['From'] = from_addr
+    msg['To'] = toaddr
+    msg['Subject'] = "MovieBox receipt"
+
+    body = "Please see your MovieBox receipt attached for the "\
+        + "transaction which occured on: " + str(today_date)\
+        + "."
+    msg.attach(MIMEText(body, 'plain'))
+
+    filename = "receipt.pdf"
+    attachment = open(path, "rb")
+
+    p = MIMEBase('application', 'octet-stream')
+    p.set_payload((attachment).read())
+    encoders.encode_base64(p)
+    p.add_header('Content-Disposition', "attachment; filename= %s" % filename)
+    msg.attach(p)
+
+    s = smtplib.SMTP('smtp.gmail.com', 587)
+    s.starttls()
+    s.login(from_addr, "Laughing522")
+    text = msg.as_string()
+    s.sendmail(from_addr, toaddr, text)
+    s.quit()
+    
+    attachment.close()
+    os.remove(path)
