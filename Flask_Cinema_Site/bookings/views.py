@@ -107,6 +107,7 @@ def payment():
 def create_pdf(trans_id, user_id, movie):
     transaction = Transaction.query.filter(Transaction.id == trans_id).first()
     user = User.query.filter(User.id == user_id).first()
+    viewing = Viewing.query.filter(Viewing.movie_id == movie.id).first()
     count = 0
     data_array = []
 
@@ -116,14 +117,15 @@ def create_pdf(trans_id, user_id, movie):
         if count == 0:
             data_array.append([str(user.email), str(transaction.datetime), str(movie.name),
                               str(seat.seat_number)])
-            count = count + 1
         else:
             data_array.append(["", "", "", str(seat.seat_number)])
+        count = count + 1
 
-    data_array.append(["", "", "", ""])
-    data_array.append(["Sub total", "", "", "initial price"])
-    data_array.append(["VAT", "", "", "VAT price added"])
-    data_array.append(["Total", "", "", "Total price"])
+    vat = viewing.price * 0.2
+
+    data_array.append(["Sub total", "", "", str(viewing.price)])
+    data_array.append(["VAT", "", "", str(vat)])
+    data_array.append(["Total", "", "", str(viewing.price + vat)])
 
     dir = os.getcwd()
     path = os.path.join(dir, "Flask_Cinema_Site", "bookings", "receipts", "receipt.pdf")
@@ -137,8 +139,8 @@ def create_pdf(trans_id, user_id, movie):
     style = TableStyle(
         [
             ("BOX", (0, 0), (-1, -1), 1, colors.black),
-            ("GRID", (0, 0), (4, 4), 1, colors.black),
-            ("BACKGROUND", (0, 0), (3, 0), colors.gray),
+            ("GRID", (0, 0), (-1, -1), 1, colors.black),
+            ("BACKGROUND", (0, 0), (-1, -1), colors.gray),
             ("TEXTCOLOR", (0, 0), (-1, 0), colors.whitesmoke),
             ("ALIGN", (0, 0), (-1, -1), "CENTER"),
             ("BACKGROUND", (0, 1), (-1, -1), colors.beige),
