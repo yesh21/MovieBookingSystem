@@ -18,7 +18,7 @@
                 {% endif %}
             </div>
             <div class="col">
-                <button class="btn btn-success w-100 mb-1 disabled">View analytics</button>
+                <a class="btn btn-success w-100 mb-1" href="{{ url_for('analysis.view_single_movie', movie_id=m.id) }}">View analytics</a>
             </div>
         </div>
     </td>

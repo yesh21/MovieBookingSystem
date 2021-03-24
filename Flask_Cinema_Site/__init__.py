@@ -31,7 +31,7 @@ app.jinja_env.globals.update(is_customer=customer_permission.can,
                              is_admin=admin_permission.can)
 
 # Add administrative views here
-from .models import User, UserRole, Role, Viewing, Transaction, Movie, Seat, Theatre
+from .models import User, UserRole, Role, Viewing, Transaction, Movie, Seat, Theatre, TicketType
 
 admin = Admin(app, name='microblog', template_mode='bootstrap4')
 admin.add_link(MenuLink(name='Logout', category='', url="/"))
@@ -42,12 +42,17 @@ admin.add_view(ModelView(Transaction, db.session))
 admin.add_view(ModelView(Viewing, db.session))
 admin.add_view(ModelView(Movie, db.session, endpoint='movies'))
 admin.add_view(ModelView(Seat, db.session))
+admin.add_view(ModelView(TicketType, db.session))
 admin.add_view(ModelView(Theatre, db.session))
 # set optional bootswatch theme
 app.config['FLASK_ADMIN_SWATCH'] = 'cerulean'
 
+# Add custom filters
+from Flask_Cinema_Site.jinja2.filters import format_datetime_generator
+app.jinja_env.filters['format_datetime'] = format_datetime_generator
+
 # Add custom functions to all templates
-from Flask_Cinema_Site.helper_functions import get_field_html, get_field_group_html, \
+from Flask_Cinema_Site.jinja2.functions import get_field_html, get_field_group_html, \
     get_file_upload_group_html, get_file_upload_errors_html
 app.jinja_env.globals.update(get_field_html=get_field_html,
                              get_field_group_html=get_field_group_html,
@@ -77,3 +82,6 @@ app.register_blueprint(movies_blueprint, url_prefix='/movie')
 
 from Flask_Cinema_Site.bookings.views import bookings_blueprint
 app.register_blueprint(bookings_blueprint, url_prefix='/book')
+
+from Flask_Cinema_Site.analysis.views import analysis_blueprint
+app.register_blueprint(analysis_blueprint, url_prefix='/analysis')

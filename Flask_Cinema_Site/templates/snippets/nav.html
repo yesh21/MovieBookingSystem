@@ -75,6 +75,8 @@
                         {% endif %}
                         <a class="dropdown-item" href="{{ url_for('movie.add') }}">Add new film</a>
                         <a class="dropdown-item" href="{{ url_for('movie.manage') }}">Manage films</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="{{ url_for('analysis.view_multiple') }}">View analysis</a>
                     </div>
                 </li>
                 {% endif %} {% if current_user.is_authenticated %}

@@ -48,6 +48,7 @@ def view_specific(movie_id):
             .order_by(asc(Viewing.time))\
             .all()
         viewing_days.append((d, viewings))
+
     return render_template('view_specific_movie.html', title=m.name, movie=m, viewing_days=viewing_days)
 
 
