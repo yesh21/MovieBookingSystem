@@ -157,10 +157,22 @@ class Seat(db.Model):
     __tablename__ = "seat"
     id = db.Column(db.Integer, primary_key=True)
     viewing_id = db.Column(db.Integer, db.ForeignKey('viewing.id'), nullable=False)
+
     transaction_id = db.Column(db.Integer, db.ForeignKey('transaction.id'), nullable=True)
+    ticket_type_id = db.Column(db.Integer, db.ForeignKey('ticket_type.id'), nullable=True)
 
     # Needs to be unique to viewing only
     seat_number = db.Column(db.String(10), nullable=False)
+
+
+class TicketType(db.Model):
+    __tablename__ = 'ticket_type'
+    id = db.Column(db.Integer, primary_key=True)
+
+    seats = db.relationship('Seat', backref='ticket_type', lazy=True)
+
+    name = db.Column(db.String(20), nullable=False, unique=True)
+    price = db.Column(db.Float, nullable=False)
 
 
 class Theatre(db.Model):

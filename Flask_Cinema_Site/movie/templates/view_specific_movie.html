@@ -2,6 +2,12 @@
 
 {% block content %}
     <div class="container">
+        {% if is_manager() %}
+            <div id="hiddenWarning" class="alert alert-warning {{ '' if movie.hidden else 'd-none' }}">
+                This movie is currently hidden
+            </div>
+        {% endif %}
+
         <div class="row mb-4">
             <!-- Cover art -->
             <div class="col-md">
@@ -144,6 +150,7 @@
             let show_movie_btn = $('#showMovieBtn');
             let hide_movie_url = '{{ url_for('movie.hide') }}';
             let hide_movie_btn = $('#hideMovieBtn');
+            let hidden_warning = $('#hiddenWarning');
 
             // Show movie
             show_movie_btn.on('click', function () {
@@ -152,6 +159,7 @@
                         // Hide / show buttons
                         show_movie_btn.addClass('d-none');
                         hide_movie_btn.removeClass('d-none');
+                        hidden_warning.removeClass('d-none');
                     })
                     .fail(function (data) {
                         // Display error message as alert at top of page
@@ -168,6 +176,7 @@
                         // Hide / show buttons
                         hide_movie_btn.addClass('d-none');
                         show_movie_btn.removeClass('d-none');
+                        hidden_warning.addClass('d-none');
                     })
                     .fail(function (data) {
                         // Display error message as alert at top of page
