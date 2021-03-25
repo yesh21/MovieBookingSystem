@@ -13,7 +13,7 @@
         <div class="card">
 
 
-            <img class="card-img-top" src="black-widow-banner.jpg" alt="Card image cap">
+            <img class="card-img-top" src="{{ url_for('home.static', filename='cover_art/black-widow-banner.jpg') }}" alt="Card image cap">
             <button class="btn btn-right">
                 <p><i class="arrow right"></i></p>
             </button>
@@ -22,9 +22,8 @@
             </button>
 
 
-            <div class="card-body">
-                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the
-                    card's content.</p>
+            <div class="card-body justify-content-center">
+                <p class="card-text"> Watch Blackwidow save the world, or find her past or something like that, Watch Now!</p>
 
             </div>
         </div>
@@ -41,7 +40,7 @@
                 {% if movies|length > 0 %}
                 <div class="card-columns">
                     {% for m in movies %}
-                    <div class="h-100">
+                    <div class="h-100" id="preview">
                         {% include("snippets/movie_preview.html") %}
                     </div>
                     {% endfor %}
@@ -80,6 +79,7 @@
                 width: 400px;
               }
 
+
                     </style>
                     <a href="https://www.embedgooglemap.net">embed maps on website</a>
                     <style>
@@ -90,13 +90,14 @@
                 width: 400px;
               }
 
+
                     </style>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="row">
+    <div class="row pt-5">
         <div class="col-6">
             <h4>Why Us?</h4>
         </div>
@@ -104,26 +105,25 @@
     </div>
 
 
-    <div class="rowAd">
- test
-        <div class="columnAd">
+    <div class="row">
+        <div class="col-5">
             <div class="containerAd">
                 <img src="{{ url_for('home.static', filename='cover_art/seat.jpg') }}" width="100%" height="50%">
                 <div class="centered">Luxury Seats</div>
             </div>
             <div class="containerAd pt-2">
-                <img src="dolbyatmos.jpg" width="100%" height="70%">
+                <img src="{{ url_for('home.static', filename='cover_art/dolbyatmos.jpg') }}" width="100%" height="259px">
                 <div class="centered"></div>
             </div>
 
         </div>
-        <div class="columnAd">
+        <div class="col-7">
             <div class="containerAd">
-                <img src="bar.jpg" width="100%" height="80%">
+                <img src="{{ url_for('home.static', filename='cover_art/bar.jpg') }}" width="100%" height="300px">
                 <div class="centered">Full Bar Service</div>
             </div>
             <div class="containerAd pt-2">
-                <img src="imax.jpg" width="100%" height="167px">
+                <img src="{{ url_for('home.static', filename='cover_art/imax.jpg') }}" width="100%" height="190px">
                 <div class="centered">IMAX</div>
             </div>
 

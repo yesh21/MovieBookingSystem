@@ -1,5 +1,5 @@
 from flask import Blueprint, redirect, url_for, render_template
-from Flask_Cinema_Site import app
+from Flask_Cinema_Site import app, Movie
 
 home_blueprint = Blueprint(
     'home', __name__,
@@ -13,5 +13,6 @@ def boot():
 
 @home_blueprint.route('/', methods=['GET'])
 def home():
-    return render_template('home_base.html')
+    movies = Movie.query.filter_by(hidden=False).all()
+    return render_template('home_base.html', movies=movies)
     #return redirect(url_for('movie.view_multiple'))
