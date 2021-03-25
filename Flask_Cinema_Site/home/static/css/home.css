@@ -3,7 +3,7 @@
  height: 400px!important;
  object-fit: cover;
 }
-.card{
+.Banner{
  width: 100%;
  background-color: black;
 }
@@ -12,9 +12,21 @@ p {
 
 
 }
-#preview{
+hr{
+    border: 5px solid white;
+    border-top: 10px;
+}
+p.pos_fixed {
+    position: relative;
+    height: 100%;
+    margin: 0;
+    text-align:center;
+    font-style: oblique;
+    font-size: 25px;
+}
+.preview{
    width:200px;
-   height:250px;;
+   height:250px;
 }
 
 .btn-right {
