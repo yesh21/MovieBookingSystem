@@ -9,6 +9,10 @@ let flash_message = function (message, category) {
     $('#flashContainer').append(new_msg);
 }
 
+let clear_flashed_messages = function () {
+    $('#flashContainer').html('');
+}
+
 // From https://www.w3schools.com/js/js_cookies.asp
 function setCookie(cname, cvalue, days_until_expiry) {
     var d = new Date();
@@ -59,29 +63,3 @@ $('#cookieAccept').on('click', function () {
 if (getCookie('allow_cookies') === '') {
     $('#cookieAlert').removeClass('d-none');
 }
-
-// Search
-$(function () {
-    $("#searchBox").autocomplete({
-        source: function (request, response) {
-            $.ajax({
-                type: "POST",
-                url: "http://localhost:5000/movie/search",
-                dataType: "json",
-                cache: false,
-                data: {
-                    q: request.term
-                },
-                success: function (data) {
-                    //alert(data);
-                    //console.log(data);
-                    response(data);
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                    console.log(textStatus + " " + errorThrown);
-                }
-            });
-        },
-        minLength: 2
-    });
-});
