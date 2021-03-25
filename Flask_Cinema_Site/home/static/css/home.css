@@ -1,8 +1,22 @@
 .card-img{
  width: 100%!important;
- height: 200px!important;
+ height: 400px!important;
  object-fit: cover;
 }
+.card{
+ width: 100%;
+ background-color: black;
+}
+p {
+ text-align: center;
+
+
+}
+#preview{
+   width:200px;
+   height:250px;;
+}
+
 .btn-right {
   position: absolute;
   top: 40%;
@@ -10,13 +24,20 @@
   height: 40%;
   transform: translate(-50%, -50%);
   -ms-transform: translate(-50%, -50%);
-  background-color: #555;
-  color: red;
+
   font-size: 99px;
-  padding: 12px 24px;
+
   border: none;
   cursor: pointer;
   border-radius: 5px;
+  background-color: Transparent;
+  outline:none;
+}
+btn:hover {
+  background-color: transparent;
+}
+p:hover {
+  background-color: transparent;
 }
 .btn-left {
   position: absolute;
@@ -25,10 +46,11 @@
   height: 40%;
   transform: translate(-50%, -50%);
   -ms-transform: translate(-50%, -50%);
-  background-color: #555;
-  color: red;
+  background-color: Transparent;
+  outline:none;
+
   font-size: 99px;
-  padding: 12px 24px;
+
   border: none;
   cursor: pointer;
   border-radius: 5px;
@@ -55,10 +77,8 @@
   transform: rotate(-45deg);
   -webkit-transform: rotate(-45deg);
 }
-.rowAd {
-  display: flex !important;
-  flex-wrap: wrap;
-  padding: 0 4px;
+.row-width-wide-cards .card {
+  width: 100%;
 }
 .left {
   transform: rotate(135deg);
@@ -79,7 +99,4 @@
   color: white;
   font-size: 40px;
 }
-.columnAd {
-  flex: 50%;
-  padding: 0 4px;
-}
+

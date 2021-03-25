@@ -45,6 +45,40 @@ m2 = Movie(
 )
 
 db.session.add(m2)
+
+m3 = Movie(
+    name='Tenet',
+    overview='Armed with only one word, Tenet, and fighting for the survival of the entire world '
+             'Protagonist journeys through a twilight world of international espionage '
+             'on a mission that will unfold in something beyond real time. '
+             'The film is written by Christorpher Nolan',
+    released=date(2020, 6, 11),
+    cover_art_name='tent.jpg',
+    directors='Jason Reitman',
+    cast='Juhan Ulfsak, Jefferson Hall, Ivo Uukkivi, Andrew Howard, Ernie Hudson',
+    duration=125,
+    rating=4.0,
+    hidden=False
+)
+
+db.session.add(m3)
+
+m4 = Movie(
+    name='The Dig',
+    overview='In the late 1930s, wealthy landowner Edith Pretty hires amateur '
+             'archaeologist Basil Brown to investigate the mounds on her property '
+             'in England. He and his team discover a ship from the Dark Ages while digging up a burial ground. '
+             'The film is written by John Preston',
+    released=date(2020, 8, 11),
+    cover_art_name='dig.jpg',
+    directors='Simon Stone',
+    cast='Lily Jame, Ralph Fiennes, Carey Mulligan, Johnny Flynn, Ben Chaplin',
+    duration=140,
+    rating=4.0,
+    hidden=False
+)
+
+db.session.add(m3)
 db.session.commit()
 
 # Add some times for each movie
