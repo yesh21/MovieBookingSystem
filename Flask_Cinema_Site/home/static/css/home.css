@@ -1,0 +1,85 @@
+.card-img{
+ width: 100%!important;
+ height: 200px!important;
+ object-fit: cover;
+}
+.btn-right {
+  position: absolute;
+  top: 40%;
+  left: 95%;
+  height: 40%;
+  transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+  background-color: #555;
+  color: red;
+  font-size: 99px;
+  padding: 12px 24px;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+}
+.btn-left {
+  position: absolute;
+  top: 40%;
+  left: 5%;
+  height: 40%;
+  transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+  background-color: #555;
+  color: red;
+  font-size: 99px;
+  padding: 12px 24px;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.container .btn:hover {
+  background-color: black;
+}
+
+.containerAd {
+  position: relative;
+  text-align: center;
+  color: white;
+}
+
+.arrow {
+  border: solid white;
+  border-width: 0 3px 3px 0;
+  display: inline-block;
+  padding: 3px;
+}
+
+.right {
+  transform: rotate(-45deg);
+  -webkit-transform: rotate(-45deg);
+}
+.rowAd {
+  display: flex !important;
+  flex-wrap: wrap;
+  padding: 0 4px;
+}
+.left {
+  transform: rotate(135deg);
+  -webkit-transform: rotate(135deg);
+}
+.block {
+  font-family: monospace;
+}
+.location {
+  font-family: cursive;
+  font-size: 25px;
+}
+.centered {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 40px;
+}
+.columnAd {
+  flex: 50%;
+  padding: 0 4px;
+}

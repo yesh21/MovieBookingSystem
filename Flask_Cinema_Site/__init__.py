@@ -67,7 +67,7 @@ def inject_simple_form():
 from Flask_Cinema_Site.errors.views import unauthorized, not_found
 
 from Flask_Cinema_Site.home.views import home_blueprint
-app.register_blueprint(home_blueprint)
+app.register_blueprint(home_blueprint, url_prefix='/home')
 
 from Flask_Cinema_Site.user.views import user_blueprint
 app.register_blueprint(user_blueprint, url_prefix='/user')
