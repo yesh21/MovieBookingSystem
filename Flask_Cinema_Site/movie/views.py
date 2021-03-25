@@ -190,6 +190,7 @@ def search():
     results = db.session.query(Movie.id, Movie.name).filter(
         Movie.name.like(search_query) | Movie.genres.like(search_query) | Movie.cast.like(search_query) |
         Movie.directors.like(search_query)) \
+        .filter(not Movie.hidden) \
         .limit(5).all()
 
     movies = {m.name: m.id for m in results}
@@ -207,6 +208,7 @@ def search_results():
     results = db.session.query(Movie).filter(
         Movie.name.like(search_query) | Movie.genres.like(search_query) | Movie.cast.like(search_query) |
         Movie.directors.like(search_query))\
+        .filter(not Movie.hidden)\
         .all()
 
     return render_template('search_results.html', query=form.query.data, results=results)
