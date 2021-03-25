@@ -15,7 +15,7 @@
                 <p class="card-header border-bottom h5">Filter</p>
 
                 <div class="card-body">
-                    <form action="#" method="get">
+                    <form action="" method="get">
                         <div class="form-row">
                             <!-- Start date -->
                             <div class="form-group col">
@@ -30,7 +30,8 @@
 
                         <div class="form-row">
                             <div class="form-group col mb-0">
-                                {{ form.submit(class="btn btn-primary w-100") }}
+                                <!-- Name attributed removed to stop it being passed to GET params -->
+                                <input class="btn btn-primary w-100" id="submit" type="submit" value="Filter">
                             </div>
                             <div class="form-group col mb-0">
                                 <button class="btn btn-success w-100" id="setEndDateWeek" type="button">Set time period

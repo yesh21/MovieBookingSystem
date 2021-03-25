@@ -9,43 +9,93 @@
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 
     <!-- Bootstrap -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.0/font/bootstrap-icons.css">
 
     <!-- Global CSS -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"> {% block head %}{% endblock %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    {% block head %}{% endblock %}
 
 </head>
 
 <body class="text-light">
-    {% include("snippets/nav.html") %}
+{% include("snippets/nav.html") %}
 
-    <main>
-        <!-- Success or error messages -->
-        <div class="container" id="flashContainer">
-            {% with flashed_messages = get_flashed_messages(with_categories=true) %} {% if flashed_messages %} {% for category, message in flashed_messages %}
-            <div class="alert alert-{{ category }}">
-                {{ message }}
-            </div>
+<main>
+    <!-- Success or error messages -->
+    <div class="container" id="flashContainer">
+        {% with flashed_messages = get_flashed_messages(with_categories=true) %} {% if flashed_messages %}
+            {% for category, message in flashed_messages %}
+                <div class="alert alert-{{ category }}">
+                    {{ message }}
+                </div>
             {% endfor %} {% endif %} {% endwith %}
-        </div>
-        {% block content %}{% endblock %}
-    </main>
+    </div>
+    {% block content %}{% endblock %}
+</main>
 
-    {% include("snippets/footer.html") %} {% include("snippets/cookie_warning.html") %}
+{% include("snippets/footer.html") %} {% include("snippets/cookie_warning.html") %}
 
-    <!-- JQuery / Bootstrap -->
-    <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+<!-- JQuery / Bootstrap -->
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"
+        integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
 
-    <!-- JQuery for search -->
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" crossorigin="anonymous"></script>
+<!-- JQuery for search -->
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" crossorigin="anonymous"></script>
 
-    <!-- Global scripts -->
-    <script src="{{ url_for('static', filename='js/global.js') }}"></script>
+<!-- Global scripts -->
+<script src="{{ url_for('static', filename='js/global.js') }}"></script>
 
-    {% block scripts %}{% endblock %}
+<script>
+    // Search
+    let base_movie_url = {{ url_for('movie.view_multiple') }}
+    window.search_results = {};
+    $(function () {
+        $("#searchBox").autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    type: "POST",
+                    url: "{{ url_for('movie.search') }}",
+                    dataType: "json",
+                    cache: false,
+                    data: {
+                        query: request.term,
+                        csrf_token: '{{ simple_form.csrf_token.current_token }}'
+                    },
+                    success: function (data) {
+                        window.search_results = data;
+                        response(Object.keys(data));
+                    },
+                    error: function (data) {
+                        clear_flashed_messages();
+                        if (!('responseJSON' in data) || !('msg' in data.responseJSON))
+                            flash_message('Search failed', 'danger');
+                        flash_message(data.responseJSON['msg'], 'danger');
+                    }
+                });
+            },
+            select: function (event, ui) {
+                // Redirect to movie page
+                let movie_id = window.search_results[ui.item.value];
+                if (movie_id === undefined) {
+                    return;
+                }
+                let movie_url = base_movie_url + movie_id;
+                window.location.href = movie_url;
+            },
+            minLength: 2
+        });
+    });
+</script>
+
+{% block scripts %}{% endblock %}
 </body>
 
 </html>

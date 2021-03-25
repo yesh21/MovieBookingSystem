@@ -1,9 +1,11 @@
 from Flask_Cinema_Site import db
 from Flask_Cinema_Site.models import Movie, TicketType, Seat, Viewing
+from Flask_Cinema_Site.roles import manager_permission
 from Flask_Cinema_Site.helper_functions import get_redirect_url
 from Flask_Cinema_Site.analysis.forms import FilterForm
 
-from flask import render_template, redirect, url_for, Blueprint, flash, request, abort, jsonify
+from flask import render_template, redirect, Blueprint, flash, request
+from flask_api import status
 
 from sqlalchemy import func, distinct
 from datetime import date, timedelta
@@ -15,6 +17,7 @@ analysis_blueprint = Blueprint(
 
 
 @analysis_blueprint.route('/', methods=['GET'])
+@manager_permission.require(status.HTTP_401_UNAUTHORIZED)
 def view_multiple():
     start_date = date.today() - timedelta(days=7)
     end_date = date.today()
@@ -80,6 +83,7 @@ def view_multiple():
 
 
 @analysis_blueprint.route('/movie/<int:movie_id>', methods=['GET'])
+@manager_permission.require(status.HTTP_401_UNAUTHORIZED)
 def view_single_movie(movie_id):
     m = Movie.query.get(movie_id)
     if not m:
