@@ -17,7 +17,7 @@ class RegisterTestCase(UserBaseTestCase):
             self.login_customerA()
             res = self.client.post(url_for('user.signup'))
             # Default for get_redirect_url
-            self.assertRedirects(res, '/')
+            self.assertRedirects(res, '/home')
 
     def test_register_correct(self):
         with self.client:
