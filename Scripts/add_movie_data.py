@@ -23,7 +23,7 @@ m1 = Movie(
          'Pugh, Scarlett Johansson',
     duration=123,
     rating=4.2,
-    hidden=True
+    hidden=False
 )
 db.session.add(m1)
 
@@ -41,7 +41,7 @@ m2 = Movie(
          'McKenna Grace, Carrie Coon, Bokeem Woodbine, Annie Potts',
     duration=125,
     rating=3.5,
-    hidden=False
+    hidden=True
 )
 
 db.session.add(m2)
@@ -78,7 +78,74 @@ m4 = Movie(
     hidden=False
 )
 
-db.session.add(m3)
+db.session.add(m4)
+
+m5 = Movie(
+    name='LockedDown',
+    overview='Just as they decide to separate, Linda and Paxton find life has other'
+             'plans when they are stuck at home in a mandatory lockdown. '
+             'Co-habitation is proving to be a challenge,  '
+             'but it will bring them closer together in the most surprising way.',
+    released=date(2020, 9, 11),
+    cover_art_name='lock.jpg',
+    directors='Doug Liman',
+    cast='Anne Hathaway, Chiwetel Ejiofor, Lucy Boynton, Jazmyn Simon, Dule Hill',
+    duration=140,
+    rating=4.0,
+    hidden=False
+)
+
+db.session.add(m5)
+
+m6 = Movie(
+    name='Inception',
+    overview='Cobb steals information from his targets by entering their dreams.'
+             'Saito offers to wipe clean Cobbs criminal history as payment for '
+             'performing an inception on his sick competitors son.  ',
+    released=date(2010, 9, 11),
+    cover_art_name='inception.jpg',
+    directors='Christopher Nolan',
+    cast='Leonardo DiCaprio, Joseph Gordon-Levitt, Tom Hardy, Cillian Murphy, Marion Cotillard',
+    duration=160,
+    rating=4.5,
+    hidden=False
+)
+
+db.session.add(m6)
+
+m7 = Movie(
+    name='The Martian',
+    overview='When astronauts blast off from the planet Mars, they leave behind'
+             'Mark Watney (Matt Damon), presumed dead after a fierce storm.'
+             'With only a meager amount of supplies, the stranded visitor must '
+             'utilize his wits and spirit to find a way to survive'
+             '(also the managers favourite movie!)',
+    released=date(2015, 10, 9),
+    cover_art_name='martian.jpg',
+    directors='Ridley Scott',
+    cast='Matt Damon, Jessica Chastain, Kate Mara Beth, Chiwetel Ejiofor, Jeff Daniels',
+    duration=120,
+    rating=5.0,
+    hidden=False
+)
+
+db.session.add(m7)
+
+m8 = Movie(
+    name='The Lord of the Rings: The Fellowship of the Ring',
+    overview='A young hobbit, Frodo, who has found the One Ring that belongs to'
+             'the Dark Lord Sauron, begins his journey with eight companions to'
+             'Mount Doom, the only place where it can be destroyed.',
+    released=date(2001, 10, 9),
+    cover_art_name='lotr.jpg',
+    directors='Peter Jackson',
+    cast='Sala Baker, Viggo Mortensen, Elijah Wood, Orlando Bloom, Ian Mckellen',
+    duration=160,
+    rating=5.0,
+    hidden=False
+)
+
+db.session.add(m8)
 db.session.commit()
 
 # Add some times for each movie

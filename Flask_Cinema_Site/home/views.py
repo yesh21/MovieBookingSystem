@@ -14,5 +14,6 @@ def boot():
 @home_blueprint.route('/', methods=['GET'])
 def home():
     movies = Movie.query.filter_by(hidden=False).all()
+    movies = movies[:4]
     return render_template('home_base.html', movies=movies)
     #return redirect(url_for('movie.view_multiple'))
