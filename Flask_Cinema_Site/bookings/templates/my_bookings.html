@@ -1,0 +1,36 @@
+{% extends 'booking_base.html' %}
+
+{% block content %}
+    <section class="jumbotron bg-transparent text-center p-0">
+        <div class="container">
+            <h1 class="jumbotron-heading">{{ title }}</h1>
+        </div>
+    </section>
+
+    <div class="container">
+        {% if show_all_btn %}
+            <a href="{{ url_for('bookings.my_bookings') }}">
+                <button class="btn btn-dark mb-3 w-100">Show all bookings</button>
+            </a>
+        {% else %}
+            <a href="{{ url_for('bookings.my_upcoming_bookings') }}">
+                <button class="btn btn-dark mb-3 w-100">Show upcoming bookings</button>
+            </a>
+        {% endif %}
+
+        {% for t in transactions %}
+            {% include 'snippets/booking_preview.html' %}
+        {% endfor %}
+        {% if not transactions %}
+            <div class="card w-100 bg-dark">
+                <div class="card-body text-center">
+                    <p class="h4">No bookings found</p>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}
+
+{% block scripts %}
+
+{% endblock %}

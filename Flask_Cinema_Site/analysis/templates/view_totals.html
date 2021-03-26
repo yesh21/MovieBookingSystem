@@ -118,7 +118,7 @@
                     <td>{{ date.date.strftime("%a %d/%m/%y") }}</td>
                     <td>{{ date.num_transactions }}</td>
                     <td>{{ date.seats_sold }}</td>
-                    <td>{{ "%.2f"|format(date.revenue) }}</td>
+                    <td>{{ '%.2f'|format(date.revenue) }}</td>
                 </tr>
             {% endfor %}
             {% if totals_by_date|length == 0 %}
