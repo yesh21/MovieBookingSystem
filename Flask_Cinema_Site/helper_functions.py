@@ -15,7 +15,8 @@ def get_redirect_url():
     # TODO ?next= dont work on POST requests???
     # TODO STOP redirect loops
     url = request.args.get('next')  # or request.referrer
-    if url and is_safe_url(url, app.config['SAFE_URL_HOSTS']):
+    # changed safe_url_hosts to server_name
+    if url and is_safe_url(url, app.config['SERVER_NAME']):
         return url
     return url_for('home.home')
 
