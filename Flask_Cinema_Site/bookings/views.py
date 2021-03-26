@@ -114,6 +114,7 @@ def my_upcoming_bookings():
     transactions = Transaction.query \
         .join(Transaction.viewings) \
         .filter(func.date(Viewing.time) >= date.today()) \
+        .filter(Transaction.user_id == current_user.id) \
         .order_by(func.date(Viewing.time))\
         .group_by(Viewing.id) \
         .all()
@@ -125,7 +126,8 @@ def my_upcoming_bookings():
 def my_bookings():
     transactions = Transaction.query \
         .join(Transaction.viewings) \
-        .order_by(func.date(Viewing.time))\
+        .order_by(func.date(Viewing.time)) \
+        .filter(Transaction.user_id == current_user.id) \
         .group_by(Viewing.id) \
         .all()
     return render_template('my_bookings.html', title='All bookings', transactions=transactions)
