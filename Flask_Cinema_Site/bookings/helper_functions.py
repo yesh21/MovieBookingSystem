@@ -15,10 +15,11 @@ from email.mime.base import MIMEBase
 from email import encoders
 
 
-def create_pdf(trans_id, user_id, movie):
-    transaction = Transaction.query.filter(Transaction.id == trans_id).first()
-    user = User.query.filter(User.id == user_id).first()
-    viewing = Viewing.query.filter(Viewing.movie_id == movie.id).first()
+def create_pdf(transaction, email_address):
+    user = transaction.user
+    viewing = transaction.viewings[0]
+    movie = viewing.movie
+
     count = 0
     data_array = []
 
@@ -60,7 +61,7 @@ def create_pdf(trans_id, user_id, movie):
 
     table = Table(data_array, style=style)
     pdf.build([title, table])
-    send_pdf(path, user.email)
+    send_pdf(path, email_address)
 
 
 def send_pdf(path, email):
