@@ -33,8 +33,7 @@ def make_booking_email_receipt_redirect(v: Viewing, seats_json, cash_payment_for
     # TODO email receipt
     create_pdf(new_transaction, email_address)
 
-    # TODO Redirect to transaction successful page
-    return redirect(url_for('bookings.my_upcoming_bookings'))
+    return render_template('transaction_complete.html', transaction=new_transaction)
 
 
 def get_validate_viewing(viewing_id):
