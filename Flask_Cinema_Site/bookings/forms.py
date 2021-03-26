@@ -9,10 +9,8 @@ from wtforms.validators import DataRequired, Length, Email, ValidationError
 import json
 
 
-class CashPaymentForm(FlaskForm):
+class BasePaymentForm(FlaskForm):
     seats_json = HiddenField('Selected Seats', validators=[DataRequired()])
-    customer_email = EmailField('Customer email', validators=[DataRequired(), Email()])
-    submit = SubmitField('Accept payment and book')
 
     def validate_seats_json(self, seats_json):
         seats = json.loads(self.seats_json.data)
@@ -26,8 +24,12 @@ class CashPaymentForm(FlaskForm):
                 raise ValidationError(f'Ticket type \'{ticket_type}\' not found')
 
 
-class PaymentForm(FlaskForm):
+class CashPaymentForm(BasePaymentForm):
+    customer_email = EmailField('Customer email', validators=[DataRequired(), Email()])
+    submit = SubmitField('Accept payment and book')
+
+
+class CardPaymentForm(BasePaymentForm):
     card = StringField('Card', validators=[DataRequired(), Length(min=2, max=20)])
-    email = StringField('Email', validators=[DataRequired(), Email()])
     cvc = PasswordField('CVC', validators=[DataRequired()])
     submit = SubmitField('Pay')
