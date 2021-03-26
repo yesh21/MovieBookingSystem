@@ -81,7 +81,7 @@ from Flask_Cinema_Site.movie.views import movies_blueprint
 app.register_blueprint(movies_blueprint, url_prefix='/movie')
 
 from Flask_Cinema_Site.bookings.views import bookings_blueprint
-app.register_blueprint(bookings_blueprint, url_prefix='/book')
+app.register_blueprint(bookings_blueprint, url_prefix='/booking')
 
 from Flask_Cinema_Site.analysis.views import analysis_blueprint
 app.register_blueprint(analysis_blueprint, url_prefix='/analysis')

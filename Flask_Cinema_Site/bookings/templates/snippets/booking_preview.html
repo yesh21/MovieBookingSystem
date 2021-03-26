@@ -1,0 +1,51 @@
+{% with %}
+    {% set v = t.viewings[0] %}
+    {% set m = v.movie %}
+
+    <div class="card bg-black mb-4">
+        <div class="card-body row">
+            <div class="col-lg-2 col-md-4 text-center m-1">
+                <a href="{{ url_for('movie.view_specific', movie_id=m.id) }}">
+                    <img class="img-fluid" src="{{ url_for('movie.static', filename=m.rel_cover_art_path()) }}">
+                </a>
+            </div>
+
+            <div class="col-lg col-md m-1">
+                <p class="h3"><a href="{{ url_for('movie.view_specific', movie_id=m.id) }}">{{ m.name }}</a></p>
+                <div class="d-flex justify-content-between border-bottom pb-2 mb-2">
+                    <div>{{ m.duration }} mins</div>
+                    <div>
+                        {{ m.get_star_rating_html() }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xl col-md-6 mb-3">
+                        <p class="h5">Seats:</p>
+                        {% for seat in t.seats %}
+                            <p class="mb-0">{{ seat.seat_number }} - {{ seat.ticket_type.name }}</p>
+                        {% endfor %}
+                    </div>
+                    <div class="col-xl col-md-6 mb-3">
+                        <p class="h5">Viewing details:</p>
+                        <p class="mb-0">Time: {{ v.time.strftime('%H:%M') | default('Unkown') }}</p>
+                        <p class="mb-0">Date: {{ v.time.strftime('%d/%m') | default('Unkown') }}</p>
+                    </div>
+                    <div class="col-xl-6 col-md-12">
+                        <p class="h5">Transaction details:</p>
+                        <div class="row">
+                            <div class="col">
+                                <p class="mb-0">Time: {{ t.datetime.strftime('%H:%M') | default('Unkown') }}</p>
+                                <p>Date: {{ t.datetime.strftime('%d/%m') | default('Unkown') }}</p>
+                            </div>
+                            <div class="col">
+                                <p class="mb-0">VAT: £{{ '%.2f' | format(t.get_cost() * 0.2) }}</p>
+                                <p>Total cost: £{{ '%.2f' | format(t.get_cost()) }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endwith %}

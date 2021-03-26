@@ -134,6 +134,9 @@ class Viewing(db.Model):
         @param user: User to book tickets for
         @return: New transaction object, Success / error message
         """
+        if len(seats) == 0:
+            return None, 'Missing seats'
+
         new_transaction = Transaction(user_id=user.id)
         for seat_number, ticket_type in seats:
             # Check number is correct

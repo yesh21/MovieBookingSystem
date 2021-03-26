@@ -9,7 +9,8 @@ from Flask_Cinema_Site.bookings.forms import CardPaymentForm, CashPaymentForm
 from Flask_Cinema_Site.bookings.helper_functions import create_pdf
 
 import json
-from datetime import datetime
+from datetime import datetime, date
+from sqlalchemy import func
 
 bookings_blueprint = Blueprint(
     'bookings', __name__,
@@ -25,6 +26,10 @@ def make_booking_email_receipt_redirect(v: Viewing, seats_json, cash_payment_for
         flash(msg, 'danger')
         return render_book_specific_viewing(v, cash_payment_form=cash_payment_form, card_payment_form=card_payment_form)
 
+    email_address = current_user.email
+    if cash_payment_form:
+        email_address = cash_payment_form.customer_email.data
+    
     # TODO email receipt
 
     # TODO Redirect to transaction successful page
@@ -100,6 +105,29 @@ def book_with_card(viewing_id):
     # Simulate card checking
     return make_booking_email_receipt_redirect(v, card_payment_form.seats_json.data,
                                                card_payment_form=card_payment_form)
+
+
+@bookings_blueprint.route('/upcoming', methods=['GET'])
+@login_required
+def my_upcoming_bookings():
+    transactions = Transaction.query \
+        .join(Transaction.viewings) \
+        .filter(func.date(Viewing.time) >= date.today()) \
+        .order_by(func.date(Viewing.time))\
+        .group_by(Viewing.id) \
+        .all()
+    return render_template('my_bookings.html', title='Upcoming bookings', transactions=transactions, show_all_btn=True)
+
+
+@bookings_blueprint.route('/all', methods=['GET'])
+@login_required
+def my_bookings():
+    transactions = Transaction.query \
+        .join(Transaction.viewings) \
+        .order_by(func.date(Viewing.time))\
+        .group_by(Viewing.id) \
+        .all()
+    return render_template('my_bookings.html', title='All bookings', transactions=transactions)
 
 
 @bookings_blueprint.route("/pay", methods=['GET', 'POST'])

@@ -60,7 +60,7 @@
                             {{ current_user.username }}
                         </a>
                         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
-                            <a class="dropdown-item" href="#">My Bookings</a>
+                            <a class="dropdown-item" href="{{ url_for('bookings.my_upcoming_bookings') }}">My Bookings</a>
                             <a class="dropdown-item" href="{{ url_for('user.manage') }}">Manage Account</a>
                             <div class="dropdown-divider"></div>
                             <form action="{{ url_for('user.logout') }}" method="post">
