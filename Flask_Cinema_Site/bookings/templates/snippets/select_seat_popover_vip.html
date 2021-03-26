@@ -1,0 +1,14 @@
+<div class="form-check">
+    <input class="form-check-input ticket_type_radio" type="radio" name="ticketTypeRadio" id="availableRadioVip"
+           value="available">
+    <label class="form-check-label" for="availableRadioVip">
+        Available
+    </label>
+</div>
+
+<div class="form-check">
+    <input class="form-check-input ticket_type_radio" type="radio" name="ticketTypeRadio" id="vipRadio" value="vip">
+    <label class="form-check-label" for="vipRadio">
+        VIP - {{ '£%.2f' | format(ticket_prices.vip) }}
+    </label>
+</div>

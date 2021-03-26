@@ -1,7 +1,8 @@
-from flask import render_template, redirect, Blueprint, flash, request
-from flask_login import current_user
+from flask import render_template, redirect, Blueprint, flash, url_for
+from flask_login import current_user, login_required
 
 from Flask_Cinema_Site import db
+from Flask_Cinema_Site.roles import manager_permission
 from Flask_Cinema_Site.models import Movie, Viewing, User, Transaction, Seat, TicketType
 from Flask_Cinema_Site.helper_functions import get_redirect_url, send_email
 from Flask_Cinema_Site.bookings.forms import CardPaymentForm, CashPaymentForm
@@ -15,6 +16,31 @@ bookings_blueprint = Blueprint(
     template_folder='templates',
     static_folder='static'
 )
+
+
+def make_booking_email_receipt_redirect(v: Viewing, seats_json, cash_payment_form=None, card_payment_form=None):
+    seats = json.loads(seats_json)
+    new_transaction, msg = v.book_seats(seats, current_user)
+    if not new_transaction:
+        flash(msg, 'danger')
+        return render_book_specific_viewing(v, cash_payment_form=cash_payment_form, card_payment_form=card_payment_form)
+
+    # TODO email receipt
+
+    # TODO Redirect to transaction successful page
+    return redirect(url_for('movie.view_multiple'))
+
+
+def get_validate_viewing(viewing_id):
+    v = Viewing.query.get(viewing_id)
+    if not v:
+        flash(f'Viewing with id [{viewing_id}] not found', 'danger')
+
+    # Check viewing in the future and not hidden
+    if v.time < datetime.now() and not v.movie.hidden:
+        flash(f'Viewing with id [{viewing_id}] not found', 'danger')
+
+    return v
 
 
 def render_book_specific_viewing(v: Viewing, cash_payment_form: CashPaymentForm = None,
@@ -31,15 +57,10 @@ def render_book_specific_viewing(v: Viewing, cash_payment_form: CashPaymentForm 
 
 
 @bookings_blueprint.route('/viewing/<int:viewing_id>', methods=['GET'])
+@login_required
 def view_specific(viewing_id):
-    v = Viewing.query.get(viewing_id)
+    v = get_validate_viewing(viewing_id)
     if not v:
-        flash(f'Viewing with id [{viewing_id}] not found', 'danger')
-        return redirect(get_redirect_url())
-
-    # Check viewing in the future and not hidden
-    if v.time < datetime.now() and not v.movie.hidden:
-        flash(f'Viewing with id [{viewing_id}] not found', 'danger')
         return redirect(get_redirect_url())
 
     cash_payment_form = CashPaymentForm()
@@ -47,15 +68,10 @@ def view_specific(viewing_id):
 
 
 @bookings_blueprint.route('/viewing/<int:viewing_id>/pay/cash', methods=['POST'])
+@manager_permission.require()
 def book_with_cash(viewing_id):
-    v = Viewing.query.get(viewing_id)
+    v = get_validate_viewing(viewing_id)
     if not v:
-        flash(f'Viewing with id [{viewing_id}] not found', 'danger')
-        return redirect(get_redirect_url())
-
-    # Check viewing in the future and not hidden
-    if v.time < datetime.now() and not v.movie.hidden:
-        flash(f'Viewing with id [{viewing_id}] not found', 'danger')
         return redirect(get_redirect_url())
 
     cash_payment_form = CashPaymentForm()
@@ -64,29 +80,15 @@ def book_with_cash(viewing_id):
             flash(cash_payment_form.seats_json.errors[0], 'danger')
         return render_book_specific_viewing(v, cash_payment_form=cash_payment_form)
 
-    # Make booking
-    seats = json.loads(cash_payment_form.seats_json.data)
-    new_transaction, msg = v.book_seats(seats, current_user)
-    if not new_transaction:
-        flash(msg, 'danger')
-        return render_book_specific_viewing(v, cash_payment_form=cash_payment_form)
-
-    # TODO email recipt
-
-    # TODO Redirect to transaction successful page
-    return render_book_specific_viewing(v, cash_payment_form=cash_payment_form)
+    return make_booking_email_receipt_redirect(v, cash_payment_form.seats_json.data,
+                                               cash_payment_form=cash_payment_form)
 
 
 @bookings_blueprint.route('/viewing/<int:viewing_id>/pay/card', methods=['POST'])
+@login_required
 def book_with_card(viewing_id):
-    v = Viewing.query.get(viewing_id)
+    v = get_validate_viewing(viewing_id)
     if not v:
-        flash(f'Viewing with id [{viewing_id}] not found', 'danger')
-        return redirect(get_redirect_url())
-
-    # Check viewing in the future and not hidden
-    if v.time < datetime.now() and not v.movie.hidden:
-        flash(f'Viewing with id [{viewing_id}] not found', 'danger')
         return redirect(get_redirect_url())
 
     card_payment_form = CardPaymentForm()
@@ -96,18 +98,8 @@ def book_with_card(viewing_id):
         return render_book_specific_viewing(v, card_payment_form=card_payment_form)
 
     # Simulate card checking
-
-    # Make booking
-    seats = json.loads(card_payment_form.seats_json.data)
-    new_transaction, msg = v.book_seats(seats, current_user)
-    if not new_transaction:
-        flash(msg, 'danger')
-        return render_book_specific_viewing(v, card_payment_form=card_payment_form)
-
-    # TODO email receipt
-
-    # TODO Redirect to transaction successful page
-    return render_book_specific_viewing(v, card_payment_form=card_payment_form)
+    return make_booking_email_receipt_redirect(v, card_payment_form.seats_json.data,
+                                               card_payment_form=card_payment_form)
 
 
 @bookings_blueprint.route("/pay", methods=['GET', 'POST'])
