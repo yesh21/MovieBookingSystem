@@ -181,7 +181,7 @@
                                 </tbody>
                             </table>
 
-                            {{ cash_payment_form.seats_json(id='seatsCashJson', type='text') }}
+                            {{ cash_payment_form.seats_json(id='seatsCashJson') }}
                             {{ get_field_group_html(cash_payment_form.customer_email) }}
                             {{ cash_payment_form.csrf_token }}
 
@@ -263,7 +263,7 @@
                             </tbody>
                         </table>
 
-                        {{ card_payment_form.seats_json(id='seatsCardJson', type='text') }}
+                        {{ card_payment_form.seats_json(id='seatsCardJson') }}
                         {{ get_field_group_html(card_payment_form.card) }}
                         {{ get_field_group_html(card_payment_form.cvc) }}
                         {{ card_payment_form.csrf_token }}
