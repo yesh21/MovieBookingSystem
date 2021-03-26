@@ -1,0 +1,41 @@
+<tr>
+    <td>
+        <span class="h5">{{ char }}</span>
+    </td>
+    <td>
+        <button type="button"
+                class="btn btn-info seat-btn {{ 'seat-available' if is_seat_available(char ~ 1) else 'seat-booked disabled' }}"
+                id="{{ char }}1">1
+        </button>
+    </td>
+    <td>
+        <button type="button"
+                class="btn btn-info seat-btn {{ 'seat-available' if is_seat_available(char ~ 2) else 'seat-booked disabled' }}"
+                id="{{ char }}2">2
+        </button>
+    </td>
+    <td><span class="mx-1"></span></td>
+    {% for i in range(3, 8) %}
+        <td>
+            <button type="button"
+                    class="btn btn-info seat-btn {{ 'seat-available' if is_seat_available(char ~ i) else 'seat-booked disabled' }}"
+                    id="{{ char }}{{ i }}">{{ i }}</button>
+        </td>
+    {% endfor %}
+    <td><span class="mx-1"></span></td>
+    <td>
+        <button type="button"
+                class="btn btn-info seat-btn {{ 'seat-available' if is_seat_available(char ~ 8) else 'seat-booked disabled' }}"
+                id="{{ char }}8">8
+        </button>
+    </td>
+    <td>
+        <button type="button"
+                class="btn btn-info seat-btn {{ 'seat-available' if is_seat_available(char ~ 9) else 'seat-booked disabled' }}"
+                id="{{ char }}9">9
+        </button>
+    </td>
+    <td>
+        <span class="h5">{{ char }}</span>
+    </td>
+</tr>

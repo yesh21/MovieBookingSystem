@@ -1,0 +1,43 @@
+<div class="row mx-neg-1 mb-3">
+    <!-- Totals by movie -->
+    <table class="table bg-black col mx-1">
+        <thead>
+        <tr>
+            <th colspan="5">Totals by movie</th>
+        </tr>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Name</th>
+            <th scope="col">Number transactions</th>
+            <th scope="col">Number seats sold</th>
+            <th scope="col">Revenue (£)</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for movie in totals_by_movie %}
+            <tr>
+                <td>{{ movie.id }}</td>
+                <td>
+                    <a href="{{ url_for('analysis.view_single_movie', movie_id=movie.id) }}">{{ movie.name }}</a>
+                </td>
+                <td>{{ movie.num_transactions }}</td>
+                <td>{{ movie.seats_sold }}</td>
+                <td>{{ '%.2f'|format(movie.revenue) }}</td>
+            </tr>
+        {% endfor %}
+        {% if totals_by_movie|length == 0 %}
+            <tr>
+                <td colspan="5">No tickets sold</td>
+            </tr>
+        {% endif %}
+        </tbody>
+    </table>
+
+    {% if totals.num_transactions %}
+        <div class="bg-black col mx-1 p-0">
+            <div class="p-2">
+                <canvas id="totalsByMovieChart"></canvas>
+            </div>
+        </div>
+    {% endif %}
+</div>

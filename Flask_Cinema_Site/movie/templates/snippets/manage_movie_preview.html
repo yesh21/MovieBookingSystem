@@ -12,13 +12,13 @@
             </div>
             <div class="col">
                 {% if m.hidden %}
-                    <button class="btn btn-primary w-100 mb-1 show-movie-btn" data-movie-id="{{ m.id }}">Show</button>
+                    <button class="btn btn-primary w-100 mb-1 show-hide-movie-btn" data-movie-id="{{ m.id }}">Show</button>
                 {% else %}
-                    <button class="btn btn-primary w-100 mb-1 hide-movie-btn" data-movie-id="{{ m.id }}">Hide</button>
+                    <button class="btn btn-primary w-100 mb-1 show-hide-movie-btn" data-movie-id="{{ m.id }}">Hide</button>
                 {% endif %}
             </div>
             <div class="col">
-                <button class="btn btn-success w-100 mb-1 disabled">View analytics</button>
+                <a class="btn btn-success w-100 mb-1" href="{{ url_for('analysis.view_single_movie', movie_id=m.id) }}">View analytics</a>
             </div>
         </div>
     </td>
