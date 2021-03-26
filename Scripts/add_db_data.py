@@ -122,7 +122,7 @@ db.session.commit()
 # For each viewing add some seats
 for v in Viewing.query.all():
     for char in ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K']:
-        for i in range(9):
+        for i in range(1, 10):
             v.seats.append(Seat(
                 seat_number=char + str(i)
             ))

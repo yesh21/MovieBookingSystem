@@ -80,7 +80,7 @@
                                 <p class="h6 my-1">{{ day[0].strftime("%a %d/%m/%y") }}</p>
                                 {% for v in day[1] %}
                                     <div class="bg-black d-inline-block mx-auto my-1 rounded">
-                                        <a href="{{ url_for('bookings.view_specific', viewing=v.id, movie=v.movie_id) }}">
+                                        <a href="{{ url_for('bookings.view_specific', viewing_id=v.id) }}">
                                             <span class="px-2 ">{{ v.time.strftime("%H:%M") }}</span>
                                         </a>
                                     </div>

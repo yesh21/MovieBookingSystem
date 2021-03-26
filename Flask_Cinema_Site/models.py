@@ -7,6 +7,7 @@ from datetime import datetime
 from time import time
 from math import floor
 import jwt
+import re
 
 
 class Role(db.Model):
@@ -99,6 +100,12 @@ class Transaction(db.Model):
 
     datetime = db.Column(db.DateTime, nullable=False, default=datetime.now())
 
+    def get_cost(self):
+        cost = 0.0
+        for s in self.seats:
+            cost += s.ticket_type.price
+        return cost
+
 
 class Viewing(db.Model):
     __tablename__ = "viewing"
@@ -115,6 +122,40 @@ class Viewing(db.Model):
     # TODO Rename to datetime?
     time = db.Column(db.DateTime, nullable=False)
     price = db.Column(db.Float, nullable=False)
+
+    def is_seat_available(self, seat_number):
+        s = Seat.query.filter_by(viewing_id=self.id, seat_number=seat_number, transaction_id=None).first()
+        return s is not None
+
+    def book_seats(self, seats, user: User) -> (Transaction, str):
+        """
+        Books seats for the given user
+        @param seats: List of tuples (seat num, ticket type) [('A1', 'Child'), ('A2', 'Adult')]
+        @param user: User to book tickets for
+        @return: New transaction object, Success / error message
+        """
+        new_transaction = Transaction(user_id=user.id)
+        for seat_number, ticket_type in seats:
+            # Check number is correct
+            if not Seat.is_number_valid(seat_number):
+                return None, f'Seat \'{seat_number}\' is invalid'
+
+            s = Seat.query.filter_by(viewing_id=self.id, seat_number=seat_number).first()
+            if not s:
+                return None, f'Seat \'{seat_number}\' not found'
+
+            if s.transaction_id is not None:
+                return None, f'Seat \'{seat_number}\' already booked'
+
+            ticket_type = TicketType.query.filter_by(name=ticket_type).first()
+            if not ticket_type:
+                return None, f'Ticket type {ticket_type} not found'
+
+            new_transaction.seats.append(s)
+            ticket_type.seats.append(s)
+
+        db.session.commit()
+        return new_transaction, 'Seats booked successfully'
 
 
 class Movie(db.Model):
@@ -163,6 +204,11 @@ class Seat(db.Model):
 
     # Needs to be unique to viewing only
     seat_number = db.Column(db.String(10), nullable=False)
+
+    @staticmethod
+    def is_number_valid(seat_num):
+        regex = re.compile(r'^([A-K][0-9])$')
+        return regex.match(seat_num) is not None
 
 
 class TicketType(db.Model):

@@ -1,0 +1,24 @@
+<div class="row justify-content-center pt-2">
+    <div class="col-sm-1">
+        <p class="pos_fixed">{{ char }}</p>
+    </div>
+    <div class="col-sm-1">
+        <div class="d-flex justify-content-center">
+            <button type="button" class="btn btn-info seat-btn {{ 'seat-available' if is_seat_available(char ~ 1) else 'seat-booked disabled' }}" id="{{ char }}1">1</button>
+            <button type="button" class="btn btn-info seat-btn {{ 'seat-available' if is_seat_available(char ~ 2) else 'seat-booked disabled' }}" id="{{ char }}2">2</button>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="d-flex justify-content-center">
+            {% for i in range(3, 8) %}
+                <button type="button" class="btn btn-info seat-btn {{ 'seat-available' if is_seat_available(char ~ i) else 'seat-booked disabled' }}" id="{{ char }}{{ i }}">{{ i }}</button>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="col-sm-1">
+        <div class="d-flex justify-content-center">
+            <button type="button" class="btn btn-info seat-btn {{ 'seat-available' if is_seat_available(char ~ 8) else 'seat-booked disabled' }}" id="{{ char }}8">8</button>
+            <button type="button" class="btn btn-info seat-btn {{ 'seat-available' if is_seat_available(char ~ 9) else 'seat-booked disabled' }}" id="{{ char }}9">9</button>
+        </div>
+    </div>
+</div>

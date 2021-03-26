@@ -1,0 +1,31 @@
+<div class="form-check">
+    <input class="form-check-input ticket_type_radio" type="radio" name="ticketTypeRadio" id="availableRadio"
+           value="available">
+    <label class="form-check-label" for="availableRadio">
+        Available
+    </label>
+</div>
+
+<div class="form-check">
+    <input class="form-check-input ticket_type_radio" type="radio" name="ticketTypeRadio" id="childRadio" value="child">
+    <label class="form-check-label" for="childRadio">
+        Child - {{ '£%.2f' | format(ticket_prices.child) }}
+    </label>
+</div>
+
+<div class="form-check">
+    <input class="form-check-input ticket_type_radio" type="radio" name="ticketTypeRadio" id="seniorRadio" value="senior">
+    <label class="form-check-label" for="seniorRadio">
+        Senior - {{ '£%.2f' | format(ticket_prices.senior) }}
+    </label>
+</div>
+
+<div class="form-check">
+    <input class="form-check-input ticket_type_radio" type="radio" name="ticketTypeRadio" id="adultRadio" value="adult">
+    <label class="form-check-label" for="adultRadio">
+        Adult - {{ '£%.2f' | format(ticket_prices.adult) }}
+    </label>
+</div>
+
+
+
