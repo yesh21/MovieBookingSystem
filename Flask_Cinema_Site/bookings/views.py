@@ -29,11 +29,12 @@ def make_booking_email_receipt_redirect(v: Viewing, seats_json, cash_payment_for
     email_address = current_user.email
     if cash_payment_form:
         email_address = cash_payment_form.customer_email.data
-    
+
     # TODO email receipt
+    create_pdf(new_transaction, email_address)
 
     # TODO Redirect to transaction successful page
-    return redirect(url_for('movie.view_multiple'))
+    return redirect(url_for('bookings.my_upcoming_bookings'))
 
 
 def get_validate_viewing(viewing_id):
