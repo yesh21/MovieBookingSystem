@@ -42,13 +42,7 @@
         let show_movie_url = '{{ url_for('movie.show') }}';
         let hide_movie_url = '{{ url_for('movie.hide') }}';
 
-        // Show movie
-        $('.show-movie-btn').on('click', function () {
-            let btn = $(this);
-            let params = {
-                'csrf_token': '{{ simple_form.csrf_token.current_token }}',
-                'id': btn.data('movie-id')
-            }
+        let show_movie = function (btn, params) {
             $.post(show_movie_url, params)
                 .done(function () {
                     // Switch functionality
@@ -62,15 +56,9 @@
                         flash_message('Show movie failed', 'danger');
                     flash_message(data.responseJSON['msg'], 'danger');
                 });
-        });
+        };
 
-        // Hide movie
-        $('.hide-movie-btn').on('click', function () {
-            let btn = $(this);
-            let params = {
-                'csrf_token': '{{ simple_form.csrf_token.current_token }}',
-                'id': btn.data('movie-id')
-            }
+        let hide_movie = function (btn, params) {
             $.post(hide_movie_url, params)
                 .done(function () {
                     // Switch functionality
@@ -84,7 +72,21 @@
                         flash_message('Show movie failed', 'danger');
                     flash_message(data.responseJSON['msg'], 'danger');
                 });
-        });
+        }
 
+        // Show / hide movie
+        $('.show-hide-movie-btn').on('click', function () {
+            let btn = $(this);
+            let params = {
+                'csrf_token': '{{ simple_form.csrf_token.current_token }}',
+                'id': btn.data('movie-id')
+            };
+
+            if(btn.text() === 'Show') {
+                show_movie(btn, params);
+            } else if (btn.text() === 'Hide') {
+                hide_movie(btn, params);
+            }
+        });
     </script>
 {% endblock %}

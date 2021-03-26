@@ -2,6 +2,12 @@
 
 {% block content %}
     <div class="container">
+        {% if is_manager() %}
+            <div id="hiddenWarning" class="alert alert-warning {{ '' if movie.hidden else 'd-none' }}">
+                This movie is currently hidden
+            </div>
+        {% endif %}
+
         <div class="row mb-4">
             <!-- Cover art -->
             <div class="col-md">
@@ -74,7 +80,7 @@
                                 <p class="h6 my-1">{{ day[0].strftime("%a %d/%m/%y") }}</p>
                                 {% for v in day[1] %}
                                     <div class="bg-black d-inline-block mx-auto my-1 rounded">
-                                        <a href="{{ url_for('bookings.view_specific', viewing=v.id, movie=v.movie_id) }}">
+                                        <a href="{{ url_for('bookings.view_specific', viewing_id=v.id) }}">
                                             <span class="px-2 ">{{ v.time.strftime("%H:%M") }}</span>
                                         </a>
                                     </div>
@@ -144,6 +150,7 @@
             let show_movie_btn = $('#showMovieBtn');
             let hide_movie_url = '{{ url_for('movie.hide') }}';
             let hide_movie_btn = $('#hideMovieBtn');
+            let hidden_warning = $('#hiddenWarning');
 
             // Show movie
             show_movie_btn.on('click', function () {
@@ -152,6 +159,7 @@
                         // Hide / show buttons
                         show_movie_btn.addClass('d-none');
                         hide_movie_btn.removeClass('d-none');
+                        hidden_warning.addClass('d-none');
                     })
                     .fail(function (data) {
                         // Display error message as alert at top of page
@@ -168,6 +176,7 @@
                         // Hide / show buttons
                         hide_movie_btn.addClass('d-none');
                         show_movie_btn.removeClass('d-none');
+                        hidden_warning.removeClass('d-none');
                     })
                     .fail(function (data) {
                         // Display error message as alert at top of page

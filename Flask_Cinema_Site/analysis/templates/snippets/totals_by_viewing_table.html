@@ -1,0 +1,33 @@
+<!-- Totals by viewing -->
+<table class="table bg-black">
+    <thead>
+    <tr>
+        <th colspan="6">Totals by viewing</th>
+    </tr>
+    <tr>
+        <th scope="col">#</th>
+        <th scope="col">Time</th>
+        <th scope="col">Date</th>
+        <th scope="col">Number transactions</th>
+        <th scope="col">Number seats sold</th>
+        <th scope="col">Revenue (£)</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for viewing in totals_by_viewing %}
+        <tr>
+            <td>{{ viewing.id }}</td>
+            <td>{{ viewing.time.strftime("%H:%M") }}</td>
+            <td>{{ viewing.time.strftime("%a %d/%m/%y") }}</td>
+            <td>{{ viewing.num_transactions }}</td>
+            <td>{{ viewing.seats_sold }}</td>
+            <td>{{ '%.2f'|format(viewing.revenue) }}</td>
+        </tr>
+    {% endfor %}
+    {% if totals_by_viewing|length == 0 %}
+        <tr>
+            <td colspan="6">No tickets sold</td>
+        </tr>
+    {% endif %}
+    </tbody>
+</table>

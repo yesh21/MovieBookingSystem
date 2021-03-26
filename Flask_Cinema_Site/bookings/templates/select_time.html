@@ -1,143 +1,438 @@
 {% extends 'booking_base.html' %}
 
 {% block head %}
-<link rel="stylesheet" href="{{ url_for('bookings.static', filename='css/bookings.css') }}">
+    <link rel="stylesheet" href="{{ url_for('bookings.static', filename='css/bookings.css') }}">
 
 {% endblock %}
 
 {% block content %}
-<div class="container">
-    <div class="row justify-content-md-center">
-        <h1>You Have Selected <span style="color:red">{{title}}</span></h1>
-    </div>
-    <div class="row">
-        <h2>At time: </h2>
-    </div>
-    <div class="row justify-content-md-center">
-        <div class=" bg-success text-white">
-            <h2>{{times.time.strftime('%H:%M') }} On {{times.time.strftime('%d/%m') }}</h2>
-        </div>
-    </div>
-    <div class="row">
-        <h2>Select Seat: </h2>
-    </div>
-
-    <!--Seating-->
-    <div class="row">
-        <span class="border border-primary w-100">
-            <p class="text-monospace text-center">Screen</p>
-        </span>
-    </div>
-
     <div class="container">
-        {% for char in "ABCDEFG"|list %}
-        <div class="row justify-content-center pt-2">
-            <div class="col-sm-1">
-                <p class="pos_fixed">{{char}}</p>
-            </div>
-            <div class="col-sm-1">
-                <div class="d-flex justify-content-center">
-                    <button type="button" class="btn btn-info disabled" id="{{char}}1">1</button>
-                    <button type="button" class="btn btn-info" id="{{char}}2">2</button>
-                </div>
-            </div>
-            <div class="col-sm-2">
-                <div class="d-flex justify-content-center">
-                    <button type="button" class="btn btn-info" id="{{char}}3">3</button>
-                    <button type="button" class="btn btn-info" id="{{char}}4">4</button>
-                    <button type="button" class="btn btn-info" id="{{char}}5">5</button>
-                    <button type="button" class="btn btn-info" id="{{char}}6">6</button>
-                    <button type="button" class="btn btn-info" id="{{char}}7">7</button>
-                </div>
-            </div>
-            <div class="col-sm-1">
-                <div class="d-flex justify-content-center">
-                    <button type="button" class="btn btn-info" id="{{char}}8">8</button>
-                    <button type="button" class="btn btn-info" id="{{char}}9">9</button>
-                </div>
+        <div class="row justify-content-md-center">
+            <h1>You Have Selected
+                <a class="text-danger"
+                   href="{{ url_for('movie.view_specific', movie_id=viewing.movie.id) }}">{{ viewing.movie.name }}</a>
+            </h1>
+        </div>
+        <div class="row">
+            <h2>At time: </h2>
+        </div>
+        <div class="row justify-content-md-center">
+            <div class=" bg-success text-white">
+                <h2>{{ viewing.time.strftime('%H:%M') }} On {{ viewing.time.strftime('%d/%m') }}</h2>
             </div>
         </div>
-        {% endfor %}
-
-        <div class="row justify-content-center pt-5">
-            <div class="col-sm-1">
-                <p class="pos_fixed">H</p>
-            </div>
-            <div class="col-sm-1">
-                <div class="d-flex justify-content-center">
-                    <button type="button" class="btn btn-success" id="H1">1</button>
-                    <button type="button" class="btn btn-info" id="H2">2</button>
-                </div>
-            </div>
-            <div class="col-sm-2">
-                <div class="d-flex justify-content-center">
-                    <button type="button" class="btn btn-info" id="H3">3</button>
-                    <button type="button" class="btn btn-info" id="H4">4</button>
-                    <button type="button" class="btn btn-info" id="H5">5</button>
-                    <button type="button" class="btn btn-info" id="H6">6</button>
-                    <button type="button" class="btn btn-info" id="H7">7</button>
-                </div>
-            </div>
-            <div class="col-sm-1">
-                <div class="d-flex justify-content-center">
-                    <button type="button" class="btn btn-info" id="H8">8</button>
-                    <button type="button" class="btn btn-info" id="H9">9</button>
-                </div>
-            </div>
+        <div class="row">
+            <h2>Select Seat: </h2>
         </div>
 
-        {% for char in "IJK"|list %}
-        <div class="row justify-content-center pt-2">
-            <div class="col-sm-1">
-                <p class="pos_fixed">{{char}}</p>
+        <!--Seating-->
+        <table class="text-center mx-auto">
+            <thead>
+            <tr>
+                <th></th>
+                <th colspan="11" class="border">Screen</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for char in "ABCDEFG" | list %}
+                {% include 'snippets/select_seats_row.html' %}
+            {% endfor %}
+
+            {% for char in "HIJ" | list %}
+                {% include 'snippets/select_seats_row.html' %}
+            {% endfor %}
+
+            <tr>
+                <td>
+                    <span class="h5">VIP</span>
+                </td>
+                <td>
+                    <button type="button"
+                            class="btn btn-info seat-btn {{ 'seat-available-vip' if is_seat_available('K' ~ 1) else 'seat-booked disabled' }}"
+                            id="K1">1
+                    </button>
+                </td>
+                <td>
+                    <button type="button"
+                            class="btn btn-info seat-btn {{ 'seat-available-vip' if is_seat_available('K' ~ 2) else 'seat-booked disabled' }}"
+                            id="K2">2
+                    </button>
+                </td>
+                <td><span class="mx-1"></span></td>
+                {% for i in range(3, 8) %}
+                    <td>
+                        <button type="button"
+                                class="btn btn-info seat-btn {{ 'seat-available-vip' if is_seat_available('K' ~ i) else 'seat-booked disabled' }}"
+                                id="K{{ i }}">{{ i }}</button>
+                    </td>
+                {% endfor %}
+                <td><span class="mx-1"></span></td>
+                <td>
+                    <button type="button"
+                            class="btn btn-info seat-btn {{ 'seat-available-vip' if is_seat_available('K' ~ 8) else 'seat-booked disabled' }}"
+                            id="K8">8
+                    </button>
+                </td>
+                <td>
+                    <button type="button"
+                            class="btn btn-info seat-btn {{ 'seat-available-vip' if is_seat_available('K' ~ 9) else 'seat-booked disabled' }}"
+                            id="K9">9
+                    </button>
+                </td>
+                <td>
+                    <span class="h5">VIP</span>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <!-- Book buttons -->
+        <div class="row justify-content-center mt-4">
+            {% if is_manager() %}
+                <button type="button" class="btn btn-primary mx-2" data-toggle="modal" data-target="#cashBookModal">Book
+                    (Cash)
+                </button>
+            {% endif %}
+
+            <button type="button" class="btn btn-primary mx-2" data-toggle="modal" data-target="#cardBookModal">Book
+                (Card)
+            </button>
+        </div>
+
+        <!--Alternative Times on same day-->
+        <div class="row pt-5">
+            <div class="col">
+                <hr>
             </div>
-            <div class="col-sm-1">
-                <div class="d-flex justify-content-center">
-                    <button type="button" class="btn btn-info" id="{{char}}1">1</button>
-                    <button type="button" class="btn btn-info" id="{{char}}2">2</button>
-                </div>
-            </div>
-            <div class="col-sm-2">
-                <div class="d-flex justify-content-center">
-                    <button type="button" class="btn btn-info" id="{{char}}3">3</button>
-                    <button type="button" class="btn btn-info" id="{{char}}4">4</button>
-                    <button type="button" class="btn btn-info" id="{{char}}5">5</button>
-                    <button type="button" class="btn btn-info" id="{{char}}6">6</button>
-                    <button type="button" class="btn btn-info" id="{{char}}7">7</button>
-                </div>
-            </div>
-            <div class="col-sm-1">
-                <div class="d-flex justify-content-center">
-                    <button type="button" class="btn btn-info" id="{{char}}8">8</button>
-                    <button type="button" class="btn btn-info" id="{{char}}9">9</button>
-                </div>
+            <div class="col-auto">Alternative Times</div>
+            <div class="col">
+                <hr>
             </div>
         </div>
-        {% endfor %}
+        <!--Insert list of times in the same day here-->
     </div>
 
-    <!--Payment-->
-    <div id="PaymentsButton">
-        <button>Book Now.</button>
-    </div>
+    {% if is_manager() %}
+        <!-- Book with cash modal -->
+        <div class="modal fade" id="cashBookModal" tabindex="-1" role="dialog" aria-labelledby="cashBookModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content bg-dark">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="cashBookModalLabel">{{ viewing.movie.name }}
+                            - {{ viewing.time.strftime('%H:%M - %d/%m/%y') }}</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <form action="{{ url_for('bookings.book_with_cash', viewing_id=viewing.id) }}" method="post">
+                        <div class="modal-body">
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th class="border-top-0">Ticket type</th>
+                                    <th class="border-top-0">Seats</th>
+                                    <th class="border-top-0">Total (£)</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td>Child</td>
+                                    <td class="modal-seats-child"></td>
+                                    <td class="modal-price-child"></td>
+                                </tr>
+                                <tr>
+                                    <td>Senior</td>
+                                    <td class="modal-seats-senior"></td>
+                                    <td class="modal-price-senior"></td>
+                                </tr>
+                                <tr>
+                                    <td>Adult</td>
+                                    <td class="modal-seats-adult"></td>
+                                    <td class="modal-price-adult"></td>
+                                </tr>
+                                <tr>
+                                    <td>VIP</td>
+                                    <td class="modal-seats-vip"></td>
+                                    <td class="modal-price-vip"></td>
+                                </tr>
+                                <tr>
+                                    <td class="border-top-0"></td>
+                                    <td class="border-top-0"></td>
+                                    <td class="border-top-0"></td>
+                                </tr>
+                                <tr class="bg-black">
+                                    <td class="border-top-0">VAT</td>
+                                    <td class="border-top-0"></td>
+                                    <td class="border-top-0 modal-vat"></td>
+                                </tr>
+                                <tr class="bg-black">
+                                    <td>Total</td>
+                                    <td></td>
+                                    <td class="modal-total-price"></td>
+                                </tr>
+                                </tbody>
+                            </table>
 
-    <!--Alternative Times on same day-->
-    <div class="row pt-5">
-        <div class="col">
-            <hr>
+                            <table class="table bg-black rounded">
+                                <tbody>
+
+                                </tbody>
+                            </table>
+
+                            {{ cash_payment_form.seats_json(id='seatsCashJson') }}
+                            {{ get_field_group_html(cash_payment_form.customer_email) }}
+                            {{ cash_payment_form.csrf_token }}
+
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                            {{ cash_payment_form.submit(class='btn btn-primary') }}
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
-        <div class="col-auto">Alternative Times</div>
-        <div class="col">
-            <hr>
+    {% endif %}
+
+    <!-- Book with card modal -->
+    <div class="modal fade" id="cardBookModal" tabindex="-1" role="dialog" aria-labelledby="cardBookModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content bg-dark">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="cardBookModalLabel">{{ viewing.movie.name }}
+                        - {{ viewing.time.strftime('%H:%M - %d/%m/%y') }}</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form action="{{ url_for('bookings.book_with_card', viewing_id=viewing.id) }}" method="post">
+                    <div class="modal-body">
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th class="border-top-0">Ticket type</th>
+                                <th class="border-top-0">Seats</th>
+                                <th class="border-top-0">Total (£)</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>Child</td>
+                                <td class="modal-seats-child"></td>
+                                <td class="modal-price-child"></td>
+                            </tr>
+                            <tr>
+                                <td>Senior</td>
+                                <td class="modal-seats-senior"></td>
+                                <td class="modal-price-senior"></td>
+                            </tr>
+                            <tr>
+                                <td>Adult</td>
+                                <td class="modal-seats-adult"></td>
+                                <td class="modal-price-adult"></td>
+                            </tr>
+                            <tr>
+                                <td>VIP</td>
+                                <td class="modal-seats-vip"></td>
+                                <td class="modal-price-vip"></td>
+                            </tr>
+                            <tr>
+                                <td class="border-top-0"></td>
+                                <td class="border-top-0"></td>
+                                <td class="border-top-0"></td>
+                            </tr>
+                            <tr class="bg-black">
+                                <td class="border-top-0">VAT</td>
+                                <td class="border-top-0"></td>
+                                <td class="border-top-0 modal-vat"></td>
+                            </tr>
+                            <tr class="bg-black">
+                                <td>Total</td>
+                                <td></td>
+                                <td class="modal-total-price"></td>
+                            </tr>
+                            </tbody>
+                        </table>
+
+                        <table class="table bg-black rounded">
+                            <tbody>
+
+                            </tbody>
+                        </table>
+
+                        {{ card_payment_form.seats_json(id='seatsCardJson') }}
+                        {{ get_field_group_html(card_payment_form.card) }}
+                        {{ get_field_group_html(card_payment_form.cvc) }}
+                        {{ card_payment_form.csrf_token }}
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        {{ card_payment_form.submit(class='btn btn-primary') }}
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
-    <!--Insert list of times in the same day here-->
-</div>
-
 
 {% endblock %}
 
 {% block scripts %}
-<script src="{{ url_for('bookings.static', filename='js/seating.js') }}"></script>
+    <!--<script src="{{ url_for('bookings.static', filename='js/seating.js') }}"></script>-->
+    <script>
+        let btn_classes = {
+            'available': 'btn-info seat-available',
+            'child': 'btn-success seat-child',
+            'senior': 'btn-light seat-senior',
+            'adult': 'btn-dark seat-adult',
+            'vip': 'btn-warning seat-vip'
+        }
 
+        // Showed booked when clicking on booked seats
+        let booked_seat_btns = $('.seat-booked');
+        booked_seat_btns.popover({
+            content: 'Booked',
+            placement: 'top',
+            trigger: 'focus'
+        });
+
+        // If booking fails reload selected seats
+        let init_buttons_from_json = function (seats_json) {
+            let seats = JSON.parse(seats_json)
+            seats.forEach(function (seat) {
+                let seat_num = seat[0];
+                let ticket_type = seat[1];
+                $(`#${seat_num}`).removeClass().addClass('btn seat-btn').addClass(btn_classes[ticket_type.toLowerCase()]);
+            });
+        }
+
+        // Standard available seats popover
+        let available_seat_btns = $('.seat-available');
+        let select_seats_popover_template = `
+            {% include 'snippets/select_seat_popover.html' %}
+        `;
+
+        available_seat_btns.popover({
+            content: select_seats_popover_template,
+            placement: 'top',
+            html: true,
+            trigger: 'focus'
+        });
+
+
+        // As soon as popover inserted into DOM
+        available_seat_btns.on('inserted.bs.popover', function () {
+            let calling_btn = $(this)
+
+            // Set radio button to current value
+            $('#availableRadio').prop("checked", calling_btn.hasClass('seat-available'));
+            $('#childRadio').prop("checked", calling_btn.hasClass('seat-child'));
+            $('#seniorRadio').prop("checked", calling_btn.hasClass('seat-senior'));
+            $('#adultRadio').prop("checked", calling_btn.hasClass('seat-adult'));
+
+            // Update classes on radio button click
+            let data = {'calling_btn': calling_btn};
+            $('.ticket_type_radio').on('click', data, function (event) {
+                let calling_btn = event.data.calling_btn;
+                let calling_radio = $(this);
+
+                calling_btn.removeClass().addClass('btn seat-btn').addClass(btn_classes[calling_radio.val()]);
+            });
+        });
+
+        // VIP available seats popover
+        let vip_seat_btns = $('.seat-available-vip');
+        let select_vip_seats_popover_template = `
+            {% include 'snippets/select_seat_popover_vip.html' %}
+        `;
+
+        vip_seat_btns.popover({
+            content: select_vip_seats_popover_template,
+            placement: 'top',
+            html: true,
+            trigger: 'focus'
+        });
+
+
+        // As soon as popover inserted into DOM
+        vip_seat_btns.on('inserted.bs.popover', function () {
+            let calling_btn = $(this)
+
+            // Set radio button to current value
+            $('#availableRadioVip').prop("checked", calling_btn.hasClass('seat-available'));
+            $('#vipRadio').prop("checked", calling_btn.hasClass('seat-vip'));
+
+            // Update classes on radio button click
+            let data = {'calling_btn': calling_btn};
+            $('.ticket_type_radio').on('click', data, function (event) {
+                let calling_btn = event.data.calling_btn;
+                let calling_radio = $(this);
+
+                calling_btn.removeClass().addClass('btn seat-btn').addClass(btn_classes[calling_radio.val()]);
+            });
+        });
+
+        // Populate booking modals with data
+        let populate_models_get_json = function () {
+            let seats = [];
+            let total_price = 0.00;
+
+            let prices = {
+                'child': {{ ticket_prices.child }},
+                'senior': {{ ticket_prices.senior }},
+                'adult': {{ ticket_prices.adult }},
+                'vip': {{ ticket_prices.vip }}
+            };
+
+            for (const [type, price] of Object.entries(prices)) {
+                let temp_seats = $(`.seat-${type}`).map(function () {
+                    return this.id;
+                }).toArray();
+                $(`.modal-seats-${type}`).text(temp_seats.join(', '));
+
+                let temp_price = temp_seats.length * price;
+                $(`.modal-price-${type}`).text(temp_price.toFixed(2));
+
+                total_price += temp_price;
+
+                temp_seats.forEach(function (seat_num) {
+                    seats.push([seat_num, type.charAt(0).toUpperCase() + type.slice(1)]);
+                });
+            }
+
+            $('.modal-vat').text((total_price * 0.2).toFixed(2));
+            $('.modal-total-price').text(total_price.toFixed(2));
+
+            return JSON.stringify(seats);
+        };
+
+        {% if is_manager() %}
+            // Populate cash book modal
+            $('#cashBookModal').on('show.bs.modal', function (e) {
+                $('#seatsCashJson').val(populate_models_get_json());
+            })
+
+            {% if cash_payment_form.customer_email.errors %}
+                // Load submitted seats
+                init_buttons_from_json({{ cash_payment_form.seats_json.data | tojson | safe }});
+                // Open cash modal if post errors
+                $('#cashBookModal').modal('show')
+            {% endif %}
+        {% endif %}
+
+        // Populate card book modal
+        $('#cardBookModal').on('show.bs.modal', function (e) {
+            $('#seatsCardJson').val(populate_models_get_json());
+        })
+
+        {% if card_payment_form.card.errors or card_payment_form.cvc.errors %}
+            // Load submitted seats
+            init_buttons_from_json({{ cash_payment_form.seats_json.data | tojson | safe }});
+            // Open card modal if post errors
+            $('#cardBookModal').modal('show')
+        {% endif %}
+    </script>
 {% endblock %}

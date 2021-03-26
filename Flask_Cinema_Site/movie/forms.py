@@ -42,3 +42,13 @@ class EditMovieForm(NewMovieForm):
         self.directors.data = m.directors
         self.cast_list.data = m.cast
         self.genres.data = m.genres
+
+
+class SearchForm(FlaskForm):
+    query = StringField('Query', validators=[DataRequired()])
+
+
+class SearchResultsForm(FlaskForm):
+    class Meta:
+        csrf = False
+    query = StringField('Query', validators=[DataRequired()])

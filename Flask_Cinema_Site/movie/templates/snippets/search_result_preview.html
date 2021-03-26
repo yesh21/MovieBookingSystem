@@ -1,0 +1,26 @@
+<div class="card bg-black mb-4">
+    <div class="card-body row">
+        <div class="col-lg-2 col-md-4 text-center m-1">
+            <a href="{{ url_for('movie.view_specific', movie_id=m.id) }}">
+                <img class="img-fluid" src="{{ url_for('movie.static', filename=m.rel_cover_art_path()) }}">
+            </a>
+        </div>
+
+        <div class="col-lg col-md m-1">
+            <p class="h3"><a href="{{ url_for('movie.view_specific', movie_id=m.id) }}">{{ m.name }}</a></p>
+            <div class="d-flex justify-content-between pb-2 border-bottom">
+                <div>{{ m.duration }} mins</div>
+                <div>
+                    {{ m.get_star_rating_html() }}
+                </div>
+            </div>
+            <p class="text-muted mt-1">{{ m.overview }}</p>
+        </div>
+
+        <div class="col-lg-3 col-md-12 m-1">
+            <p>Genre: {{ m.genre | default('Unkown') }}</p>
+            <p>Directors: {{ m.director | default('Unkown') }}</p>
+            <p>Cast: {{ m.cast | default('Unkown') }}</p>
+        </div>
+    </div>
+</div>

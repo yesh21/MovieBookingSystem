@@ -1,0 +1,263 @@
+{% extends 'analysis_base.html' %}
+
+{% block content %}
+    <section class="jumbotron bg-transparent text-center p-0">
+        <div class="container">
+            <h1 class="jumbotron-heading">{{ title }}</h1>
+            <p class="h5">{{ start_date.strftime("%a %d/%m/%y") }} - {{ end_date.strftime("%a %d/%m/%y") }}</p>
+        </div>
+    </section>
+
+    <div class="container">
+        <div class="row mx-neg-1">
+            <!-- Filter dates -->
+            <div class="card my-3 bg-black col mx-1">
+                <p class="card-header border-bottom h5">Filter</p>
+
+                <div class="card-body">
+                    <form action="" method="get">
+                        <div class="form-row">
+                            <!-- Start date -->
+                            <div class="form-group col">
+                                {{ get_field_html(form.start_date) }}
+                            </div>
+
+                            <!-- End date -->
+                            <div class="form-group col">
+                                {{ get_field_html(form.end_date) }}
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group col mb-0">
+                                <!-- Name attributed removed to stop it being passed to GET params -->
+                                <input class="btn btn-primary w-100" id="submit" type="submit" value="Filter">
+                            </div>
+                            <div class="form-group col mb-0">
+                                <button class="btn btn-success w-100" id="setEndDateWeek" type="button">Set time period
+                                    1 week
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- General totals -->
+            <div class="card my-3 bg-black col mx-1">
+                <p class="card-header border-bottom h5">Overall totals</p>
+
+                <div class="card-body">
+                    <p>Transactions: {{ totals.num_transactions }}</p>
+                    <p>Seats sold: {{ totals.seats_sold }}</p>
+                    <p>Revenue: {{ '£%.2f' | format(totals.revenue) if totals.revenue else '£0.00' }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Totals by ticket type -->
+        <div class="row mx-neg-1 mb-3">
+            <table class="table bg-black col mx-1">
+                <thead>
+                <tr>
+                    <th colspan="3">Totals by ticket type</th>
+                </tr>
+                <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">Number seats sold</th>
+                    <th scope="col">Revenue (£)</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for ticket_type in totals_by_ticket_type %}
+                    <tr>
+                        <td>{{ ticket_type.name }}</td>
+                        <td>{{ ticket_type.seats_sold }}</td>
+                        <td>{{ '%.2f'|format(ticket_type.revenue) }}</td>
+                    </tr>
+                {% endfor %}
+                {% if totals_by_ticket_type|length == 0 %}
+                    <tr>
+                        <td colspan="3">No tickets sold</td>
+                    </tr>
+                {% endif %}
+                </tbody>
+            </table>
+
+            {% if totals.num_transactions %}
+                <div class="col mx-1 p-0 bg-black">
+                    <div class="p-2">
+                        <canvas id="totalsByTicketChart"></canvas>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+
+        {% if totals_by_movie %}
+            {% include 'snippets/totals_by_movie_table_chart.html' %}
+        {% elif totals_by_viewing %}
+            {% include 'snippets/totals_by_viewing_table.html' %}
+        {% endif %}
+
+        <!-- Totals by date -->
+        <table class="table bg-black">
+            <thead>
+            <tr>
+                <th colspan="4">Totals by date</th>
+            </tr>
+            <tr>
+                <th scope="col">Date</th>
+                <th scope="col">Number transactions</th>
+                <th scope="col">Number seats sold</th>
+                <th scope="col">Revenue (£)</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for date in totals_by_date %}
+                <tr>
+                    <td>{{ date.date.strftime("%a %d/%m/%y") }}</td>
+                    <td>{{ date.num_transactions }}</td>
+                    <td>{{ date.seats_sold }}</td>
+                    <td>{{ '%.2f'|format(date.revenue) }}</td>
+                </tr>
+            {% endfor %}
+            {% if totals_by_date|length == 0 %}
+                <tr>
+                    <td colspan="4">No tickets sold</td>
+                </tr>
+            {% endif %}
+            </tbody>
+        </table>
+
+        <!-- Revenue by day bar chart -->
+        {% if totals.num_transactions %}
+            <div class="bg-black p-2">
+                <canvas id="totalsByDateChart"></canvas>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        $('#setEndDateWeek').on('click', function () {
+            let d = new Date($('#start_date').val());
+            d.setDate(d.getDate() + 7);
+            $('#end_date').val(d.toISOString().substr(0, 10));
+        });
+    </script>
+
+    {% if totals.num_transactions %}
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"
+                integrity="sha256-t9UJPrESBeG2ojKTIcFLPGF7nHi2vEc7f5A2KpH/UBU=" crossorigin="anonymous"></script>
+
+        <!-- Totals by ticket type pie chart -->
+        <script>
+            let totals_by_ticket_type_ctx = document.getElementById('totalsByTicketChart').getContext('2d');
+            let totals_by_ticket_type_chart = new Chart(totals_by_ticket_type_ctx, {
+                type: 'pie',
+                data: {
+                    labels: {{ totals_by_ticket_type | map(attribute='name') | list | safe  }},
+                    datasets: [{
+                        data: {{ totals_by_ticket_type | map(attribute='seats_sold') | list | safe  }},
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(255, 206, 86, 0.2)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    title: {
+                        display: true,
+                        text: 'Total seats sold by ticket type',
+                        fontColor: '#FFF'
+                    },
+                    legend: {
+                        display: true,
+                        position: 'right'
+                    }
+                }
+            });
+        </script>
+
+        {% if totals_by_movie %}
+            <!-- Totals by movie pie chart -->
+            <script>
+                let totals_by_movie_ctx = document.getElementById('totalsByMovieChart').getContext('2d');
+                let totals_by_movie_chart = new Chart(totals_by_movie_ctx, {
+                    type: 'pie',
+                    data: {
+                        labels: {{ totals_by_movie | map(attribute='name') | list | safe  }},
+                        datasets: [{
+                            data: {{ totals_by_movie | map(attribute='seats_sold') | list | safe  }},
+                            backgroundColor: [
+                                'rgba(255, 99, 132, 0.2)',
+                                'rgba(54, 162, 235, 0.2)',
+                                'rgba(255, 206, 86, 0.2)'
+                            ],
+                            borderColor: [
+                                'rgba(255, 99, 132, 1)',
+                                'rgba(54, 162, 235, 1)',
+                                'rgba(255, 206, 86, 1)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        title: {
+                            display: true,
+                            text: 'Total seats sold by ticket type',
+                            fontColor: '#FFF'
+                        },
+                        legend: {
+                            display: true,
+                            position: 'right'
+                        }
+                    }
+                });
+            </script>
+        {% endif %}
+
+        <!-- Totals by date bar chart -->
+        <script>
+            let totals_by_date_ctx = document.getElementById('totalsByDateChart').getContext('2d');
+            let totals_by_date_chart = new Chart(totals_by_date_ctx, {
+                type: 'bar',
+                data: {
+                    labels: {{ totals_by_date | map(attribute='date') | format_datetime('%a, %B %d') | list | safe  }},
+                    datasets: [{
+                        data: {{ totals_by_date | map(attribute='revenue') | list | safe  }},
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(255, 206, 86, 0.2)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    title: {
+                        display: true,
+                        text: 'Revenue by day (£)',
+                        fontColor: '#FFF'
+                    },
+                    legend: {
+                        display: false
+                    }
+                }
+            });
+        </script>
+    {% endif %}
+{% endblock %}
