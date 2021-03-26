@@ -1,0 +1,35 @@
+{% extends 'booking_base.html' %}
+
+{% block content %}
+<section class="jumbotron bg-transparent text-center p-0 text-success">
+    <div class="container">
+        <h1 class="jumbotron-heading">Transaction Successful!</h1>
+    </div>
+</section>
+<div class="container">
+    <div class="row">
+        <h2>You're going to See:</h2>
+    </div>
+    <div class="row pb-5">
+        <div class="container">
+            {% set t = transaction %}
+            {% include 'snippets/booking_preview.html' %}
+        </div>
+    </div>
+
+
+    <div class="row justify-content-center pt-5">
+        <h2>You should receive an email receipt soon. </h2>
+    </div>
+    <div class="row justify-content-center">
+        <a href="{{url_for('home.home')}}"><h2>Return Home</h2></a>
+    </div>
+    <div class="row justify-content-center pt-5">
+        <a href="TODO"><p>Cancel Transaction?</p></a>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+
+{% endblock %}
