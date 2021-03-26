@@ -137,8 +137,8 @@ class Viewing(db.Model):
         new_transaction = Transaction(user_id=user.id)
         for seat_number, ticket_type in seats:
             # Check number is correct
-            if not Seat.is_number_valid(seat_number):
-                return None, f'Seat \'{seat_number}\' is invalid'
+            if not Seat.is_number_type_valid(seat_number, ticket_type):
+                return None, f'Seat \'{seat_number}\' with type \'{ticket_type}\' is invalid'
 
             s = Seat.query.filter_by(viewing_id=self.id, seat_number=seat_number).first()
             if not s:
@@ -206,8 +206,19 @@ class Seat(db.Model):
     seat_number = db.Column(db.String(10), nullable=False)
 
     @staticmethod
-    def is_number_valid(seat_num):
-        regex = re.compile(r'^([A-K][0-9])$')
+    def is_number_type_valid(seat_num, ticket_type):
+        # VIP row K
+        if ticket_type == 'Vip':
+            regex = re.compile(r'^(K[0-9])$')
+            return regex.match(seat_num) is not None
+
+        # Check type is valid
+        t = TicketType.query.filter_by(name=ticket_type).first()
+        if not t:
+            return False
+
+        # Check seat is valid
+        regex = re.compile(r'^([A-J][0-9])$')
         return regex.match(seat_num) is not None
 
 

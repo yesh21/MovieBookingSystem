@@ -16,12 +16,8 @@ class BasePaymentForm(FlaskForm):
         seats = json.loads(self.seats_json.data)
 
         for seat_num, ticket_type in seats:
-            if not Seat.is_number_valid(seat_num):
-                raise ValidationError(f'Seat \'{seat_num}\' is invalid')
-
-            t = TicketType.query.filter_by(name=ticket_type).first()
-            if not t:
-                raise ValidationError(f'Ticket type \'{ticket_type}\' not found')
+            if not Seat.is_number_type_valid(seat_num, ticket_type):
+                raise ValidationError(f'Seat \'{seat_num}\' with type \'{ticket_type}\' is invalid')
 
 
 class CashPaymentForm(BasePaymentForm):

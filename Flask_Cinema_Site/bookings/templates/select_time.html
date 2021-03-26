@@ -26,22 +26,66 @@
         </div>
 
         <!--Seating-->
-        <div class="row">
-        <span class="border border-primary w-100">
-            <p class="text-monospace text-center">Screen</p>
-        </span>
-        </div>
+        <table class="text-center mx-auto">
+        <thead>
+        <tr>
+            <th></th>
+            <th colspan="9" class="border">Screen</th>
+            <th></th>
+        </tr>
+        </thead>
+            <tbody>
+            {% for char in "ABCDEFG" | list %}
+                {% include 'snippets/select_seats_row.html' %}
+            {% endfor %}
 
-        {% for char in "ABCDEFG" | list %}
-            {% include 'snippets/select_seats_row.html' %}
-        {% endfor %}
+            {% for char in "HIJ" | list %}
+                {% include 'snippets/select_seats_row.html' %}
+            {% endfor %}
 
-        <div class="my-4"></div>
+            <tr>
+                <td>
+                    <span class="h5">VIP</span>
+                </td>
+                <td>
+                    <button type="button"
+                            class="btn btn-info seat-btn {{ 'seat-available-vip' if is_seat_available('K' ~ 1) else 'seat-booked disabled' }}"
+                            id="K1">1
+                    </button>
+                </td>
+                <td>
+                    <button type="button"
+                            class="btn btn-info seat-btn {{ 'seat-available-vip' if is_seat_available('K' ~ 2) else 'seat-booked disabled' }} mr-3"
+                            id="K2">2
+                    </button>
+                </td>
+                {% for i in range(3, 8) %}
+                    <td>
+                        <button type="button"
+                                class="btn btn-info seat-btn {{ 'seat-available-vip' if is_seat_available('K' ~ i) else 'seat-booked disabled' }}"
+                                id="K{{ i }}">{{ i }}</button>
+                    </td>
+                {% endfor %}
+                <td>
+                    <button type="button"
+                            class="btn btn-info seat-btn {{ 'seat-available-vip' if is_seat_available('K' ~ 8) else 'seat-booked disabled' }} ml-3"
+                            id="K8">8
+                    </button>
+                </td>
+                <td>
+                    <button type="button"
+                            class="btn btn-info seat-btn {{ 'seat-available-vip' if is_seat_available('K' ~ 9) else 'seat-booked disabled' }}"
+                            id="K9">9
+                    </button>
+                </td>
+                <td>
+                    <span class="h5">VIP</span>
+                </td>
+            </tr>
+            </tbody>
+        </table>
 
-        {% for char in "HIJK" | list %}
-            {% include 'snippets/select_seats_row.html' %}
-        {% endfor %}
-
+        <!-- Book buttons -->
         <div class="row justify-content-center mt-4">
             {% if is_manager() %}
                 <button type="button" class="btn btn-primary mx-2" data-toggle="modal" data-target="#cashBookModal">Book
@@ -237,7 +281,15 @@
 {% block scripts %}
     <!--<script src="{{ url_for('bookings.static', filename='js/seating.js') }}"></script>-->
     <script>
-        // Register booked popover
+        let btn_classes = {
+            'available': 'btn-info seat-available',
+            'child': 'btn-success seat-child',
+            'senior': 'btn-light seat-senior',
+            'adult': 'btn-dark seat-adult',
+            'vip': 'btn-warning seat-vip'
+        }
+
+        // Showed booked when clicking on booked seats
         let booked_seat_btns = $('.seat-booked');
         booked_seat_btns.popover({
             content: 'Booked',
@@ -245,7 +297,17 @@
             trigger: 'focus'
         });
 
-        // Register popover for all available seats
+        // If booking fails reload selected seats
+        let init_buttons_from_json = function (seats_json) {
+            let seats = JSON.parse(seats_json)
+            seats.forEach(function (seat) {
+                let seat_num = seat[0];
+                let ticket_type = seat[1];
+                $(`#${seat_num}`).removeClass().addClass('btn seat-btn').addClass(btn_classes[ticket_type.toLowerCase()]);
+            });
+        }
+
+        // Standard available seats popover
         let available_seat_btns = $('.seat-available');
         let select_seats_popover_template = `
             {% include 'snippets/select_seat_popover.html' %}
@@ -258,12 +320,6 @@
             trigger: 'focus'
         });
 
-        let btn_classes = {
-            'available': 'btn-info seat-available',
-            'child': 'btn-success seat-child',
-            'senior': 'btn-light seat-senior',
-            'adult': 'btn-dark seat-adult'
-        }
 
         // As soon as popover inserted into DOM
         available_seat_btns.on('inserted.bs.popover', function () {
@@ -285,15 +341,39 @@
             });
         });
 
-        let init_buttons_from_json = function (seats_json) {
-            let seats = JSON.parse(seats_json)
-            seats.forEach(function (seat) {
-                let seat_num = seat[0];
-                let ticket_type = seat[1];
-                $(`#${seat_num}`).removeClass().addClass('btn seat-btn').addClass(btn_classes[ticket_type.toLowerCase()]);
-            });
-        }
+        // VIP available seats popover
+        let vip_seat_btns = $('.seat-available-vip');
+        let select_vip_seats_popover_template = `
+            {% include 'snippets/select_seat_popover_vip.html' %}
+        `;
 
+        vip_seat_btns.popover({
+            content: select_vip_seats_popover_template,
+            placement: 'top',
+            html: true,
+            trigger: 'focus'
+        });
+
+
+        // As soon as popover inserted into DOM
+        vip_seat_btns.on('inserted.bs.popover', function () {
+            let calling_btn = $(this)
+
+            // Set radio button to current value
+            $('#availableRadioVip').prop("checked", calling_btn.hasClass('seat-available'));
+            $('#vipRadio').prop("checked", calling_btn.hasClass('seat-vip'));
+
+            // Update classes on radio button click
+            let data = {'calling_btn': calling_btn};
+            $('.ticket_type_radio').on('click', data, function (event) {
+                let calling_btn = event.data.calling_btn;
+                let calling_radio = $(this);
+
+                calling_btn.removeClass().addClass('btn seat-btn').addClass(btn_classes[calling_radio.val()]);
+            });
+        });
+
+        // Populate booking modals with data
         let populate_models_get_json = function () {
             let seats = [];
             let total_price = 0.00;
