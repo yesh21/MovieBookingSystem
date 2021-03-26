@@ -27,13 +27,13 @@
 
         <!--Seating-->
         <table class="text-center mx-auto">
-        <thead>
-        <tr>
-            <th></th>
-            <th colspan="9" class="border">Screen</th>
-            <th></th>
-        </tr>
-        </thead>
+            <thead>
+            <tr>
+                <th></th>
+                <th colspan="11" class="border">Screen</th>
+                <th></th>
+            </tr>
+            </thead>
             <tbody>
             {% for char in "ABCDEFG" | list %}
                 {% include 'snippets/select_seats_row.html' %}
@@ -55,10 +55,11 @@
                 </td>
                 <td>
                     <button type="button"
-                            class="btn btn-info seat-btn {{ 'seat-available-vip' if is_seat_available('K' ~ 2) else 'seat-booked disabled' }} mr-3"
+                            class="btn btn-info seat-btn {{ 'seat-available-vip' if is_seat_available('K' ~ 2) else 'seat-booked disabled' }}"
                             id="K2">2
                     </button>
                 </td>
+                <td><span class="mx-1"></span></td>
                 {% for i in range(3, 8) %}
                     <td>
                         <button type="button"
@@ -66,9 +67,10 @@
                                 id="K{{ i }}">{{ i }}</button>
                     </td>
                 {% endfor %}
+                <td><span class="mx-1"></span></td>
                 <td>
                     <button type="button"
-                            class="btn btn-info seat-btn {{ 'seat-available-vip' if is_seat_available('K' ~ 8) else 'seat-booked disabled' }} ml-3"
+                            class="btn btn-info seat-btn {{ 'seat-available-vip' if is_seat_available('K' ~ 8) else 'seat-booked disabled' }}"
                             id="K8">8
                     </button>
                 </td>
