@@ -9,7 +9,8 @@
     <div class="container">
         <div class="row justify-content-md-center">
             <h1>You Have Selected
-                <a class="text-danger" href="{{ url_for('movie.view_specific', movie_id=viewing.movie.id) }}">{{ viewing.movie.name }}</a>
+                <a class="text-danger"
+                   href="{{ url_for('movie.view_specific', movie_id=viewing.movie.id) }}">{{ viewing.movie.name }}</a>
             </h1>
         </div>
         <div class="row">
@@ -31,25 +32,27 @@
         </span>
         </div>
 
-        <div class="container">
-            {% for char in "ABCDEFG" | list %}
-                {% include 'snippets/select_seats_row.html' %}
-            {% endfor %}
+        {% for char in "ABCDEFG" | list %}
+            {% include 'snippets/select_seats_row.html' %}
+        {% endfor %}
 
-            <div class="my-4"></div>
+        <div class="my-4"></div>
 
-            {% for char in "HIJK" | list %}
-                {% include 'snippets/select_seats_row.html' %}
-            {% endfor %}
+        {% for char in "HIJK" | list %}
+            {% include 'snippets/select_seats_row.html' %}
+        {% endfor %}
+
+        <div class="row justify-content-center mt-4">
+            {% if is_manager() %}
+                <button type="button" class="btn btn-primary mx-2" data-toggle="modal" data-target="#cashBookModal">Book
+                    (Cash)
+                </button>
+            {% endif %}
+
+            <button type="button" class="btn btn-primary mx-2" data-toggle="modal" data-target="#cardBookModal">Book
+                (Card)
+            </button>
         </div>
-
-        <!--Payment-->
-        <div id="PaymentsButton">
-            <button>Book Now.</button>
-        </div>
-
-        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#cashBookModal">Book (Cash)
-        </button>
 
         <!--Alternative Times on same day-->
         <div class="row pt-5">
@@ -64,18 +67,102 @@
         <!--Insert list of times in the same day here-->
     </div>
 
-    <div class="modal fade" id="cashBookModal" tabindex="-1" role="dialog" aria-labelledby="cashBookModalLabel"
+    {% if is_manager() %}
+        <!-- Book with cash modal -->
+        <div class="modal fade" id="cashBookModal" tabindex="-1" role="dialog" aria-labelledby="cashBookModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content bg-dark">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="cashBookModalLabel">{{ viewing.movie.name }}
+                            - {{ viewing.time.strftime('%H:%M - %d/%m/%y') }}</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <form action="{{ url_for('bookings.book_with_cash', viewing_id=viewing.id) }}" method="post">
+                        <div class="modal-body">
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th class="border-top-0">Ticket type</th>
+                                    <th class="border-top-0">Seats</th>
+                                    <th class="border-top-0">Total (£)</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td>Child</td>
+                                    <td class="modal-seats-child"></td>
+                                    <td class="modal-price-child"></td>
+                                </tr>
+                                <tr>
+                                    <td>Senior</td>
+                                    <td class="modal-seats-senior"></td>
+                                    <td class="modal-price-senior"></td>
+                                </tr>
+                                <tr>
+                                    <td>Adult</td>
+                                    <td class="modal-seats-adult"></td>
+                                    <td class="modal-price-adult"></td>
+                                </tr>
+                                <tr>
+                                    <td>VIP</td>
+                                    <td class="modal-seats-vip"></td>
+                                    <td class="modal-price-vip"></td>
+                                </tr>
+                                <tr>
+                                    <td class="border-top-0"></td>
+                                    <td class="border-top-0"></td>
+                                    <td class="border-top-0"></td>
+                                </tr>
+                                <tr class="bg-black">
+                                    <td class="border-top-0">VAT</td>
+                                    <td class="border-top-0"></td>
+                                    <td class="border-top-0 modal-vat"></td>
+                                </tr>
+                                <tr class="bg-black">
+                                    <td>Total</td>
+                                    <td></td>
+                                    <td class="modal-total-price"></td>
+                                </tr>
+                                </tbody>
+                            </table>
+
+                            <table class="table bg-black rounded">
+                                <tbody>
+
+                                </tbody>
+                            </table>
+
+                            {{ cash_payment_form.seats_json(id='seatsCashJson', type='text') }}
+                            {{ get_field_group_html(cash_payment_form.customer_email) }}
+                            {{ cash_payment_form.csrf_token }}
+
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                            {{ cash_payment_form.submit(class='btn btn-primary') }}
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- Book with card modal -->
+    <div class="modal fade" id="cardBookModal" tabindex="-1" role="dialog" aria-labelledby="cardBookModalLabel"
          aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content bg-dark">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="cashBookModalLabel">Book - {{ viewing.movie.name }}
+                    <h5 class="modal-title" id="cardBookModalLabel">{{ viewing.movie.name }}
                         - {{ viewing.time.strftime('%H:%M - %d/%m/%y') }}</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <form action="{{ url_for('bookings.book_with_cash', viewing_id=viewing.id) }}" method="post">
+                <form action="{{ url_for('bookings.book_with_card', viewing_id=viewing.id) }}" method="post">
                     <div class="modal-body">
                         <table class="table">
                             <thead>
@@ -130,20 +217,20 @@
                             </tbody>
                         </table>
 
-                        {{ cash_payment_form.seats_json(id='seatsCashJson', type='text') }}
-                        {{ get_field_group_html(cash_payment_form.customer_email) }}
-                        {{ cash_payment_form.csrf_token }}
+                        {{ card_payment_form.seats_json(id='seatsCardJson', type='text') }}
+                        {{ get_field_group_html(card_payment_form.card) }}
+                        {{ get_field_group_html(card_payment_form.cvc) }}
+                        {{ card_payment_form.csrf_token }}
 
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                        {{ cash_payment_form.submit(class='btn btn-primary') }}
+                        {{ card_payment_form.submit(class='btn btn-primary') }}
                     </div>
                 </form>
             </div>
         </div>
     </div>
-
 
 {% endblock %}
 
@@ -240,16 +327,30 @@
             return JSON.stringify(seats);
         };
 
-        // Populate cash book modal
-        $('#cashBookModal').on('show.bs.modal', function (e) {
-            $('#seatsCashJson').val(populate_models_get_json());
+        {% if is_manager() %}
+            // Populate cash book modal
+            $('#cashBookModal').on('show.bs.modal', function (e) {
+                $('#seatsCashJson').val(populate_models_get_json());
+            })
+
+            {% if cash_payment_form.customer_email.errors %}
+                // Load submitted seats
+                init_buttons_from_json({{ cash_payment_form.seats_json.data | tojson | safe }});
+                // Open cash modal if post errors
+                $('#cashBookModal').modal('show')
+            {% endif %}
+        {% endif %}
+
+        // Populate card book modal
+        $('#cardBookModal').on('show.bs.modal', function (e) {
+            $('#seatsCardJson').val(populate_models_get_json());
         })
 
-        {% if cash_payment_form.customer_email.errors %}
+        {% if card_payment_form.card.errors or card_payment_form.cvc.errors %}
             // Load submitted seats
             init_buttons_from_json({{ cash_payment_form.seats_json.data | tojson | safe }});
-            // Open cash modal if post errors
-            $('#cashBookModal').modal('show')
+            // Open card modal if post errors
+            $('#cardBookModal').modal('show')
         {% endif %}
     </script>
 {% endblock %}
