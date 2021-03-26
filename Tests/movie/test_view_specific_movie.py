@@ -36,7 +36,7 @@ class ViewSpecificMovieTestCase(MovieBaseTestCase):
                 .all()
             for v in viewings:
                 self.assertIn(v.time.strftime("%H:%M").encode('utf-8'), res.data)
-                self.assertIn(f'viewing={v.id}'.encode('utf-8'), res.data)
+                self.assertIn(f'viewing/{v.id}'.encode('utf-8'), res.data)
 
     def test_view_specific_buttons_manager(self):
         with self.client:

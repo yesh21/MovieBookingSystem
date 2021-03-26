@@ -17,5 +17,6 @@ db.session.add(Role(name='customer'))
 db.session.add(TicketType(name='Child', price=4.50))
 db.session.add(TicketType(name='Senior', price=5.50))
 db.session.add(TicketType(name='Adult', price=6.50))
+db.session.add(TicketType(name='VIP', price=8.00))
 
 db.session.commit()
