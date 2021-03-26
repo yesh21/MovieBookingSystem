@@ -160,12 +160,12 @@ def confirm_email(token):
     u = User.verify_email_confirm_token(token)
     if u.confirmed:
         flash("Account already confirmed.", "danger")
-        return redirect('home.home')
+        return redirect(url_for('home.home'))
 
     u.confirmed = True
     db.session.commit()
     flash(f'User \'{u.username}\' has been successfully confirmed', "success")
-    return redirect('home.home')
+    return redirect(url_for('home.home'))
 
 
 @login_required
