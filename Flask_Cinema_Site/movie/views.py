@@ -25,6 +25,18 @@ def view_multiple():
     return render_template('view_multiple_movies.html', title='Browse Movies', movies=movies)
 
 
+@movies_blueprint.route('/star', methods=['GET'])
+def star_filter():
+    movies = Movie.query.filter_by(hidden=False).all()
+    return render_template('star_rating_filter.html', title='Browse Movies', movies=movies)
+
+
+@movies_blueprint.route('/star', methods=['GET'])
+def genre_filter():
+    movies = Movie.query.filter_by(hidden=False).all()
+    return render_template('genre_filter.html', title='Browse Movies', movies=movies)
+
+
 @movies_blueprint.route('/<int:movie_id>', methods=['GET'])
 def view_specific(movie_id):
     m = Movie.query.get(movie_id)

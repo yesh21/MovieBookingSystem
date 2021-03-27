@@ -131,7 +131,7 @@ m5 = Movie(
     directors='Doug Liman',
     cast='Anne Hathaway, Chiwetel Ejiofor, Lucy Boynton, Jazmyn Simon, Dule Hill',
     duration=140,
-    rating=4.0,
+    rating=3.5,
     hidden=False
 )
 
