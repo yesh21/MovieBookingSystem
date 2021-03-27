@@ -27,13 +27,39 @@
 <div class="album py-5">
     <div class="container">
         {% if movies|length > 0 %}
+        <div class="row py-2"><h2><span>5 Star</span></h2></div>
         <div class="card-columns">
             {% for m in movies %}
+            {% if m.rating == 5 %}
             <div class="h-100">
                 {% include("snippets/movie_preview.html") %}
             </div>
+            {% endif %}
             {% endfor %}
         </div>
+
+        <div class="row py-2"><h2><span>4 Star</span></h2></div>
+        <div class="card-columns">
+            {% for m in movies %}
+            {% if m.rating >= 4 and m.rating < 5 %}
+            <div class="h-100">
+                {% include("snippets/movie_preview.html") %}
+            </div>
+            {% endif %}
+            {% endfor %}
+        </div>
+
+        <div class="row py-2"><h2><span>3 Star</span></h2></div>
+        <div class="card-columns">
+            {% for m in movies %}
+            {% if m.rating >= 3 and m.rating < 4 %}
+            <div class="h-100">
+                {% include("snippets/movie_preview.html") %}
+            </div>
+            {% endif %}
+            {% endfor %}
+        </div>
+
         {% else %}
         <div class="card w-100 bg-dark">
             <div class="card-body text-center">
