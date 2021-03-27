@@ -47,6 +47,7 @@ admin_role.users.append(admin_A)
 manager_role.users.append(admin_A)
 
 db.session.commit()
+# genres so far; Action, Drama, Space, Fantasy
 
 m1 = Movie(
     name='Black Widow',
@@ -63,7 +64,8 @@ m1 = Movie(
          'Pugh, Scarlett Johansson',
     duration=123,
     rating=4.2,
-    hidden=False
+    hidden=False,
+    genres="Action"
 )
 db.session.add(m1)
 
@@ -81,7 +83,8 @@ m2 = Movie(
          'McKenna Grace, Carrie Coon, Bokeem Woodbine, Annie Potts',
     duration=125,
     rating=3.5,
-    hidden=True
+    hidden=True,
+    genres="Action"
 )
 
 db.session.add(m2)
@@ -98,7 +101,8 @@ m3 = Movie(
     cast='Juhan Ulfsak, Jefferson Hall, Ivo Uukkivi, Andrew Howard, Ernie Hudson',
     duration=125,
     rating=4.0,
-    hidden=False
+    hidden=False,
+    genres="Action"
 )
 
 db.session.add(m3)
@@ -115,7 +119,8 @@ m4 = Movie(
     cast='Lily Jame, Ralph Fiennes, Carey Mulligan, Johnny Flynn, Ben Chaplin',
     duration=140,
     rating=4.0,
-    hidden=False
+    hidden=False,
+    genres="Drama"
 )
 
 db.session.add(m4)
@@ -132,7 +137,8 @@ m5 = Movie(
     cast='Anne Hathaway, Chiwetel Ejiofor, Lucy Boynton, Jazmyn Simon, Dule Hill',
     duration=140,
     rating=3.5,
-    hidden=False
+    hidden=False,
+    genres="Action"
 )
 
 db.session.add(m5)
@@ -148,7 +154,8 @@ m6 = Movie(
     cast='Leonardo DiCaprio, Joseph Gordon-Levitt, Tom Hardy, Cillian Murphy, Marion Cotillard',
     duration=160,
     rating=4.5,
-    hidden=False
+    hidden=False,
+    genres="Action"
 )
 
 db.session.add(m6)
@@ -166,7 +173,8 @@ m7 = Movie(
     cast='Matt Damon, Jessica Chastain, Kate Mara Beth, Chiwetel Ejiofor, Jeff Daniels',
     duration=120,
     rating=5.0,
-    hidden=False
+    hidden=False,
+    genres="Space"
 )
 
 db.session.add(m7)
@@ -182,7 +190,8 @@ m8 = Movie(
     cast='Sala Baker, Viggo Mortensen, Elijah Wood, Orlando Bloom, Ian Mckellen',
     duration=160,
     rating=5.0,
-    hidden=False
+    hidden=False,
+    genres="Fantasy"
 )
 
 db.session.add(m8)

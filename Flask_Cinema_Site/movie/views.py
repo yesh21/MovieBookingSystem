@@ -31,7 +31,7 @@ def star_filter():
     return render_template('star_rating_filter.html', title='Browse Movies', movies=movies)
 
 
-@movies_blueprint.route('/star', methods=['GET'])
+@movies_blueprint.route('/genre', methods=['GET'])
 def genre_filter():
     movies = Movie.query.filter_by(hidden=False).all()
     return render_template('genre_filter.html', title='Browse Movies', movies=movies)
