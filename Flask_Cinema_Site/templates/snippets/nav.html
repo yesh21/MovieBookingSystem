@@ -41,7 +41,7 @@
                             Cinema Management
                         </a>
                         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="managementDropdown">
-                            {% if is_admin() %}
+                            {% if is_admin() and config['ENV'] == 'development' %}
                                 <a class="dropdown-item" href="{{ url_for('admin.index') }}">Admin</a>
                                 <div class="dropdown-divider"></div>
                             {% endif %}
