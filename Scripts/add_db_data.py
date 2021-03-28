@@ -4,7 +4,7 @@ import os
 sys.path.insert(0, os.path.dirname(__file__) + '/..')
 
 from Flask_Cinema_Site import db
-from Flask_Cinema_Site.models import Movie, Viewing, Seat, Transaction, User, Role, TicketType
+from Flask_Cinema_Site.models import Movie, Viewing, Seat, Transaction, User, Role, TicketType, SavedCard
 
 from datetime import date, datetime, timedelta
 
@@ -48,6 +48,17 @@ manager_role.users.append(admin_A)
 
 db.session.commit()
 # genres so far; Action, Drama, Space, Fantasy
+
+# Add card to manager
+manager_A.saved_cards.append(SavedCard(
+    number='1234 5678 1234 5678',
+    expiry=date.today()
+))
+manager_A.saved_cards.append(SavedCard(
+    number='9876 5432 2198 7654',
+    expiry=date.today() + timedelta(days=7)
+))
+db.session.commit()
 
 m1 = Movie(
     name='Black Widow',
@@ -267,8 +278,9 @@ def book_seats(seat_nums, t, v_id):
 
 seat_numbers = [('B3', 'Child'), ('B4', 'Adult'), ('B6', 'Senior')]
 
-book_seats(seat_numbers, Transaction(user_id=2), 1)
-book_seats(seat_numbers, Transaction(user_id=3), 2)
+# Commented out cause they won't have receipts
+# book_seats(seat_numbers, Transaction(user_id=2), 1)
+# book_seats(seat_numbers, Transaction(user_id=3), 2)
 
 
 db.session.commit()
