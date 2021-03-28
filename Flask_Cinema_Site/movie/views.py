@@ -165,25 +165,6 @@ def show():
     return get_json_response(f'Movie with id \'{form.id.data}\' successfully unhidden', status.HTTP_200_OK)
 
 
-@movies_blueprint.route('/delete', methods=['POST'])
-@manager_permission.require(status.HTTP_401_UNAUTHORIZED)
-def delete():
-    form = SimpleForm()
-    if not form.validate_on_submit():
-        return get_json_response('Delete movie failed', status.HTTP_400_BAD_REQUEST)
-
-    m = Movie.query.get(form.id.data)
-    if not m:
-        return get_json_response(f'Movie with id \'{form.id.data}\' not found', status.HTTP_400_BAD_REQUEST)
-
-    delete_picture('movie', 'static', 'cover_arts', m.cover_art_name)
-    db.session.delete(m)
-    db.session.commit()
-
-    flash(f'Movie with id \'{form.id.data}\' successfully deleted', 'success')
-    return get_json_response(f'Movie with id \'{form.id.data}\' successfully deleted', status.HTTP_200_OK)
-
-
 @movies_blueprint.route('/manage', methods=['GET'])
 @manager_permission.require(status.HTTP_401_UNAUTHORIZED)
 def manage():

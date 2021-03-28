@@ -27,15 +27,16 @@
                     </div>
                     <div class="col-xl col-md-6 mb-3">
                         <p class="h5">Viewing details:</p>
-                        <p class="mb-0">Time: {{ v.time.strftime('%H:%M') | default('Unkown') }}</p>
-                        <p class="mb-0">Date: {{ v.time.strftime('%d/%m') | default('Unkown') }}</p>
+                        <p class="mb-0">Time: {{ v.time.strftime('%H:%M') }}</p>
+                        <p class="mb-0">Date: {{ v.time.strftime('%d/%m') }}</p>
+                        <p class="mb-0">Screen: {{ v.screen.name}}</p>
                     </div>
                     <div class="col-xl-6 col-md-12">
                         <p class="h5">Transaction details:</p>
                         <div class="row">
                             <div class="col">
-                                <p class="mb-0">Time: {{ t.datetime.strftime('%H:%M') | default('Unkown') }}</p>
-                                <p>Date: {{ t.datetime.strftime('%d/%m') | default('Unkown') }}</p>
+                                <p class="mb-0">Time: {{ t.datetime.strftime('%H:%M') }}</p>
+                                <p>Date: {{ t.datetime.strftime('%d/%m') }}</p>
                             </div>
                             <div class="col">
                                 <p class="mb-0">VAT: £{{ '%.2f' | format(t.get_cost() * 0.2) }}</p>

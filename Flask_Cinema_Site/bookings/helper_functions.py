@@ -38,7 +38,7 @@ def generate_receipt_pdf(transaction, email_address):
         key=app.config['SECRET_KEY'],
         algorithm='HS256'
     )
-    draw_qr_code(c, margin, 410, qr_data)
+    draw_qr_code(c, margin, 390, qr_data)
     # 180 = qr code height, 22 = qr code border width
     draw_seats_table(c, width - margin, 410 + 180 - 22, transaction)
 
@@ -76,9 +76,12 @@ def draw_movie_viewing_section(c, x, y, viewing: Viewing, email_address):
     c.drawString(x + viewing_offset, y - 20 * 4, 'Time:')
     c.drawString(second_margin, y - 20 * 4, viewing.time.strftime('%H:%M'))
 
+    c.drawString(x + viewing_offset, y - 20 * 5, 'Screen:')
+    c.drawString(second_margin, y - 20 * 5, viewing.screen.name)
+
     # Email
-    c.drawString(x, y - 20 * 5, 'Email:')
-    c.drawString(second_margin, y - 20 * 5, email_address)
+    c.drawString(x, y - 20 * 6, 'Email:')
+    c.drawString(second_margin, y - 20 * 6, email_address)
 
 
 def draw_transaction_section(c, x, y, transaction: Transaction):

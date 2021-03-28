@@ -126,8 +126,8 @@ class Transaction(db.Model):
 class Viewing(db.Model):
     __tablename__ = "viewing"
     id = db.Column(db.Integer, unique=True, primary_key=True)
-    movie_id = db.Column(db.Integer, db.ForeignKey('movie.id'))
-    theatre_id = db.Column(db.Integer, db.ForeignKey('theatre.id'))
+    movie_id = db.Column(db.Integer, db.ForeignKey('movie.id'), nullable=False)
+    screen_id = db.Column(db.Integer, db.ForeignKey('screen.id'), nullable=False)
 
     seats = db.relationship('Seat', backref='viewing', lazy=True)
 
@@ -142,6 +142,14 @@ class Viewing(db.Model):
     def is_seat_available(self, seat_number):
         s = Seat.query.filter_by(viewing_id=self.id, seat_number=seat_number, transaction_id=None).first()
         return s is not None
+
+    def init_seats(self):
+        for char in ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K']:
+            for i in range(1, 10):
+                self.seats.append(Seat(
+                    seat_number=char + str(i)
+                ))
+        db.session.commit()
 
     def book_seats(self, seats, user: User) -> (Transaction, str):
         """
@@ -251,8 +259,10 @@ class TicketType(db.Model):
     price = db.Column(db.Float, nullable=False)
 
 
-class Theatre(db.Model):
-    __tablename__ = "theatre"
+class Screen(db.Model):
+    __tablename__ = "screen"
     id = db.Column(db.Integer, unique=True, primary_key=True)
 
-    viewings = db.relationship('Viewing', backref='viewing', lazy=True)
+    viewings = db.relationship('Viewing', backref='screen', lazy=True)
+
+    name = db.Column(db.String(5), nullable=False, unique=True)

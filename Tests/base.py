@@ -1,7 +1,7 @@
 from flask_testing import TestCase
 
 from Flask_Cinema_Site import app, db
-from Flask_Cinema_Site.models import User, Movie, Viewing, Role
+from Flask_Cinema_Site.models import User, Movie, Viewing, Role, Screen
 from Flask_Cinema_Site.forms import SimpleForm
 
 from flask import url_for, current_app
@@ -159,25 +159,22 @@ class BaseTestCase(TestCase):
             datetime.today().replace(hour=17, minute=30, second=0, microsecond=0)
         ]
 
-        for m in Movie.query.all():
-            # Add viewings for the next 10 days
-            for day_num in range(10):
+        # For simplicity give each movie its own screen
+        screen_letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S',
+                          'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
+
+        for m, screen_letter in zip(Movie.query.all(), screen_letters):
+            screen = Screen(name=screen_letter)
+            db.session.add(screen)
+            db.session.commit()
+
+            # Add viewings for the next 7 days
+            for day_num in range(7):
                 for viewing_time in viewing_times:
                     m.viewings.append(Viewing(
                         time=viewing_time + timedelta(days=day_num, minutes=20 * day_num),
-                        price=4.40
-                    ))
-
-                # Add extra same time viewings on fridays
-                if (datetime.today() + timedelta(days=day_num)).weekday() == 4:
-                    m.viewings.append(Viewing(
-                        time=viewing_times[0] + timedelta(days=day_num, minutes=20 * day_num),
-                        price=5.70
-                    ))
-
-                    m.viewings.append(Viewing(
-                        time=viewing_times[-1] + timedelta(days=day_num, minutes=20 * day_num),
-                        price=7.99
+                        price=4.40,
+                        screen_id=screen.id
                     ))
 
         db.session.commit()
