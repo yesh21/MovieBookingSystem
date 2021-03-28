@@ -6,7 +6,6 @@ from flask_principal import Principal
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 from flask_admin.menu import MenuLink
-from flask_cors import CORS
 
 app = Flask(__name__)
 # Load config
@@ -21,7 +20,6 @@ else:
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
 mail = Mail(app)
-cors = CORS(app)
 
 # User roles
 principals = Principal(app)
@@ -31,7 +29,7 @@ app.jinja_env.globals.update(is_customer=customer_permission.can,
                              is_admin=admin_permission.can)
 
 # Add administrative views here
-from .models import User, UserRole, Role, Viewing, Transaction, Movie, Seat, Theatre, TicketType
+from .models import User, UserRole, Role, Viewing, Transaction, Movie, Seat, Screen, TicketType
 
 # Only allow admin view in development
 if app.config['ENV'] == 'development':
@@ -45,7 +43,7 @@ if app.config['ENV'] == 'development':
     admin.add_view(ModelView(Movie, db.session, endpoint='movies'))
     admin.add_view(ModelView(Seat, db.session))
     admin.add_view(ModelView(TicketType, db.session))
-    admin.add_view(ModelView(Theatre, db.session))
+    admin.add_view(ModelView(Screen, db.session))
     # set optional bootswatch theme
     app.config['FLASK_ADMIN_SWATCH'] = 'cerulean'
 

@@ -48,7 +48,6 @@ class ViewSpecificMovieTestCase(MovieBaseTestCase):
             self.assertIn(b'Edit movie', res.data)
             self.assertIn(b'Hide movie', res.data)
             self.assertIn(b'Show movie', res.data)
-            self.assertIn(b'Delete movie', res.data)
 
     def test_view_specific_hidden_manager(self):
         with self.client:
