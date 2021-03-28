@@ -64,3 +64,17 @@ def send_email(subject, sender, recipients, text_body, html_body):
     msg.body = text_body
     msg.html = html_body
     Thread(target=send_async_email, args=(app, msg)).start()
+
+
+def send_email_with_attachment(subject, sender, recipients, text_body, html_body, file_path, content_type,
+                               attachment_name):
+    msg = Message(subject=subject, sender=sender, recipients=recipients)
+    msg.body = text_body
+    msg.html = html_body
+    with open(file_path, 'rb') as f:
+        msg.attach(
+            filename=attachment_name,
+            content_type=content_type,
+            data=f.read()
+        )
+    Thread(target=send_async_email, args=(app, msg)).start()

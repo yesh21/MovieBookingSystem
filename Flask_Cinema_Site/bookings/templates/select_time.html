@@ -99,18 +99,6 @@
                 (Card)
             </button>
         </div>
-
-        <!--Alternative Times on same day-->
-        <div class="row pt-5">
-            <div class="col">
-                <hr>
-            </div>
-            <div class="col-auto">Alternative Times</div>
-            <div class="col">
-                <hr>
-            </div>
-        </div>
-        <!--Insert list of times in the same day here-->
     </div>
 
     {% if is_manager() %}
@@ -183,12 +171,12 @@
 
                             {{ cash_payment_form.seats_json(id='seatsCashJson') }}
                             {{ get_field_group_html(cash_payment_form.customer_email) }}
-                            {{ cash_payment_form.csrf_token }}
+                            {{ cash_payment_form.csrf_token(id='cashCsrf') }}
 
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                            {{ cash_payment_form.submit(class='btn btn-primary') }}
+                            {{ cash_payment_form.submit(class='btn btn-primary', id='cashSubmit') }}
                         </div>
                     </form>
                 </div>
@@ -257,21 +245,53 @@
                             </tbody>
                         </table>
 
-                        <table class="table bg-black rounded">
-                            <tbody>
+                        <!-- Saved cards-->
+                        <div class="form-group">
+                            <label class="form-control-label" for="storedCards">Saved cards</label>
+                            <select class="form-control" id="storedCards">
+                                {% for card in current_user.saved_cards %}
+                                    <option value="**** **** **** {{ card.number[-4:] }}">**** ****
+                                        **** {{ card.number[-4:] }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
 
-                            </tbody>
-                        </table>
+                        <!-- Card / CVC -->
+                        <div class="form-row">
+                            <div class="form-group col-8">
+                                {{ get_field_html(card_payment_form.card) }}
+                            </div>
+                            <div class="form-group col-4">
+                                {{ get_field_html(card_payment_form.cvc) }}
+                            </div>
+                        </div>
 
+                        <!-- Expiry month selector -->
+                        <div class="form-group">
+                            <label class="form-control-label" for="expirySelector">Expiry date</label>
+                            <input class="form-control {{ 'is-invalid' if card_payment_form.expiry.errors else '' }}"
+                                   id="expirySelector" type="month">
+                            <div class="invalid-feedback">
+                                {% for error in card_payment_form.expiry.errors %}
+                                    <p class="mb-0">{{ error}}</p>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {{ card_payment_form.expiry(class='d-none') }}
+
+                        <!-- Remember card -->
+                        <div class="form-group form-check">
+                            {{ card_payment_form.remember(class="form-check-input") }}
+                            {{ card_payment_form.remember.label(class="form-check-label") }}
+                        </div>
+
+                        {{ card_payment_form.csrf_token(id='cardCsrf') }}
                         {{ card_payment_form.seats_json(id='seatsCardJson') }}
-                        {{ get_field_group_html(card_payment_form.card) }}
-                        {{ get_field_group_html(card_payment_form.cvc) }}
-                        {{ card_payment_form.csrf_token }}
 
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                        {{ card_payment_form.submit(class='btn btn-primary') }}
+                        {{ card_payment_form.submit(class='btn btn-primary', id='cardSubmit') }}
                     </div>
                 </form>
             </div>
@@ -281,8 +301,27 @@
 {% endblock %}
 
 {% block scripts %}
-    <!--<script src="{{ url_for('bookings.static', filename='js/seating.js') }}"></script>-->
     <script>
+        // Set initial selected card
+        let stored_cards = $("#storedCards");
+        let card = $('#card');
+        stored_cards.val(card.val());
+
+        // On saved card selected
+        stored_cards.change(function () {
+            card.val(stored_cards.val());
+        });
+
+        // Set initial month value
+        let expiry_selector = $('#expirySelector');
+        let expiry = $('#expiry');
+        expiry_selector.val(expiry.val().slice(0, -3))
+
+        // Update hidden date selector
+        expiry_selector.change(function () {
+           expiry.val(expiry_selector.val() + '-01');
+        });
+
         let btn_classes = {
             'available': 'btn-info seat-available',
             'child': 'btn-success seat-child',
@@ -428,7 +467,7 @@
             $('#seatsCardJson').val(populate_models_get_json());
         })
 
-        {% if card_payment_form.card.errors or card_payment_form.cvc.errors %}
+        {% if card_payment_form.card.errors or card_payment_form.cvc.errors or card_payment_form.expiry.errors %}
             // Load submitted seats
             init_buttons_from_json({{ cash_payment_form.seats_json.data | tojson | safe }});
             // Open card modal if post errors
