@@ -1,10 +1,11 @@
 # Fix being within folder
 import sys
 import os
+
 sys.path.insert(0, os.path.dirname(__file__) + '/..')
 
 from Flask_Cinema_Site import db
-from Flask_Cinema_Site.models import Movie, Viewing, Seat, Transaction, User, Role, TicketType, SavedCard
+from Flask_Cinema_Site.models import Movie, Viewing, Seat, Transaction, User, Role, TicketType, SavedCard, Screen
 
 from datetime import date, datetime, timedelta
 
@@ -210,48 +211,35 @@ db.session.commit()
 
 # Add some times for each movie
 viewing_times = [
-    # datetime.today().replace(hour=10, minute=0, second=0, microsecond=0),
-    # datetime.today().replace(hour=14, minute=15, second=0, microsecond=0),
+    datetime.today().replace(hour=14, minute=15, second=0, microsecond=0),
     datetime.today().replace(hour=17, minute=30, second=0, microsecond=0),
     datetime.today().replace(hour=19, minute=20, second=0, microsecond=0),
     datetime.today().replace(hour=20, minute=45, second=0, microsecond=0)
 ]
 
-for m in Movie.query.all():
-    # Add viewings for the next 2 days
-    for day_num in range(2):
+# For simplicity give each movie its own screen
+screen_letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',
+                  'U', 'V', 'W', 'X', 'Y', 'Z']
+
+for m, screen_letter in zip(Movie.query.all(), screen_letters):
+    screen = Screen(name=screen_letter)
+    db.session.add(screen)
+    db.session.commit()
+
+    # Add viewings for the next 7 days
+    for day_num in range(7):
         for viewing_time in viewing_times:
-            m.viewings.append(Viewing(
+            v = Viewing(
                 time=viewing_time + timedelta(days=day_num, minutes=20 * day_num),
-                price=5.50
-            ))
-
-        # Add extra same time viewings on fridays
-        if (datetime.today() + timedelta(days=day_num)).weekday() == 4:
-            m.viewings.append(Viewing(
-                time=viewing_times[1] + timedelta(days=day_num, minutes=20 * day_num),
-                price=4.40
-            ))
-
-            m.viewings.append(Viewing(
-                time=viewing_times[-1] + timedelta(days=day_num, minutes=20 * day_num),
-                price=7.77
-            ))
-
-db.session.commit()
-
-# For each viewing add some seats
-for v in Viewing.query.all():
-    for char in ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K']:
-        for i in range(1, 10):
-            v.seats.append(Seat(
-                seat_number=char + str(i)
-            ))
+                price=5.50,
+                screen_id=screen.id
+            )
+            v.init_seats()
+            m.viewings.append(v)
 
 db.session.commit()
 
 
-# Book seats for viewing 1
 def book_seats(seat_nums, t, v_id):
     child_ticket_type = TicketType.query.filter_by(name='Child').first()
     adult_ticket_type = TicketType.query.filter_by(name='Adult').first()
