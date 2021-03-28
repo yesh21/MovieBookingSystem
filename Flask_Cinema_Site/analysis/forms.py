@@ -19,7 +19,7 @@ class FilterForm(FlaskForm):
         # Default time period is one week
         if self.start_date.data is None and self.end_date.data is None:
             self.start_date.data = date.today() - timedelta(days=7)
-            self.end_date.data = date.today()
+            self.end_date.data = date.today() + timedelta(days=7)
 
         elif self.start_date.data is not None and self.end_date.data is None:
             self.end_date.data = self.start_date.data + timedelta(days=7)

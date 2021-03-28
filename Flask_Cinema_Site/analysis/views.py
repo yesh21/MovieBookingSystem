@@ -20,7 +20,7 @@ analysis_blueprint = Blueprint(
 @manager_permission.require(status.HTTP_401_UNAUTHORIZED)
 def view_multiple():
     start_date = date.today() - timedelta(days=7)
-    end_date = date.today()
+    end_date = date.today() + timedelta(days=7)
 
     form = FilterForm(request.args)
     if form.validate():
@@ -91,7 +91,7 @@ def view_single_movie(movie_id):
         return redirect(get_redirect_url())
 
     start_date = date.today() - timedelta(days=7)
-    end_date = date.today()
+    end_date = date.today() + timedelta(days=7)
 
     form = FilterForm(request.args)
     if form.validate():
