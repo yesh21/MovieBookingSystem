@@ -1,6 +1,6 @@
 from Flask_Cinema_Site import db, app, bcrypt
 
-from flask import Markup
+from flask import Markup, current_app
 from flask_login import UserMixin
 
 from datetime import datetime
@@ -8,6 +8,16 @@ from time import time
 from math import floor
 import jwt
 import re
+import os
+
+
+class SavedCard(db.Model):
+    __tablename__ = 'saved_cards'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+
+    number = db.Column(db.String(20), nullable=False)
+    expiry = db.Column(db.Date, nullable=False)
 
 
 class Role(db.Model):
@@ -29,6 +39,7 @@ class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
 
     transactions = db.relationship('Transaction', backref='user', lazy=True)
+    saved_cards = db.relationship('SavedCard', backref='user', lazy=True)
 
     # Readonly list
     roles = db.relationship('Role', secondary='user_role', back_populates='users', viewonly=True)
@@ -46,8 +57,9 @@ class User(db.Model, UserMixin):
 
     def get_reset_password_token(self, expires_in=86400):
         return jwt.encode(
-            {'reset_password': self.id, 'exp': time() + expires_in},
-            app.config['SECRET_KEY'], algorithm='HS256')
+            payload={'reset_password': self.id, 'exp': time() + expires_in},
+            key=app.config['SECRET_KEY'],
+            algorithm='HS256')
 
     @staticmethod
     def verify_reset_password_token(token):
@@ -64,8 +76,9 @@ class User(db.Model, UserMixin):
 
     def get_email_confirm_token(self, expires_in=86400):
         return jwt.encode(
-            {'email_confirm': self.id, 'exp': time() + expires_in},
-            app.config['SECRET_KEY'], algorithm='HS256')
+            payload={'email_confirm': self.id, 'exp': time() + expires_in},
+            key=app.config['SECRET_KEY'],
+            algorithm='HS256')
 
     @staticmethod
     def verify_email_confirm_token(token):
@@ -90,7 +103,7 @@ class User(db.Model, UserMixin):
 class Transaction(db.Model):
     __tablename__ = "transaction"
     id = db.Column(db.Integer, unique=True, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
     seats = db.relationship('Seat', backref='transaction', lazy=True)
 
@@ -105,6 +118,9 @@ class Transaction(db.Model):
         for s in self.seats:
             cost += s.ticket_type.price
         return cost
+
+    def get_receipt_path(self):
+        return os.path.join(current_app.root_path, "bookings", "receipts", str(self.id) + ".pdf")
 
 
 class Viewing(db.Model):
