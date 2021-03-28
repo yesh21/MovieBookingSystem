@@ -6,8 +6,8 @@ site.db
 migrations/
 
 # User generated content
-Flask_Cinema_Site/movie/static/cover_arts
-Flask_Cinema_Site/bookings/receipts
+#Flask_Cinema_Site/movie/static/cover_arts
+#Flask_Cinema_Site/bookings/receipts
 
 # Unit test / coverage reports
 htmlcov/
@@ -25,8 +25,8 @@ coverage.xml
 cover/
 
 # Flask stuff:
-instance/
-.webassets-cache
+ instance/
+ .webassets-cache
 
 # Environments
 venv/
