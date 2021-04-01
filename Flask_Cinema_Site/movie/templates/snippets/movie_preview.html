@@ -1,4 +1,4 @@
-<div class="card h-100 bg-black">
+<div class="card bg-black">
     <a href="{{ url_for('movie.view_specific', movie_id=m.id) }}">
         <img class="card-img-top"
              src="{{ url_for('movie.static', filename=m.rel_cover_art_path()) }}"
