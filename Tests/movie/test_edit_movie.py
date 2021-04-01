@@ -47,6 +47,9 @@ class EditMovieTestCase(MovieBaseTestCase):
             self.assertEqual(num_movies, self.get_num_movies())
             self.assert_message_flashed(f'Movie \'{params["name"]}\' saved successfully', 'success')
 
+            # Fix deleted cover arts
+            self.copy_resources()
+
     # Fail
     def test_edit_movie_post_customer(self):
         with self.client:
