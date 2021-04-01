@@ -14,13 +14,13 @@ from reportlab.platypus import Table, TableStyle
 
 import os
 import jwt
+import textwrap
 
 
 def generate_receipt_pdf(transaction, email_address):
     viewing = transaction.viewings[0]
 
-    path = transaction.get_receipt_path()
-    c = canvas.Canvas(path)
+    c = canvas.Canvas(transaction.get_receipt_path())
     width, height = letter
     margin = 50
 
@@ -30,7 +30,7 @@ def generate_receipt_pdf(transaction, email_address):
     c.setFont('Helvetica', 30)
     c.drawString(margin, 720, 'Tickets')
 
-    draw_movie_viewing_section(c, margin, 700, viewing, email_address)
+    viewing_section_height = draw_movie_viewing_section(c, margin, 700, viewing, email_address)
     draw_transaction_section(c, 370, 700, transaction)
 
     qr_data = jwt.encode(
@@ -38,7 +38,9 @@ def generate_receipt_pdf(transaction, email_address):
         key=app.config['SECRET_KEY'],
         algorithm='HS256'
     )
-    draw_qr_code(c, margin, 390, qr_data)
+    # 180 = qr code height
+    draw_qr_code(c, margin, 700 - 180 - viewing_section_height, qr_data)
+
     # 180 = qr code height, 22 = qr code border width
     draw_seats_table(c, width - margin, 410 + 180 - 22, transaction)
 
@@ -50,7 +52,7 @@ def generate_receipt_pdf(transaction, email_address):
         recipients=[email_address],
         text_body=render_template('email/receipt.txt', viewing=viewing),
         html_body=render_template('email/receipt.txt', viewing=viewing),
-        file_path=path,
+        file_path=transaction.get_receipt_path(),
         content_type='application/pdf',
         attachment_name='tickets.pdf'
     )
@@ -59,29 +61,45 @@ def generate_receipt_pdf(transaction, email_address):
 def draw_movie_viewing_section(c, x, y, viewing: Viewing, email_address):
     second_margin = x + 100
     c.setFont('Helvetica', 15)
+    lp = LinePosition(y, 20)
 
-    c.drawString(x, y, 'Movie:')
-    c.drawString(second_margin, y, viewing.movie.name)
+    c.drawString(x, lp.get_current_line_y(), 'Movie:')
+    # Split long names into new lines
+    name_parts = textwrap.wrap(viewing.movie.name, width=22)
+    for part in name_parts:
+        c.drawString(second_margin, lp.get_current_line_y(), part)
+        lp.inc_line_number()
 
     # Viewing section
-    viewing_offset = 10
-    c.drawString(x, y - 20, 'Viewing:')
+    viewing_x = x + 10
+    c.drawString(x, lp.get_current_line_y(), 'Viewing:')
+    lp.inc_line_number()
 
-    c.drawString(x + viewing_offset, y - 20 * 2, 'Number:')
-    c.drawString(second_margin, y - 20 * 2, str(viewing.id))
+    c.drawString(viewing_x, lp.get_current_line_y(), 'Number:')
+    c.drawString(second_margin, lp.get_current_line_y(), str(viewing.id))
+    lp.inc_line_number()
 
-    c.drawString(x + viewing_offset, y - 20 * 3, 'Date:')
-    c.drawString(second_margin, y - 20 * 3, viewing.time.strftime('%d/%m/%y'))
+    c.drawString(viewing_x, lp.get_current_line_y(), 'Date:')
+    c.drawString(second_margin, lp.get_current_line_y(), viewing.time.strftime('%d/%m/%y'))
+    lp.inc_line_number()
 
-    c.drawString(x + viewing_offset, y - 20 * 4, 'Time:')
-    c.drawString(second_margin, y - 20 * 4, viewing.time.strftime('%H:%M'))
+    c.drawString(viewing_x, lp.get_current_line_y(), 'Time:')
+    c.drawString(second_margin, lp.get_current_line_y(), viewing.time.strftime('%H:%M'))
+    lp.inc_line_number()
 
-    c.drawString(x + viewing_offset, y - 20 * 5, 'Screen:')
-    c.drawString(second_margin, y - 20 * 5, viewing.screen.name)
+    c.drawString(viewing_x, lp.get_current_line_y(), 'Screen:')
+    c.drawString(second_margin, lp.get_current_line_y(), viewing.screen.name)
+    lp.inc_line_number()
 
     # Email
-    c.drawString(x, y - 20 * 6, 'Email:')
-    c.drawString(second_margin, y - 20 * 6, email_address)
+    c.drawString(x, lp.get_current_line_y(), 'Email:')
+    # Split long emails into new lines
+    email_parts = textwrap.wrap(email_address, width=22)
+    for part in email_parts:
+        c.drawString(second_margin, lp.get_current_line_y(), part)
+        lp.inc_line_number()
+
+    return y - lp.get_current_line_y()
 
 
 def draw_transaction_section(c, x, y, transaction: Transaction):
@@ -156,3 +174,16 @@ def draw_qr_code(c, x, y, qr_data):
 
     # 22 = qr code border width
     renderPDF.draw(d, c, x - 22, y)
+
+
+class LinePosition:
+    def __init__(self, y, line_height):
+        self.y = y
+        self.line_height = line_height
+        self.line_number = 0
+
+    def get_current_line_y(self):
+        return self.y - self.line_height * self.line_number
+
+    def inc_line_number(self):
+        self.line_number += 1
