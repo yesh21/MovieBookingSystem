@@ -22,15 +22,18 @@
     }
 }
 
-h2 {
-   width: 100%;
-   text-align: left;
-   border-bottom: 1px solid #007bff;
-   line-height: 0.1em;
-   margin: 10px 0 20px;
+.section-line {
+    display: flex;
+    align-items: center;
+    text-align: left;
 }
 
-h2 span {
-    background:linear-gradient(155deg, rgba(10,1,20,1) 0%, rgba(25,1,52,1) 49%, rgba(10,1,20,1) 100%);
-    padding:0 10px;
+.section-line::after {
+    content: '';
+    flex: 1;
+    border-bottom: 2px solid #FFF;
+}
+
+.section-line:not(:empty)::after {
+    margin-left: .3em;
 }

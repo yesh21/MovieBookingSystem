@@ -3,6 +3,11 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="description" content="Leeds based cinema">
+    <meta name="keywords" content="Cinema, Movie, Film">
+    <meta name="author" content="Group 40">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>{{ title or 'Group 40 Cinema...' }}</title>
 
     <!-- CSS related to search ???? -->
@@ -56,7 +61,7 @@
 <script>
     // Search
     let base_movie_url = {{ url_for('movie.view_multiple') }}
-    window.search_results = {};
+        window.search_results = {};
     $(function () {
         $("#searchBox").autocomplete({
             source: function (request, response) {
