@@ -1,74 +1,51 @@
 {% extends 'movies_base.html' %}
 
 {% block content %}
-<section class="jumbotron bg-transparent text-center p-0">
+    <section class="jumbotron bg-transparent text-center p-0">
+        <div class="container">
+            <h1 class="jumbotron-heading">Browse Movies</h1>
+        </div>
+    </section>
+
     <div class="container">
-        <h1 class="jumbotron-heading">Browse Movies</h1>
-    </div>
-</section>
-
-<div class="container">
-    <div class="row flex-row-reverse">
-        <div class="dropdown">
-            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
-                    data-toggle="dropdown"
-                    aria-haspopup="true" aria-expanded="false">
-                Filter Results
-            </button>
-            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                <a class="dropdown-item" href="{{url_for('movie.star_filter')}}">Star Rating</a>
-                <a class="dropdown-item" href="{{url_for('movie.genre_filter')}}">Genre</a>
-                <!--<a class="dropdown-item" href="#">Date of Showing?</a>-->
+        <div class="d-flex flex-row-reverse">
+            <div class="dropdown">
+                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Sort Results
+                </button>
+                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
+                    <a class="dropdown-item" href="{{ url_for('movie.star_filter') }}">Star Rating</a>
+                    <a class="dropdown-item" href="{{ url_for('movie.genre_filter') }}">Genre</a>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<div class="album py-5">
-    <div class="container">
-        {% if movies|length > 0 %}
-        <div class="row py-2"><h2><span>5 Star</span></h2></div>
-        <div class="card-columns">
-            {% for m in movies %}
-            {% if m.rating == 5 %}
-            <div class="h-100">
-                {% include("snippets/movie_preview.html") %}
-            </div>
-            {% endif %}
+    <div class="album py-5">
+        <div class="container">
+            {% for i in range(1, 6) | reverse %}
+                {% if movies | selectattr('rating', 'ge', i) | selectattr('rating', 'lt', i + 1) | list | length > 0 %}
+                    <div class="section-line h2">{{ i }} Star</div>
+                    <div class="card-columns">
+                        {% for m in movies | selectattr('rating', 'ge', i) | selectattr('rating', 'lt', i + 1) %}
+                            <div class="h-100">
+                                {% include("snippets/movie_preview.html") %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
             {% endfor %}
-        </div>
 
-        <div class="row py-2"><h2><span>4 Star</span></h2></div>
-        <div class="card-columns">
-            {% for m in movies %}
-            {% if m.rating >= 4 and m.rating < 5 %}
-            <div class="h-100">
-                {% include("snippets/movie_preview.html") %}
-            </div>
+            {% if movies | length == 0 %}
+                <div class="card w-100 bg-dark">
+                    <div class="card-body text-center">
+                        <p class="h4">No movies found</p>
+                    </div>
+                </div>
             {% endif %}
-            {% endfor %}
         </div>
-
-        <div class="row py-2"><h2><span>3 Star</span></h2></div>
-        <div class="card-columns">
-            {% for m in movies %}
-            {% if m.rating >= 3 and m.rating < 4 %}
-            <div class="h-100">
-                {% include("snippets/movie_preview.html") %}
-            </div>
-            {% endif %}
-            {% endfor %}
-        </div>
-
-        {% else %}
-        <div class="card w-100 bg-dark">
-            <div class="card-body text-center">
-                <p class="h4">No movies found</p>
-            </div>
-        </div>
-        {% endif %}
     </div>
-</div>
 
 
 {% endblock %}

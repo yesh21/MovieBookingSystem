@@ -1,114 +1,33 @@
-.card-img{
- width: 100%!important;
- height: 400px!important;
- object-fit: cover;
-}
-.Banner{
- width: 100%;
- background-color: black;
-}
-p {
- text-align: center;
-
-
-}
-hr{
+hr {
     border: 5px solid white;
     border-top: 10px;
 }
-p.pos_fixed {
-    position: relative;
-    height: 100%;
-    margin: 0;
-    text-align:center;
-    font-style: oblique;
-    font-size: 25px;
-}
-.preview{
-   width:200px;
-   height:250px;
-}
-
-.btn-right {
-  position: absolute;
-  top: 40%;
-  left: 95%;
-  height: 40%;
-  transform: translate(-50%, -50%);
-  -ms-transform: translate(-50%, -50%);
-
-  font-size: 99px;
-
-  border: none;
-  cursor: pointer;
-  border-radius: 5px;
-  background-color: Transparent;
-  outline:none;
-}
-btn:hover {
-  background-color: transparent;
-}
-p:hover {
-  background-color: transparent;
-}
-.btn-left {
-  position: absolute;
-  top: 40%;
-  left: 5%;
-  height: 40%;
-  transform: translate(-50%, -50%);
-  -ms-transform: translate(-50%, -50%);
-  background-color: Transparent;
-  outline:none;
-
-  font-size: 99px;
-
-  border: none;
-  cursor: pointer;
-  border-radius: 5px;
-}
-
-.container .btn:hover {
-  background-color: black;
-}
 
 .containerAd {
-  position: relative;
-  text-align: center;
-  color: white;
+    position: relative;
+    text-align: center;
+    color: white;
 }
 
-.arrow {
-  border: solid white;
-  border-width: 0 3px 3px 0;
-  display: inline-block;
-  padding: 3px;
-}
-
-.right {
-  transform: rotate(-45deg);
-  -webkit-transform: rotate(-45deg);
-}
-.row-width-wide-cards .card {
-  width: 100%;
-}
-.left {
-  transform: rotate(135deg);
-  -webkit-transform: rotate(135deg);
-}
-.block {
-  font-family: monospace;
-}
 .location {
-  font-family: cursive;
-  font-size: 25px;
+    font-family: cursive;
+    font-size: 25px;
 }
+
 .centered {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  color: white;
-  font-size: 40px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 40px;
+}
+
+.text-monospace {
+    font-family: monospace;
+}
+
+.mt-neg-3 {
+    margin-top: -3rem;
 }
 
