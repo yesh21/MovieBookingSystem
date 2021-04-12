@@ -44,6 +44,7 @@ def get_validate_viewing(viewing_id):
     # Check viewing in the future and not hidden
     if v.time < datetime.now() and not v.movie.hidden:
         flash(f'Viewing with id [{viewing_id}] not found', 'danger')
+        return None
 
     return v
 

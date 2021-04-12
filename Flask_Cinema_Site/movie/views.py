@@ -9,7 +9,7 @@ from flask import render_template, redirect, url_for, Blueprint, flash, request,
 from flask_api import status
 
 from sqlalchemy import func, asc
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
 
 
 movies_blueprint = Blueprint(
@@ -54,7 +54,8 @@ def view_specific(movie_id):
         d = date.today() + timedelta(days=i)
         viewings = Viewing.query\
             .filter(Viewing.movie_id == movie_id)\
-            .filter(func.date(Viewing.time) == d) \
+            .filter(func.date(Viewing.time) == d)\
+            .filter(Viewing.time >= datetime.now())\
             .order_by(asc(Viewing.time))\
             .all()
         viewing_days.append((d, viewings))
