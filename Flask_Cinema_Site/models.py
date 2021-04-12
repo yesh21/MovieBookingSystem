@@ -137,7 +137,6 @@ class Viewing(db.Model):
 
     # TODO Rename to datetime?
     time = db.Column(db.DateTime, nullable=False)
-    price = db.Column(db.Float, nullable=False)
 
     def is_seat_available(self, seat_number):
         s = Seat.query.filter_by(viewing_id=self.id, seat_number=seat_number, transaction_id=None).first()

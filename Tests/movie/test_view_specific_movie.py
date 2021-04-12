@@ -5,7 +5,7 @@ from Flask_Cinema_Site.models import Viewing
 
 from flask import url_for
 
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
 from sqlalchemy import func
 
 
@@ -31,7 +31,7 @@ class ViewSpecificMovieTestCase(MovieBaseTestCase):
             # Check movie viewings
             viewings = Viewing.query\
                 .filter(Viewing.movie_id == self.movie_A.id)\
-                .filter(func.date(Viewing.time) >= date.today())\
+                .filter(Viewing.time >= datetime.today())\
                 .filter(func.date(Viewing.time) <= date.today() + timedelta(days=6))\
                 .all()
             for v in viewings:
