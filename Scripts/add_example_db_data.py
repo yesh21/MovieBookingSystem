@@ -231,7 +231,6 @@ for m, screen_letter in zip(Movie.query.all(), screen_letters):
         for viewing_time in viewing_times:
             v = Viewing(
                 time=viewing_time + timedelta(days=day_num, minutes=20 * day_num),
-                price=5.50,
                 screen_id=screen.id
             )
             v.init_seats()

@@ -173,7 +173,6 @@ class BaseTestCase(TestCase):
                 for viewing_time in viewing_times:
                     m.viewings.append(Viewing(
                         time=viewing_time + timedelta(days=day_num, minutes=20 * day_num),
-                        price=4.40,
                         screen_id=screen.id
                     ))
 
