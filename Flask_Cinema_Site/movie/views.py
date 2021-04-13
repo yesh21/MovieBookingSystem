@@ -91,7 +91,7 @@ def add():
     db.session.commit()
 
     flash(f'Movie \'{m.name}\' added successfully', 'success')
-    return redirect(url_for('movie.view_multiple'))
+    return redirect(url_for('movie.view_specific', movie_id=m.id))
 
 
 @movies_blueprint.route('/<int:movie_id>/edit', methods=['GET', 'POST'])
