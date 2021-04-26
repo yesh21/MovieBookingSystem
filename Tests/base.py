@@ -126,7 +126,8 @@ class BaseTestCase(TestCase):
             genres='sci-fi',
             duration=123,
             rating=4.2,
-            hidden=False
+            hidden=False,
+            trailer="https://www.youtube.com/embed/Fp9pNPdNwjI"
         )
         db.session.add(self.movie_A)
 
@@ -145,7 +146,8 @@ class BaseTestCase(TestCase):
             genres='sci-fi',
             duration=125,
             rating=3.5,
-            hidden=False
+            hidden=False,
+            trailer="https://www.youtube.com/embed/ahZFCF--uRY"
         )
         db.session.add(self.movie_B)
 
