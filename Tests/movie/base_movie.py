@@ -21,6 +21,7 @@ class MovieBaseTestCase(BaseTestCase):
             directors=m.directors,
             cast_list=m.cast,
             genres=m.genres,
+            trailer=m.trailer,
             picture=self.get_file_parameter('ghostbusters.jpg'),
             csrf_token=self.csrf_token
         )
@@ -32,6 +33,7 @@ class MovieBaseTestCase(BaseTestCase):
             released=date.today(),
             duration=123,
             rating=3,
+            trailer='a youtube link',
             directors='a director',
             cast_list='a actor, another actor',
             genres='comedy',
@@ -46,6 +48,7 @@ class MovieBaseTestCase(BaseTestCase):
             released='not a date',
             duration='not a number',
             rating=9,
+            trailer='X',
             directors='',
             cast_list='',
             genres='',
@@ -62,6 +65,7 @@ class MovieBaseTestCase(BaseTestCase):
             rating=params['rating'],
             directors=params['directors'],
             cast=params['cast_list'],
+            trailer=params['trailer'],
             genres=params['genres']
         ).first()
 
