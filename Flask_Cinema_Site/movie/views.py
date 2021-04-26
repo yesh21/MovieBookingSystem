@@ -79,6 +79,7 @@ def add():
         name=form.name.data,
         overview=form.overview.data,
         released=form.released.data,
+        trailer=form.trailer.data,
         duration=form.duration.data,
         rating=form.rating.data,
         directors=form.directors.data,
@@ -117,6 +118,7 @@ def edit(movie_id):
     m.directors = form.directors.data
     m.cast = form.cast_list.data
     m.genres = form.genres.data
+    m.trailer = form.trailer.data
 
     db.session.commit()
 

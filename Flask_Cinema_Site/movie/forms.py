@@ -25,6 +25,7 @@ class NewMovieForm(FlaskForm):
     directors = TextAreaField('Directors', validators=[Length(min=0, max=250)])
     cast_list = TextAreaField('Cast list', validators=[Length(min=0, max=250)])
     genres = TextAreaField('Genres', validators=[Length(min=0, max=250)])
+    trailer = TextAreaField('Trailer *', validators=[DataRequired(), Length(min=5, max=500)])
 
     submit = SubmitField('Add')
 
