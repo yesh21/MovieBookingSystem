@@ -1,115 +1,130 @@
 {% extends 'movies_base.html' %}
 
 {% block content %}
-    <div class="container">
-        {% if is_manager() %}
-            <div id="hiddenWarning" class="alert alert-warning {{ '' if movie.hidden else 'd-none' }}">
-                This movie is currently hidden
-            </div>
-        {% endif %}
+<div class="container">
+    {% if is_manager() %}
+    <div id="hiddenWarning" class="alert alert-warning {{ '' if movie.hidden else 'd-none' }}">
+        This movie is currently hidden
+    </div>
+    {% endif %}
 
-        <div class="row mb-4">
-            <!-- Cover art -->
-            <div class="col-md">
-                <div class="card mb-4 px-1 h-100 bg-black">
-                    <img class="y-100 w-100 m-auto"
-                         src="{{ url_for('movie.static', filename=movie.rel_cover_art_path()) }}"
-                         alt="Movie cover art">
-                </div>
-            </div>
-
-            <!-- Movie Details -->
-            <div class="col-md-8">
-                <div class="card mb-4 box-shadow h-100 bg-black">
-                    <div class="card-body">
-                        <h5 class="card-title">{{ movie.name }}</h5>
-                        <!-- Price / Rating -->
-                        <div class="d-flex justify-content-between pb-2 border-bottom">
-                            <div>{{ movie.duration }} mins</div>
-                            <div>
-                                {{ movie.get_star_rating_html() }}
-                            </div>
-                        </div>
-                        <p class="card-text py-2 mb-0 border-bottom">{{ movie.overview }}</p>
-                        <p class="card-text py-2 mb-0 border-bottom">Release
-                            date: {{ movie.released.strftime("%B %d, %Y") }}</p>
-                        <p class="card-text py-2 mb-0">
-                            Director: {{ movie.directors  if movie.directors is not none else 'Unkown' }}</p>
-                        <p class="card-text pb-2 mb-0">
-                            Cast: {{ movie.cast  if movie.cast is not none else 'Unkown' }}</p>
-                        <p class="card-text mb-0">
-                            Genres: {{ movie.genres if movie.genres is not none else 'Unkown' }}</p>
-                    </div>
-
-                    {% if is_manager() %}
-                        <!-- Edit / Hide / Delete buttons -->
-                        <div class="card-footer">
-                            <div class="row">
-                                <div class="col">
-                                    <a href="{{ url_for('movie.edit', movie_id=movie.id) }}"
-                                       class="btn btn-dark w-100">Edit movie</a>
-                                </div>
-                                <div class="col">
-                                    <button class="btn btn-primary w-100 {{ 'd-none' if movie.hidden }}"
-                                            type="button" id="hideMovieBtn">Hide movie
-                                    </button>
-                                    <button class="btn btn-primary w-100 {{ 'd-none' if not movie.hidden }}"
-                                            type="button" id="showMovieBtn">Show movie
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    {% endif %}
-                </div>
+    <div class="row mb-4">
+        <!-- Cover art -->
+        <div class="col-md">
+            <div class="card mb-4 px-1 h-100 bg-black">
+                <img class="y-100 w-100 m-auto"
+                     src="{{ url_for('movie.static', filename=movie.rel_cover_art_path()) }}"
+                     alt="Movie cover art">
             </div>
         </div>
 
-        <!-- Viewings search -->
-        <div class="card bg-black mb-4">
-            <div class="card-header">Upcoming viewings</div>
-            <div class="card-body">
-                <div class="row mx-neg-1">
-                    {% for day in viewing_days %}
-                        <div class="col-lg col-md-12 mb-2 px-1">
-                            <div class="bg-dark px-2 text-center rounded h-100">
-                                <p class="h6 my-1">{{ day[0].strftime("%a %d/%m/%y") }}</p>
-                                {% for v in day[1] %}
-                                    <div class="bg-black d-inline-block mx-auto my-1 rounded">
-                                        <a href="{{ url_for('bookings.view_specific', viewing_id=v.id) }}">
-                                            <span class="px-2 ">{{ v.time.strftime("%H:%M") }}</span>
-                                        </a>
-                                    </div>
-                                {% endfor %}
-                            </div>
-                        </div>
-                    {% endfor %}
-                </div>
-            </div>
-        </div><!-- Viewings search end -->
-
-        <!-- Similar movies -->
-        <div class="card bg-black">
-            <div class="card-header">Similar movies you may also like</div>
-            <div class="card-body">
-                <div class="row">
-
-                </div>
-                {% if 0 == 0 %}
-                    <div class="card w-100 bg-dark">
-                        <div class="card-body text-center">
-                            <p class="h4">No movies found</p>
+        <!-- Movie Details -->
+        <div class="col-md-8">
+            <div class="card mb-4 box-shadow h-100 bg-black">
+                <div class="card-body">
+                    <h5 class="card-title">{{ movie.name }}</h5>
+                    <!-- Price / Rating -->
+                    <div class="d-flex justify-content-between pb-2 border-bottom">
+                        <div>{{ movie.duration }} mins</div>
+                        <div>
+                            {{ movie.get_star_rating_html() }}
                         </div>
                     </div>
+                    <p class="card-text py-2 mb-0 border-bottom">{{ movie.overview }}</p>
+                    <p class="card-text py-2 mb-0 border-bottom">Release
+                        date: {{ movie.released.strftime("%B %d, %Y") }}</p>
+                    <p class="card-text py-2 mb-0">
+                        Director: {{ movie.directors if movie.directors is not none else 'Unkown' }}</p>
+                    <p class="card-text pb-2 mb-0">
+                        Cast: {{ movie.cast if movie.cast is not none else 'Unkown' }}</p>
+                    <p class="card-text mb-0">
+                        Genres: {{ movie.genres if movie.genres is not none else 'Unkown' }}</p>
+                </div>
+
+                {% if is_manager() %}
+                <!-- Edit / Hide / Delete buttons -->
+                <div class="card-footer">
+                    <div class="row">
+                        <div class="col">
+                            <a href="{{ url_for('movie.edit', movie_id=movie.id) }}"
+                               class="btn btn-dark w-100">Edit movie</a>
+                        </div>
+                        <div class="col">
+                            <button class="btn btn-primary w-100 {{ 'd-none' if movie.hidden }}"
+                                    type="button" id="hideMovieBtn">Hide movie
+                            </button>
+                            <button class="btn btn-primary w-100 {{ 'd-none' if not movie.hidden }}"
+                                    type="button" id="showMovieBtn">Show movie
+                            </button>
+                        </div>
+                    </div>
+                </div>
                 {% endif %}
             </div>
-        </div><!-- Similar movies end -->
+        </div>
     </div>
+
+    <!-- Viewings search -->
+    <div class="card bg-black mb-4">
+        <div class="card-header">Upcoming viewings</div>
+        <div class="card-body">
+            <div class="row mx-neg-1">
+                {% for day in viewing_days %}
+                <div class="col-lg col-md-12 mb-2 px-1">
+                    <div class="bg-dark px-2 text-center rounded h-100">
+                        <p class="h6 my-1">{{ day[0].strftime("%a %d/%m/%y") }}</p>
+                        {% for v in day[1] %}
+                        <div class="bg-black d-inline-block mx-auto my-1 rounded">
+                            <a href="{{ url_for('bookings.view_specific', viewing_id=v.id) }}">
+                                <span class="px-2 ">{{ v.time.strftime("%H:%M") }}</span>
+                            </a>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div><!-- Viewings search end -->
+
+    <!-- Trailer -->
+    <div class="card bg-black mb-4">
+        <div class="card-header">Trailer</div>
+        <div class="card-body">
+
+                <div class="videoWrapper">
+                    <!-- Copy & Pasted from YouTube -->
+                    <iframe width="420" height="315"
+                            src="{{movie.trailer}}">
+                    </iframe>
+                </div>
+
+        </div>
+    </div><!-- Trailer end -->
+
+    <!-- Similar movies -->
+    <div class="card bg-black">
+        <div class="card-header">Similar movies you may also like</div>
+        <div class="card-body">
+            <div class="row">
+
+            </div>
+            {% if 0 == 0 %}
+            <div class="card w-100 bg-dark">
+                <div class="card-body text-center">
+                    <p class="h4">No movies found</p>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div><!-- Similar movies end -->
+</div>
 {% endblock %}
 
 
 {% block scripts %}
-    {% if is_manager() %}
-        <script>
+{% if is_manager() %}
+<script>
             let params = {
                 'csrf_token': '{{ simple_form.csrf_token.current_token }}',
                 'id': {{ movie.id }}
@@ -155,7 +170,9 @@
                         flash_message(data.responseJSON['msg'], 'danger');
                     });
             });
-        </script>
-    {% endif %}
+
+
+</script>
+{% endif %}
 {% endblock %}
 

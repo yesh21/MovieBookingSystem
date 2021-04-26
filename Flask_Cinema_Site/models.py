@@ -194,6 +194,7 @@ class Movie(db.Model):
     name = db.Column(db.String(100), nullable=False)
     overview = db.Column(db.String(500), nullable=False)
     released = db.Column(db.Date, nullable=False)
+    trailer = db.Column(db.String(500), nullable=False)
 
     duration = db.Column(db.Integer, nullable=False)
     rating = db.Column(db.Float, nullable=False)

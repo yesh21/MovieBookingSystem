@@ -77,7 +77,8 @@ m1 = Movie(
     duration=123,
     rating=4.2,
     hidden=False,
-    genres="Action"
+    genres="Action",
+    trailer="https://www.youtube.com/embed/Fp9pNPdNwjI"
 )
 db.session.add(m1)
 
@@ -96,7 +97,8 @@ m2 = Movie(
     duration=125,
     rating=3.5,
     hidden=True,
-    genres="Action"
+    genres="Action",
+    trailer="https://www.youtube.com/embed/ahZFCF--uRY"
 )
 
 db.session.add(m2)
@@ -114,7 +116,8 @@ m3 = Movie(
     duration=125,
     rating=4.0,
     hidden=False,
-    genres="Action"
+    genres="Action",
+    trailer="https://www.youtube.com/embed/L3pk_TBkihU"
 )
 
 db.session.add(m3)
@@ -132,7 +135,8 @@ m4 = Movie(
     duration=140,
     rating=4.0,
     hidden=False,
-    genres="Drama"
+    genres="Drama",
+    trailer="https://www.youtube.com/embed/JZQz0rkNajo"
 )
 
 db.session.add(m4)
@@ -150,7 +154,8 @@ m5 = Movie(
     duration=140,
     rating=3.5,
     hidden=False,
-    genres="Action"
+    genres="Action",
+    trailer="https://www.youtube.com/embed/mepeWor5JPk"
 )
 
 db.session.add(m5)
@@ -167,7 +172,8 @@ m6 = Movie(
     duration=160,
     rating=4.5,
     hidden=False,
-    genres="Action"
+    genres="Action",
+    trailer="https://www.youtube.com/embed/YoHD9XEInc0"
 )
 
 db.session.add(m6)
@@ -186,7 +192,8 @@ m7 = Movie(
     duration=120,
     rating=5.0,
     hidden=False,
-    genres="Space"
+    genres="Space",
+    trailer="https://www.youtube.com/embed/ej3ioOneTy8"
 )
 
 db.session.add(m7)
@@ -203,7 +210,8 @@ m8 = Movie(
     duration=160,
     rating=5.0,
     hidden=False,
-    genres="Fantasy"
+    genres="Fantasy",
+    trailer="https://www.youtube.com/embed/V75dMMIW2B4"
 )
 
 db.session.add(m8)
