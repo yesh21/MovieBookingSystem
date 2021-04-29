@@ -37,6 +37,9 @@
                             <div class="col">
                                 <p class="mb-0">Time: {{ t.datetime.strftime('%H:%M') }}</p>
                                 <p>Date: {{ t.datetime.strftime('%d/%m') }}</p>
+                                <a href="{{ url_for('bookings.cancel', transaction_id=t.id) }}">
+                                    <button class="btn btn-danger">Cancel Booking</button>
+                                </a>
                             </div>
                             <div class="col">
                                 <p class="mb-0">VAT: £{{ '%.2f' | format(t.get_cost() * 0.2) }}</p>

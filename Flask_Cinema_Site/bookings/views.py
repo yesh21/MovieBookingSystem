@@ -162,3 +162,17 @@ def view_receipt(transaction_id):
         return redirect(get_redirect_url())
 
     return send_file(path, attachment_filename='tickets.pdf')
+
+
+@bookings_blueprint.route('/cancel/<int:transaction_id>', methods=['GET'])
+@login_required
+def cancel(transaction_id):
+    t = Transaction.query.filter_by(id=transaction_id, user_id=current_user.id).first()
+    if not t:
+        flash(f'Transaction with id \'{transaction_id}\' not found', 'danger')
+        return redirect(get_redirect_url())
+
+    db.session.delete(t)
+    db.session.commit()
+
+    return render_template('canceled_booking.html', title='Cancelled')

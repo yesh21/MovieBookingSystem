@@ -1,0 +1,22 @@
+{% extends 'booking_base.html' %}
+
+{% block content %}
+<section class="jumbotron bg-transparent text-center p-0 text-success">
+    <div class="container">
+        <h1 class="jumbotron-heading">Booking Cancelled</h1>
+    </div>
+</section>
+<div class="container">
+    <div class="row justify-content-center">
+        <h2>Hope to see you again soon!</h2>
+    </div>
+
+    <div class="row justify-content-center">
+        <a href="{{url_for('home.home')}}"><h2>Return Home</h2></a>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+
+{% endblock %}

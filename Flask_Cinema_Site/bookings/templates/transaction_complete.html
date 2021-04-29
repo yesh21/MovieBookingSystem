@@ -25,7 +25,7 @@
         <a href="{{url_for('home.home')}}"><h2>Return Home</h2></a>
     </div>
     <div class="row justify-content-center pt-5">
-        <a href="TODO"><p>Cancel Transaction?</p></a>
+        <a href="{{ url_for('bookings.cancel', transaction_id=t.id) }}"><p>Cancel Transaction?</p></a>
     </div>
 </div>
 {% endblock %}
