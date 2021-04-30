@@ -16,135 +16,139 @@
     <div class="row">
         <h2>At time: </h2>
     </div>
-    <div class="row justify-content-md-center">
-        <div class=" bg-success text-white">
-            <h2>{{ viewing.time.strftime('%H:%M') }} </h2>
+    <div class="card bg-black mb-4">
+        <div class="row justify-content-md-center">
+            <div class=" bg-success text-white">
+                <h2>{{ viewing.time.strftime('%H:%M') }} </h2>
+            </div>
+
+            <h2>&nbsp; On &nbsp;</h2>
+
+            <div class=" bg-success text-white">
+                <h2> {{ viewing.time.strftime('%d/%m') }}</h2>
+            </div>
+
+            <div style="width:100px;display:inline-block;">
+
+            </div>
+
+            <a href="{{ url_for('movie.view_specific', movie_id=viewing.movie.id) }}">
+                <button class="btn btn-warning">Change Time</button>
+            </a>
         </div>
-
-        <h2>&nbsp; On &nbsp;</h2>
-
-        <div class=" bg-success text-white">
-            <h2> {{ viewing.time.strftime('%d/%m') }}</h2>
-        </div>
-
-        <div style="width:100px;display:inline-block;">
-
-        </div>
-
-        <a href="{{ url_for('movie.view_specific', movie_id=viewing.movie.id) }}">
-            <button class="btn btn-warning" >Change Time</button>
-        </a>
     </div>
     <div class="row">
         <h2>Select Seat: </h2>
     </div>
 
-    <div class="row">
-        <div class="col-2">
-            <div class="pt-5">
-                <div class="keySeat">
-                    <h5>Key</h5>
-                    <hr>
-                    <p>Child: £4.50</p>
-                    <p>Senior: £5.50</p>
-                    <p>Adult: £6.50</p>
-                    <p>VIP: £8.00</p>
-                    <hr>
-                    <button type="button" class="btn btn-info seat-btn"></button>
-                    = Available <br>
-                    <button type="button" class="btn btn-info seat-btn seat-booked disabled"></button>
-                    = Booked
+    <div class="card bg-black mb-4">
+        <div class="row">
+            <div class="col-2">
+                <div class="pt-5">
+                    <div class="keySeat">
+                        <h5>Key</h5>
+                        <hr>
+                        <p>Child: £4.50</p>
+                        <p>Senior: £5.50</p>
+                        <p>Adult: £6.50</p>
+                        <p>VIP: £8.00</p>
+                        <hr>
+                        <button type="button" class="btn btn-info seat-btn"></button>
+                        = Available <br>
+                        <button type="button" class="btn btn-info seat-btn seat-booked disabled"></button>
+                        = Booked
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="col">
-            <!--Seating-->
-            <table class="text-center mx-auto">
-                <thead>
-                <tr class="screen">
+            <div class="col">
+                <!--Seating-->
+                <table class="text-center mx-auto">
+                    <thead>
+                    <tr class="screen">
 
-                    <th colspan="13" class="border">Screen</th>
+                        <th colspan="13" class="border">Screen</th>
 
-                </tr>
-                </thead>
-                <tbody>
-                <tr class="blank_row">
-                    <td colspan="3"></td>
-                </tr>
-                {% for char in "ABCDEFG" | list %}
-                {% include 'snippets/select_seats_row.html' %}
-                {% endfor %}
-                <tr class="blank_row">
-                    <td colspan="3"></td>
-                </tr>
-                {% for char in "HIJ" | list %}
-                {% include 'snippets/select_seats_row.html' %}
-                {% endfor %}
-
-                <tr class="blank_row">
-                    <td colspan="3"></td>
-                </tr>
-
-                <tr>
-                    <td>
-                        <span class="h5">VIP</span>
-                    </td>
-
-                    <td>
-                        <button type="button"
-                                class="btn btn-info seat-btn {{ 'seat-available-vip' if is_seat_available('K' ~ 1) else 'seat-booked disabled' }}"
-                                id="K1">1
-                        </button>
-                    </td>
-                    <td>
-                        <button type="button"
-                                class="btn btn-info seat-btn {{ 'seat-available-vip' if is_seat_available('K' ~ 2) else 'seat-booked disabled' }}"
-                                id="K2">2
-                        </button>
-                    </td>
-                    <td><span class="mx-1"></span></td>
-                    {% for i in range(3, 8) %}
-                    <td>
-                        <button type="button"
-                                class="btn btn-info seat-btn {{ 'seat-available-vip' if is_seat_available('K' ~ i) else 'seat-booked disabled' }}"
-                                id="K{{ i }}">{{ i }}
-                        </button>
-                    </td>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr class="blank_row">
+                        <td colspan="3"></td>
+                    </tr>
+                    {% for char in "ABCDEFG" | list %}
+                    {% include 'snippets/select_seats_row.html' %}
                     {% endfor %}
-                    <td><span class="mx-1"></span></td>
-                    <td>
-                        <button type="button"
-                                class="btn btn-info seat-btn {{ 'seat-available-vip' if is_seat_available('K' ~ 8) else 'seat-booked disabled' }}"
-                                id="K8">8
-                        </button>
-                    </td>
-                    <td>
-                        <button type="button"
-                                class="btn btn-info seat-btn {{ 'seat-available-vip' if is_seat_available('K' ~ 9) else 'seat-booked disabled' }}"
-                                id="K9">9
-                        </button>
-                    </td>
+                    <tr class="blank_row">
+                        <td colspan="3"></td>
+                    </tr>
+                    {% for char in "HIJ" | list %}
+                    {% include 'snippets/select_seats_row.html' %}
+                    {% endfor %}
 
-                    <td>
-                        <span class="h5">VIP</span>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
+                    <tr class="blank_row">
+                        <td colspan="3"></td>
+                    </tr>
 
-            <!-- Book buttons -->
-            <div class="row justify-content-center mt-4">
-                {% if is_manager() %}
-                <button type="button" class="btn btn-primary mx-2" data-toggle="modal" data-target="#cashBookModal">
-                    Book
-                    (Cash)
-                </button>
-                {% endif %}
+                    <tr>
+                        <td>
+                            <span class="h5">VIP</span>
+                        </td>
 
-                <button type="button" class="btn btn-primary mx-2" data-toggle="modal" data-target="#cardBookModal">
-                    Book
-                    (Card)
-                </button>
+                        <td>
+                            <button type="button"
+                                    class="btn btn-info seat-btn {{ 'seat-available-vip' if is_seat_available('K' ~ 1) else 'seat-booked disabled' }}"
+                                    id="K1">1
+                            </button>
+                        </td>
+                        <td>
+                            <button type="button"
+                                    class="btn btn-info seat-btn {{ 'seat-available-vip' if is_seat_available('K' ~ 2) else 'seat-booked disabled' }}"
+                                    id="K2">2
+                            </button>
+                        </td>
+                        <td><span class="mx-1"></span></td>
+                        {% for i in range(3, 8) %}
+                        <td>
+                            <button type="button"
+                                    class="btn btn-info seat-btn {{ 'seat-available-vip' if is_seat_available('K' ~ i) else 'seat-booked disabled' }}"
+                                    id="K{{ i }}">{{ i }}
+                            </button>
+                        </td>
+                        {% endfor %}
+                        <td><span class="mx-1"></span></td>
+                        <td>
+                            <button type="button"
+                                    class="btn btn-info seat-btn {{ 'seat-available-vip' if is_seat_available('K' ~ 8) else 'seat-booked disabled' }}"
+                                    id="K8">8
+                            </button>
+                        </td>
+                        <td>
+                            <button type="button"
+                                    class="btn btn-info seat-btn {{ 'seat-available-vip' if is_seat_available('K' ~ 9) else 'seat-booked disabled' }}"
+                                    id="K9">9
+                            </button>
+                        </td>
+
+                        <td>
+                            <span class="h5">VIP</span>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <!-- Book buttons -->
+                <div class="row justify-content-center mt-4">
+                    {% if is_manager() %}
+                    <button type="button" class="btn btn-primary mx-2" data-toggle="modal" data-target="#cashBookModal">
+                        Book
+                        (Cash)
+                    </button>
+                    {% endif %}
+
+                    <button type="button" class="btn btn-primary mx-2" data-toggle="modal" data-target="#cardBookModal">
+                        Book
+                        (Card)
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -525,6 +529,8 @@
             // Open card modal if post errors
             $('#cardBookModal').modal('show')
         {% endif %}
+
+
 
 
 

@@ -3,7 +3,7 @@ from flask_login import current_user, login_required
 
 from Flask_Cinema_Site import db
 from Flask_Cinema_Site.roles import manager_permission
-from Flask_Cinema_Site.models import Viewing, Transaction, TicketType, SavedCard
+from Flask_Cinema_Site.models import Viewing, Transaction, TicketType, SavedCard, Seat
 from Flask_Cinema_Site.helper_functions import get_redirect_url
 from Flask_Cinema_Site.bookings.forms import CardPaymentForm, CashPaymentForm
 from Flask_Cinema_Site.bookings.helper_functions import generate_receipt_pdf
