@@ -1,307 +1,358 @@
 {% extends 'booking_base.html' %}
 
 {% block head %}
-    <link rel="stylesheet" href="{{ url_for('bookings.static', filename='css/bookings.css') }}">
+<link rel="stylesheet" href="{{ url_for('bookings.static', filename='css/bookings.css') }}">
 
 {% endblock %}
 
 {% block content %}
-    <div class="container">
-        <div class="row justify-content-md-center">
-            <h1>You Have Selected
-                <a class="text-danger"
-                   href="{{ url_for('movie.view_specific', movie_id=viewing.movie.id) }}">{{ viewing.movie.name }}</a>
-            </h1>
+<div class="container">
+    <div class="row justify-content-md-center">
+        <h1>You Have Selected
+            <a class="text-danger"
+               href="{{ url_for('movie.view_specific', movie_id=viewing.movie.id) }}">{{ viewing.movie.name }}</a>
+        </h1>
+    </div>
+    <div class="row">
+        <h2>At time: </h2>
+    </div>
+    <div class="row justify-content-md-center">
+        <div class=" bg-success text-white">
+            <h2>{{ viewing.time.strftime('%H:%M') }} </h2>
         </div>
-        <div class="row">
-            <h2>At time: </h2>
+
+        <h2>&nbsp; On &nbsp;</h2>
+
+        <div class=" bg-success text-white">
+            <h2> {{ viewing.time.strftime('%d/%m') }}</h2>
         </div>
-        <div class="row justify-content-md-center">
-            <div class=" bg-success text-white">
-                <h2>{{ viewing.time.strftime('%H:%M') }} On {{ viewing.time.strftime('%d/%m') }}</h2>
+
+        <div style="width:100px;display:inline-block;">
+
+        </div>
+
+        <a href="{{ url_for('movie.view_specific', movie_id=viewing.movie.id) }}">
+            <button class="btn btn-warning" >Change Time</button>
+        </a>
+    </div>
+    <div class="row">
+        <h2>Select Seat: </h2>
+    </div>
+
+    <div class="row">
+        <div class="col-2">
+            <div class="pt-5">
+                <div class="keySeat">
+                    <h5>Key</h5>
+                    <hr>
+                    <p>Child: £4.50</p>
+                    <p>Senior: £5.50</p>
+                    <p>Adult: £6.50</p>
+                    <p>VIP: £8.00</p>
+                    <hr>
+                    <button type="button" class="btn btn-info seat-btn"></button>
+                    = Available <br>
+                    <button type="button" class="btn btn-info seat-btn seat-booked disabled"></button>
+                    = Booked
+                </div>
             </div>
         </div>
-        <div class="row">
-            <h2>Select Seat: </h2>
-        </div>
+        <div class="col">
+            <!--Seating-->
+            <table class="text-center mx-auto">
+                <thead>
+                <tr class="screen">
 
-        <!--Seating-->
-        <table class="text-center mx-auto">
-            <thead>
-            <tr>
-                <th></th>
-                <th colspan="11" class="border">Screen</th>
-                <th></th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for char in "ABCDEFG" | list %}
+                    <th colspan="13" class="border">Screen</th>
+
+                </tr>
+                </thead>
+                <tbody>
+                <tr class="blank_row">
+                    <td colspan="3"></td>
+                </tr>
+                {% for char in "ABCDEFG" | list %}
                 {% include 'snippets/select_seats_row.html' %}
-            {% endfor %}
-
-            {% for char in "HIJ" | list %}
+                {% endfor %}
+                <tr class="blank_row">
+                    <td colspan="3"></td>
+                </tr>
+                {% for char in "HIJ" | list %}
                 {% include 'snippets/select_seats_row.html' %}
-            {% endfor %}
+                {% endfor %}
 
-            <tr>
-                <td>
-                    <span class="h5">VIP</span>
-                </td>
-                <td>
-                    <button type="button"
-                            class="btn btn-info seat-btn {{ 'seat-available-vip' if is_seat_available('K' ~ 1) else 'seat-booked disabled' }}"
-                            id="K1">1
-                    </button>
-                </td>
-                <td>
-                    <button type="button"
-                            class="btn btn-info seat-btn {{ 'seat-available-vip' if is_seat_available('K' ~ 2) else 'seat-booked disabled' }}"
-                            id="K2">2
-                    </button>
-                </td>
-                <td><span class="mx-1"></span></td>
-                {% for i in range(3, 8) %}
+                <tr class="blank_row">
+                    <td colspan="3"></td>
+                </tr>
+
+                <tr>
+                    <td>
+                        <span class="h5">VIP</span>
+                    </td>
+
+                    <td>
+                        <button type="button"
+                                class="btn btn-info seat-btn {{ 'seat-available-vip' if is_seat_available('K' ~ 1) else 'seat-booked disabled' }}"
+                                id="K1">1
+                        </button>
+                    </td>
+                    <td>
+                        <button type="button"
+                                class="btn btn-info seat-btn {{ 'seat-available-vip' if is_seat_available('K' ~ 2) else 'seat-booked disabled' }}"
+                                id="K2">2
+                        </button>
+                    </td>
+                    <td><span class="mx-1"></span></td>
+                    {% for i in range(3, 8) %}
                     <td>
                         <button type="button"
                                 class="btn btn-info seat-btn {{ 'seat-available-vip' if is_seat_available('K' ~ i) else 'seat-booked disabled' }}"
-                                id="K{{ i }}">{{ i }}</button>
+                                id="K{{ i }}">{{ i }}
+                        </button>
                     </td>
-                {% endfor %}
-                <td><span class="mx-1"></span></td>
-                <td>
-                    <button type="button"
-                            class="btn btn-info seat-btn {{ 'seat-available-vip' if is_seat_available('K' ~ 8) else 'seat-booked disabled' }}"
-                            id="K8">8
-                    </button>
-                </td>
-                <td>
-                    <button type="button"
-                            class="btn btn-info seat-btn {{ 'seat-available-vip' if is_seat_available('K' ~ 9) else 'seat-booked disabled' }}"
-                            id="K9">9
-                    </button>
-                </td>
-                <td>
-                    <span class="h5">VIP</span>
-                </td>
-            </tr>
-            </tbody>
-        </table>
+                    {% endfor %}
+                    <td><span class="mx-1"></span></td>
+                    <td>
+                        <button type="button"
+                                class="btn btn-info seat-btn {{ 'seat-available-vip' if is_seat_available('K' ~ 8) else 'seat-booked disabled' }}"
+                                id="K8">8
+                        </button>
+                    </td>
+                    <td>
+                        <button type="button"
+                                class="btn btn-info seat-btn {{ 'seat-available-vip' if is_seat_available('K' ~ 9) else 'seat-booked disabled' }}"
+                                id="K9">9
+                        </button>
+                    </td>
 
-        <!-- Book buttons -->
-        <div class="row justify-content-center mt-4">
-            {% if is_manager() %}
-                <button type="button" class="btn btn-primary mx-2" data-toggle="modal" data-target="#cashBookModal">Book
+                    <td>
+                        <span class="h5">VIP</span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
+            <!-- Book buttons -->
+            <div class="row justify-content-center mt-4">
+                {% if is_manager() %}
+                <button type="button" class="btn btn-primary mx-2" data-toggle="modal" data-target="#cashBookModal">
+                    Book
                     (Cash)
                 </button>
-            {% endif %}
+                {% endif %}
 
-            <button type="button" class="btn btn-primary mx-2" data-toggle="modal" data-target="#cardBookModal">Book
-                (Card)
-            </button>
-        </div>
-    </div>
-
-    {% if is_manager() %}
-        <!-- Book with cash modal -->
-        <div class="modal fade" id="cashBookModal" tabindex="-1" role="dialog" aria-labelledby="cashBookModalLabel"
-             aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content bg-dark">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="cashBookModalLabel">{{ viewing.movie.name }}
-                            - {{ viewing.time.strftime('%H:%M - %d/%m/%y') }}</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <form action="{{ url_for('bookings.book_with_cash', viewing_id=viewing.id) }}" method="post">
-                        <div class="modal-body">
-                            <table class="table">
-                                <thead>
-                                <tr>
-                                    <th class="border-top-0">Ticket type</th>
-                                    <th class="border-top-0">Seats</th>
-                                    <th class="border-top-0">Total (£)</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <tr>
-                                    <td>Child</td>
-                                    <td class="modal-seats-child"></td>
-                                    <td class="modal-price-child"></td>
-                                </tr>
-                                <tr>
-                                    <td>Senior</td>
-                                    <td class="modal-seats-senior"></td>
-                                    <td class="modal-price-senior"></td>
-                                </tr>
-                                <tr>
-                                    <td>Adult</td>
-                                    <td class="modal-seats-adult"></td>
-                                    <td class="modal-price-adult"></td>
-                                </tr>
-                                <tr>
-                                    <td>VIP</td>
-                                    <td class="modal-seats-vip"></td>
-                                    <td class="modal-price-vip"></td>
-                                </tr>
-                                <tr>
-                                    <td class="border-top-0"></td>
-                                    <td class="border-top-0"></td>
-                                    <td class="border-top-0"></td>
-                                </tr>
-                                <tr class="bg-black">
-                                    <td class="border-top-0">VAT</td>
-                                    <td class="border-top-0"></td>
-                                    <td class="border-top-0 modal-vat"></td>
-                                </tr>
-                                <tr class="bg-black">
-                                    <td>Total</td>
-                                    <td></td>
-                                    <td class="modal-total-price"></td>
-                                </tr>
-                                </tbody>
-                            </table>
-
-                            <table class="table bg-black rounded">
-                                <tbody>
-
-                                </tbody>
-                            </table>
-
-                            {{ cash_payment_form.seats_json(id='seatsCashJson') }}
-                            {{ get_field_group_html(cash_payment_form.customer_email) }}
-                            {{ cash_payment_form.csrf_token(id='cashCsrf') }}
-
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                            {{ cash_payment_form.submit(class='btn btn-primary', id='cashSubmit') }}
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    {% endif %}
-
-    <!-- Book with card modal -->
-    <div class="modal fade" id="cardBookModal" tabindex="-1" role="dialog" aria-labelledby="cardBookModalLabel"
-         aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content bg-dark">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="cardBookModalLabel">{{ viewing.movie.name }}
-                        - {{ viewing.time.strftime('%H:%M - %d/%m/%y') }}</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <form action="{{ url_for('bookings.book_with_card', viewing_id=viewing.id) }}" method="post">
-                    <div class="modal-body">
-                        <table class="table">
-                            <thead>
-                            <tr>
-                                <th class="border-top-0">Ticket type</th>
-                                <th class="border-top-0">Seats</th>
-                                <th class="border-top-0">Total (£)</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr>
-                                <td>Child</td>
-                                <td class="modal-seats-child"></td>
-                                <td class="modal-price-child"></td>
-                            </tr>
-                            <tr>
-                                <td>Senior</td>
-                                <td class="modal-seats-senior"></td>
-                                <td class="modal-price-senior"></td>
-                            </tr>
-                            <tr>
-                                <td>Adult</td>
-                                <td class="modal-seats-adult"></td>
-                                <td class="modal-price-adult"></td>
-                            </tr>
-                            <tr>
-                                <td>VIP</td>
-                                <td class="modal-seats-vip"></td>
-                                <td class="modal-price-vip"></td>
-                            </tr>
-                            <tr>
-                                <td class="border-top-0"></td>
-                                <td class="border-top-0"></td>
-                                <td class="border-top-0"></td>
-                            </tr>
-                            <tr class="bg-black">
-                                <td class="border-top-0">VAT</td>
-                                <td class="border-top-0"></td>
-                                <td class="border-top-0 modal-vat"></td>
-                            </tr>
-                            <tr class="bg-black">
-                                <td>Total</td>
-                                <td></td>
-                                <td class="modal-total-price"></td>
-                            </tr>
-                            </tbody>
-                        </table>
-
-                        <!-- Saved cards-->
-                        <div class="form-group">
-                            <label class="form-control-label" for="storedCards">Saved cards</label>
-                            <select class="form-control" id="storedCards">
-                                {% for card in current_user.saved_cards %}
-                                    <option value="**** **** **** {{ card.number[-4:] }}">**** ****
-                                        **** {{ card.number[-4:] }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-
-                        <!-- Card / CVC -->
-                        <div class="form-row">
-                            <div class="form-group col-8">
-                                {{ get_field_html(card_payment_form.card) }}
-                            </div>
-                            <div class="form-group col-4">
-                                {{ get_field_html(card_payment_form.cvc) }}
-                            </div>
-                        </div>
-
-                        <!-- Expiry month selector -->
-                        <div class="form-group">
-                            <label class="form-control-label" for="expirySelector">Expiry date</label>
-                            <input class="form-control {{ 'is-invalid' if card_payment_form.expiry.errors else '' }}"
-                                   id="expirySelector" type="month">
-                            <div class="invalid-feedback">
-                                {% for error in card_payment_form.expiry.errors %}
-                                    <p class="mb-0">{{ error}}</p>
-                                {% endfor %}
-                            </div>
-                        </div>
-                        {{ card_payment_form.expiry(class='d-none') }}
-
-                        <!-- Remember card -->
-                        <div class="form-group form-check">
-                            {{ card_payment_form.remember(class="form-check-input") }}
-                            {{ card_payment_form.remember.label(class="form-check-label") }}
-                        </div>
-
-                        {{ card_payment_form.csrf_token(id='cardCsrf') }}
-                        {{ card_payment_form.seats_json(id='seatsCardJson') }}
-
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                        {{ card_payment_form.submit(class='btn btn-primary', id='cardSubmit') }}
-                    </div>
-                </form>
+                <button type="button" class="btn btn-primary mx-2" data-toggle="modal" data-target="#cardBookModal">
+                    Book
+                    (Card)
+                </button>
             </div>
         </div>
     </div>
+
+</div>
+
+{% if is_manager() %}
+<!-- Book with cash modal -->
+<div class="modal fade" id="cashBookModal" tabindex="-1" role="dialog" aria-labelledby="cashBookModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content bg-dark">
+            <div class="modal-header">
+                <h5 class="modal-title" id="cashBookModalLabel">{{ viewing.movie.name }}
+                    - {{ viewing.time.strftime('%H:%M - %d/%m/%y') }}</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form action="{{ url_for('bookings.book_with_cash', viewing_id=viewing.id) }}" method="post">
+                <div class="modal-body">
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th class="border-top-0">Ticket type</th>
+                            <th class="border-top-0">Seats</th>
+                            <th class="border-top-0">Total (£)</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>Child</td>
+                            <td class="modal-seats-child"></td>
+                            <td class="modal-price-child"></td>
+                        </tr>
+                        <tr>
+                            <td>Senior</td>
+                            <td class="modal-seats-senior"></td>
+                            <td class="modal-price-senior"></td>
+                        </tr>
+                        <tr>
+                            <td>Adult</td>
+                            <td class="modal-seats-adult"></td>
+                            <td class="modal-price-adult"></td>
+                        </tr>
+                        <tr>
+                            <td>VIP</td>
+                            <td class="modal-seats-vip"></td>
+                            <td class="modal-price-vip"></td>
+                        </tr>
+                        <tr>
+                            <td class="border-top-0"></td>
+                            <td class="border-top-0"></td>
+                            <td class="border-top-0"></td>
+                        </tr>
+                        <tr class="bg-black">
+                            <td class="border-top-0">VAT</td>
+                            <td class="border-top-0"></td>
+                            <td class="border-top-0 modal-vat"></td>
+                        </tr>
+                        <tr class="bg-black">
+                            <td>Total</td>
+                            <td></td>
+                            <td class="modal-total-price"></td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                    <table class="table bg-black rounded">
+                        <tbody>
+
+                        </tbody>
+                    </table>
+
+                    {{ cash_payment_form.seats_json(id='seatsCashJson') }}
+                    {{ get_field_group_html(cash_payment_form.customer_email) }}
+                    {{ cash_payment_form.csrf_token(id='cashCsrf') }}
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    {{ cash_payment_form.submit(class='btn btn-primary', id='cashSubmit') }}
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Book with card modal -->
+<div class="modal fade" id="cardBookModal" tabindex="-1" role="dialog" aria-labelledby="cardBookModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content bg-dark">
+            <div class="modal-header">
+                <h5 class="modal-title" id="cardBookModalLabel">{{ viewing.movie.name }}
+                    - {{ viewing.time.strftime('%H:%M - %d/%m/%y') }}</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form action="{{ url_for('bookings.book_with_card', viewing_id=viewing.id) }}" method="post">
+                <div class="modal-body">
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th class="border-top-0">Ticket type</th>
+                            <th class="border-top-0">Seats</th>
+                            <th class="border-top-0">Total (£)</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>Child</td>
+                            <td class="modal-seats-child"></td>
+                            <td class="modal-price-child"></td>
+                        </tr>
+                        <tr>
+                            <td>Senior</td>
+                            <td class="modal-seats-senior"></td>
+                            <td class="modal-price-senior"></td>
+                        </tr>
+                        <tr>
+                            <td>Adult</td>
+                            <td class="modal-seats-adult"></td>
+                            <td class="modal-price-adult"></td>
+                        </tr>
+                        <tr>
+                            <td>VIP</td>
+                            <td class="modal-seats-vip"></td>
+                            <td class="modal-price-vip"></td>
+                        </tr>
+                        <tr>
+                            <td class="border-top-0"></td>
+                            <td class="border-top-0"></td>
+                            <td class="border-top-0"></td>
+                        </tr>
+                        <tr class="bg-black">
+                            <td class="border-top-0">VAT</td>
+                            <td class="border-top-0"></td>
+                            <td class="border-top-0 modal-vat"></td>
+                        </tr>
+                        <tr class="bg-black">
+                            <td>Total</td>
+                            <td></td>
+                            <td class="modal-total-price"></td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                    <!-- Saved cards-->
+                    <div class="form-group">
+                        <label class="form-control-label" for="storedCards">Saved cards</label>
+                        <select class="form-control" id="storedCards">
+                            {% for card in current_user.saved_cards %}
+                            <option value="**** **** **** {{ card.number[-4:] }}">**** ****
+                                **** {{ card.number[-4:] }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- Card / CVC -->
+                    <div class="form-row">
+                        <div class="form-group col-8">
+                            {{ get_field_html(card_payment_form.card) }}
+                        </div>
+                        <div class="form-group col-4">
+                            {{ get_field_html(card_payment_form.cvc) }}
+                        </div>
+                    </div>
+
+                    <!-- Expiry month selector -->
+                    <div class="form-group">
+                        <label class="form-control-label" for="expirySelector">Expiry date</label>
+                        <input class="form-control {{ 'is-invalid' if card_payment_form.expiry.errors else '' }}"
+                               id="expirySelector" type="month">
+                        <div class="invalid-feedback">
+                            {% for error in card_payment_form.expiry.errors %}
+                            <p class="mb-0">{{ error}}</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {{ card_payment_form.expiry(class='d-none') }}
+
+                    <!-- Remember card -->
+                    <div class="form-group form-check">
+                        {{ card_payment_form.remember(class="form-check-input") }}
+                        {{ card_payment_form.remember.label(class="form-check-label") }}
+                    </div>
+
+                    {{ card_payment_form.csrf_token(id='cardCsrf') }}
+                    {{ card_payment_form.seats_json(id='seatsCardJson') }}
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    {{ card_payment_form.submit(class='btn btn-primary', id='cardSubmit') }}
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
 {% endblock %}
 
 {% block scripts %}
-    <script>
+<script>
         // Set initial selected card
         let stored_cards = $("#storedCards");
         let card = $('#card');
@@ -474,5 +525,15 @@
             // Open card modal if post errors
             $('#cardBookModal').modal('show')
         {% endif %}
-    </script>
+
+
+
+
+
+
+
+
+
+
+</script>
 {% endblock %}

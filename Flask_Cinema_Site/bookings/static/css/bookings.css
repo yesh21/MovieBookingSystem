@@ -1,5 +1,5 @@
 hr{
-    border: 5px solid red;
+    border: 1px solid white;
     border-top: 10px;
 }
 p.pos_fixed {
@@ -9,4 +9,24 @@ p.pos_fixed {
     text-align:center;
     font-style: oblique;
     font-size: 25px;
+}
+.keySeat{
+    border: 1px solid white;
+    text-align: center;
+}
+.blank_row
+{
+    height: 20px !important;
+    background-color: #FFFFFF;
+    opacity: 0;
+}
+.screen
+{
+    background-color: #000000;
+    opacity: 0.7;
+}
+.VIP
+{
+    background-color: #F4D409;
+    opacity: 1;
 }
